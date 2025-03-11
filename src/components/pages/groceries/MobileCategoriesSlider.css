@@ -1,0 +1,8 @@
+.mobile-categories-slider{
+    width: 100%;
+    background-color: var(--footer-bg-color);
+}
+  
+h3.category-name {
+    font-size: 15px;
+}

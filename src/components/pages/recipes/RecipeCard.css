@@ -1,0 +1,19 @@
+.card{
+    max-width: 300px;
+    min-height: 310px;
+    background-color: var(--footer-bg-color);
+}
+
+.recipe-meta{
+    font-size: 13px;
+}
+
+.recipe-title{
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.recipe-description{
+    font-size: 14px;
+    margin: 0;
+}

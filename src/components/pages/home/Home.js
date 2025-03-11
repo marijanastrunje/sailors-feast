@@ -1,0 +1,342 @@
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';  
+import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+import HomePageCategories from "../groceries/HomePageCategories";
+import RecipeBlock from '../../blocks/recipe-block/RecipeBlock';
+import HomePageBlog from '../blog/HomePageBlog'
+import Faq from "../all-pages/Faq";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import './Home.css';
+
+const Home = () => {
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch("https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
+      headers: {
+        Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      const filtered = data
+        .filter(category => ![16, 668, 672].includes(category.id))
+        .sort((a, b) => a.menu_order - b.menu_order);
+      setCategories(filtered);
+    });
+  }, []);
+
+
+  const settings = {
+    slidesToShow: 1,
+    slidesToScroll: 3,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    arrow: false,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 3,
+          infinite: true,
+          arrow: false,
+        }
+      },
+      {
+        breakpoint: 776,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 3,
+          arrow: false,
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 3,
+          arrow: false,
+        },
+      },
+    ],
+  };
+
+    return(
+        <>
+        <section id="hero" className="align-items-md-center justify-content-md-start mb-0">
+            <video muted loop width={1440} height={500} className="position-absolute w-100 h-100 object-fit-cover">
+                <source src="img/home/Sailors-Feast-Catamaran-Dining-Croatia.mp4" type="video/mp4" />
+                <p>Families, friends, and couples are sharing freshly delivered meals and drinks by Sailor's Feast. Set on a luxurious catamaran, they relax and enjoy the stunning Croatian coastline.</p>
+            </video>
+            <div className="hero-text ms-md-5">
+                <img src="img/home/hand-drawn-boat-symbol-for-sailors-feast.png" alt="Hand-drawn boat symbol for Sailor's Feast" title="Hand-drawn boat symbol for Sailor's Feast" width={70} height={80} className="icon-dynamic me-2"/> 
+                <div>
+                    <h1 className="m-0">Sailor's Feast</h1>
+                    <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
+                    <p className="d-none d-md-block">From luxury yacht charters to family sailing trip, we deliver fresh, high-quality provisions, beverages, and personalized food packages straight to your boat.</p>
+                    <a href="mix&match.html" className="btn" aria-label="Plan your meals and order food packages now">Place your order</a> 
+                </div>              
+            </div> 
+        </section>
+
+        <section id="advantages">
+            <div className="container">
+                <div className="row">
+                <div className="p-4">
+                <strong><p className="d-block d-md-none text-center">From luxury yacht charters to family sailing trip, we deliver fresh, high-quality provisions, beverages, and personalized food packages straight to your boat.</p></strong>
+                </div>
+                    <div className="col-md-4 advantage-item mb-4 mb-md-0">
+                        <div className="row px-2">
+                            <div className="col-5 col-md-12 col-xl-5 order-1 order-md-1 text-center">
+                                <img src="\img\home\advantages-sailors-feast-fresh-vegetables-herbs-spices.jpg" width={170} height={100} alt="Fresh vegetables, herbs, and spices for Sailor's Feast delivery" title="Fresh vegetables, herbs, and spices for Sailor's Feast delivery" className="object-fit-cover mb-2"/>
+                            </div>
+                            <div className="col-7 col-md-12 col-xl-7 order-2 order-md-2 text-start text-md-center text-xl-start">
+                                <h4>Fresh Ingredients</h4>
+                                <p>Locally grown fruits and vegetables, always freshly delivered to your boat.</p>
+                            </div>  
+                        </div>
+                    </div>
+
+                    <div className="col-md-4 advantage-item mb-4 mb-md-0">
+                        <div className="row px-2">
+                            <div className="col-5 col-md-12 col-xl-5 order-2 order-md-1 text-center">
+                                <img src="img\home\advantages-sailors-feast-fast-delivery.jpg" width={170} height={100} alt="Fast and reliable delivery to Split marinas by Sailor's Feast" title="Fast and reliable delivery to Split marinas by Sailor's Feast" className="object-fit-cover mb-2"/>
+                            </div>
+                            <div className="col-7 col-md-12 col-xl-7 order-1 order-md-2 text-end text-md-center text-xl-start">
+                                <h4>Fast Delivery</h4>
+                                <p>Fast and reliable delivery to 5 marinas around Split, Croatia.</p>
+                            </div>  
+                        </div>
+                    </div>
+
+                    <div className="col-md-4 advantage-item">
+                        <div className="row px-2">
+                            <div className="col-5 col-md-12 col-xl-5 order-first order-md-first text-center">
+                                <img src="img\home\advantages-sailors-feast-custom-order.jpg" width={170} height={100} alt="Customizable food packages by Sailor's Feast" title="Customizable food packages by Sailor's Feast" className="object-fit-cover mb-2"/>
+                            </div>
+                            <div className="col-7 col-md-12 col-xl-7 order-2 order-md-2 text-start text-md-center text-xl-start">
+                                <h4>Custom Orders</h4>
+                                <p>Customizable packages tailored to your preferences and needs.</p>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="special-offer">
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-6 text-center pb-2">
+                        <div className="d-flex align-items-center justify-content-center mb-2">
+                            <img src="img/home/special-offer-icon-fire-percent.png" width={60} height={60} alt="Fire icon with a percent sign representing special offer" title="Fire icon with a percent sign representing special offer" />
+                            <h2 className="mb-0">Special offer</h2>
+                        </div>
+                        <div>
+                            <p>Join our Sailor's Feast community and unlock <strong>exclusive benefits!</strong> Members enjoy discounts, special packages, and access to an easy-to-use interactive platform.</p>
+                            <p>Plan ahead and save! Place your order by <b>31.03.2025.</b> to enjoy up to <strong>20% off</strong> and special gift.</p>
+                            <a href="mix&match.html" className="btn me-2">Place Your Order</a>
+                        </div>  
+                    </div>
+                </div>
+            </div>    
+        </section>
+
+        <section id="categories" className="py-md-5">
+        <h2>Shop by category</h2>
+        <HomePageCategories categories={categories} />
+        </section> 
+
+        <section id="product-carousel">
+          <div className="container">
+            <div className="row justify-content-center">
+              <h2>Food box</h2>
+              <div className="box-carousel col-12 col-md-6 p-0 carousel slide" id="carouselExample" data-bs-ride="carousel">
+                <div className="carousel-inner">
+                  <div className="carousel-item active">
+                    <div className="box-carousel-img">
+                      <img
+                        src="img/home/home-carousel-friends-family-box.jpg"
+                        width={660}
+                        height={350}
+                        alt="Friends & Family Food Box by Sailor's Feast - perfect for group meals"
+                        title="Friends & Family Food Box by Sailor's Feast - perfect for group meals"
+                        className="d-block w-100"
+                      />
+                      <div className="box-carousel-text mx-5 mx-xl-0">
+                        <h3>Friends & Family Box</h3>
+                        <p>Some representative placeholder content for the first slide.</p>
+                        <a href="ff-box.html" className="btn">Order CTA</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="carousel-item">
+                    <div className="box-carousel-img">
+                      <img
+                        src="img/home/home-carusel-standard-box.jpg"
+                        alt="Standard Food Box by Sailor's Feast - essential provisions"
+                        title="Standard Food Box by Sailor's Feast - essential provisions"
+                        className="d-block w-100"
+                      />
+                      <div className="box-carousel-text mx-5 mx-xl-0">
+                        <h3>Standard box</h3>
+                        <p>Some representative placeholder content for the second slide.</p>
+                        <a href="standard-box.html" className="btn">Order CTA</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="carousel-item">
+                    <div className="box-carousel-img">
+                      <img
+                        src="img/home/home-carousel-feast-box.jpg"
+                        alt="Feast Food Box by Sailor's Feast - gourmet meals"
+                        title="Feast Food Box by Sailor's Feast - gourmet meals"
+                        className="d-block w-100"
+                      />
+                      <div className="box-carousel-text mx-5 mx-xl-0">
+                        <h3>Feast Box</h3>
+                        <p>Some representative placeholder content for the third slide.</p>
+                        <a href="feast-box.html" className="btn">Order CTA</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="carousel-item">
+                    <div className="box-carousel-img">
+                      <img
+                        src="img/home/home-carousel-healthy-box.jpg"
+                        alt="Healthy Food Box - Fresh and healthy options"
+                        title="Healthy Food Box - Fresh and healthy options"
+                        className="d-block w-100"
+                      />
+                      <div className="box-carousel-text mx-5 mx-xl-0">
+                        <h3>Healthy Box</h3>
+                        <p>Some representative placeholder content for the third slide.</p>
+                        <a href="feast-box.html" className="btn">Order CTA</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button className="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span className="visually-hidden">Previous</span>
+                </button>
+                <button className="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span className="visually-hidden">Next</span>
+                </button>
+              </div>
+              <div className="why-us d-none d-lg-inline col-md-3 bg-white pt-5">
+                <h4 className="mb-3 text-center fw-bold">Zašto odabrati nas?</h4>
+                <ul className="ps-3">
+                  <li className="d-flex align-items-center mb-3">
+                    <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
+                    <span>Svježe lokalne namirnice</span>
+                  </li>
+                  <li className="d-flex align-items-center mb-3">
+                    <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
+                    <span>Prilagodljivi paketi po vašim željama</span>
+                  </li>
+                  <li className="d-flex align-items-center mb-3">
+                    <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
+                    <span>Praktična rješenja za obroke na brodu</span>
+                  </li>
+                  <li className="d-flex align-items-center">
+                    <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
+                    <span>Ekološka ambalaža i održivost</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="your-box" className="bg-white py-3">
+            <div className="container d-flex flex-column justify-content-center align-items-center">
+                <h2>Mix & Match</h2>
+                <img className="mb-3" src="https://placehold.co/300x50" alt="" title=""/>
+                <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est. Proin velit </p>
+                <a href="mix&match.html" className="btn">Order CTA</a>
+            </div> 
+        </section>
+
+        <section id="delivery">
+            <div className="container">
+            <div className="row justify-content-center">
+                <h2>Marina Delivery Points:</h2>
+                <div className="col-md-8">
+                <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1u5Hx3EedR34xYeOG-zZPcCueSxX0I5o&ehbc=2E312F&noprof=1" width="100%" height="350"></iframe>
+                </div>
+            </div>
+            </div>  
+        </section>
+
+        <section id="recepies">
+        <div className="container">
+            <div className="row align-items-center mb-3">
+            <div className="col-6">
+                <a href=""><h2 className="text-start">Recipes</h2></a>
+            </div>
+            <div className="col-6 text-end">
+                <a href="recipes.html">View more</a>
+            </div>
+            </div>
+        </div>  
+        <RecipeBlock />
+
+        
+        </section>
+
+        <section id="recent-posts">
+        <div className="container py-5">
+            <div className="row justify-content-center">
+            <div className="col-11 col-sm-12 col-md-10 col-lg-8">
+            <h3>Recent posts</h3>
+            <HomePageBlog />    
+            </div>
+
+            <div className="col-md-2">
+                <div>
+                    <h4>Follow us</h4>
+                    <a className="d-inline-flex align-items-center" href="#"><FontAwesomeIcon icon={faInstagram} />#sailorsfeast</a>
+                </div>
+                <div className="instagram">
+                  <Slider {...settings}>
+                    <div>
+                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    </div>
+                    <div>
+                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    </div>
+                    <div>
+                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    </div>
+                    <div>
+                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                    </div>
+                    </Slider>
+                </div>
+                </div>
+            </div>
+        </div>
+        </section>
+        <section id="Faq">
+          <Faq />
+        </section>
+        </>
+    );
+};
+
+export default Home;

@@ -1,0 +1,7 @@
+h3.subcategory-title{
+    cursor: pointer;
+}
+
+h3.subcategory-title:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,35 @@
+.lunch{
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #da4d4d;
+    color: var(--footer-bg-color);
+    border-radius: 10%;
+    padding: 0 3px;
+}
+
+.healthy{
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #41976f;
+    color: var(--footer-bg-color);
+    border-radius: 10%;
+    padding: 0 3px;
+}
+
+.fit{
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #ef7e49;
+    color: var(--footer-bg-color);
+    border-radius: 10%;
+    padding: 0 3px;
+}
+
+.dinner{
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #e6ba21;
+    color: var(--footer-bg-color);
+    border-radius: 10%;
+    padding: 0 3px;
+}

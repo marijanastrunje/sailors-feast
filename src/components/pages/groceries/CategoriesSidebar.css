@@ -1,0 +1,11 @@
+.categories-list.list-group {
+    --bs-list-group-bg: var(--footer-bg-color);
+}
+
+.subcategories-list.list-group {
+    --bs-list-group-bg: var(--footer-bg-color);
+}
+
+.rotate-icon {
+    transform: rotate(90deg);
+}

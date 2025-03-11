@@ -1,0 +1,78 @@
+.top-navbar, .navbar, ul.dropdown-menu.show{
+    background: var(--nav-color);
+}
+
+.top-navbar{
+height: 24px;
+border-bottom: 1px solid #495057;
+}
+
+.top-navbar a, .top-navbar p{
+    color: var(--secondary-color);
+    font-size: 15px;
+    
+}
+
+.navbar a{
+    color: var(--secondary-color);
+    font-size: 18px;
+    font-weight: 450;
+}
+
+.top-navbar a:hover, .navbar a:hover, .nav-link:focus{
+    color: var(--primary-color);
+}
+
+
+.navbar{
+margin-top: 24px;
+}
+
+.navbar-toggler{
+  color: var(--primary-color);
+}
+
+.navbar-toggler:focus{
+  box-shadow: none;
+}
+
+.navbar-nav .nav-item a.nav-link.active{
+  color:var(--primary-color);
+}
+
+#ikone, #search-icon{
+  color:var(--primary-color);
+}
+
+.search-box {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+@media (min-width: 768px) {
+  .search-box {
+    position: fixed; 
+    top: 89px; 
+  }
+}
+
+@media (max-width: 767px) {
+  .width-search {
+    margin-top: 143px;
+  }
+}
+
+.navbar-nav .nav-link.show {
+    color: var(--primary-color) !important;
+}
+
+.cart-badge{
+  font-size: 12px;
+  position: absolute;
+  margin-top: -10px;
+  margin-left: -3px;
+}  

@@ -1,0 +1,37 @@
+
+.groceries-hero {
+    width: 100%;
+    height: auto;
+    position: relative;
+    background-image: url("C:\Users\Marijana\Desktop\www\izm\sailors-feast\public\img\groceries\SAILOR'SFEAST-PRODUCT-24.jpg"); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+}
+
+.groceries-hero::before {
+    content: "";
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.desktop-scroll {
+    height: calc(100vh - 89px);
+    position: sticky;
+    top: 89px;
+    overflow-y: auto; 
+    background: var(--footer-bg-color); 
+    padding: 15px;
+    cursor: pointer;
+}
+
+
+
+
+
+  
