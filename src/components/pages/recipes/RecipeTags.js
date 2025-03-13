@@ -7,25 +7,31 @@ const RecipeTags = ({ postID }) => {
   const [fitTags, setFitTags] = useState([]);
   const [dinnerTags, setDinnerTags] = useState([]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (!postID) return;
 
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/healthy?post=" + postID)
       .then(response => response.json())
-      .then(data => setHealthyTags(data));
+      .then(data => setHealthyTags(data))
+      .catch(error => console.error("Error fetching healthy tags:", error));
 
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/lunch?post=" + postID)
       .then(response => response.json())
-      .then(data => setLunchTags(data));
+      .then(data => setLunchTags(data))
+      .catch(error => console.error("Error fetching lunch tags:", error));
 
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/fit?post=" + postID)
       .then(response => response.json())
-      .then(data => setFitTags(data));
+      .then(data => setFitTags(data))
+      .catch(error => console.error("Error fetching fit tags:", error));
 
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/dinner?post=" + postID)
       .then(response => response.json())
-      .then(data => setDinnerTags(data));
-  }, [postID]);
+      .then(data => setDinnerTags(data))
+      .catch(error => console.error("Error fetching dinner tags:", error));
+
+}, [postID]);
+
 
   return (
     <div className="recipe-tags pb-1 d-flex justify-content-center">

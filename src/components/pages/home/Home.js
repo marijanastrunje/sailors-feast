@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';  
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -24,7 +25,7 @@ const Home = () => {
     .then(response => response.json())
     .then(data => {
       const filtered = data
-        .filter(category => ![16, 668, 672].includes(category.id))
+        .filter(category => ![17, 108].includes(category.id))
         .sort((a, b) => a.menu_order - b.menu_order);
       setCategories(filtered);
     })
@@ -74,7 +75,6 @@ const Home = () => {
         <section id="hero" className="align-items-md-center justify-content-md-start mb-0">
             <video muted loop width={1440} height={500} className="position-absolute w-100 h-100 object-fit-cover">
                 <source src="img/home/Sailors-Feast-Catamaran-Dining-Croatia.mp4" type="video/mp4" />
-                <p>Families, friends, and couples are sharing freshly delivered meals and drinks by Sailor's Feast. Set on a luxurious catamaran, they relax and enjoy the stunning Croatian coastline.</p>
             </video>
             <div className="hero-text ms-md-5">
                 <img src="img/home/hand-drawn-boat-symbol-for-sailors-feast.png" alt="Hand-drawn boat symbol for Sailor's Feast" title="Hand-drawn boat symbol for Sailor's Feast" width={70} height={80} className="icon-dynamic me-2"/> 
@@ -82,7 +82,7 @@ const Home = () => {
                     <h1 className="m-0">Sailor's Feast</h1>
                     <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
                     <p className="d-none d-md-block">From luxury yacht charters to family sailing trip, we deliver fresh, high-quality provisions, beverages, and personalized food packages straight to your boat.</p>
-                    <a href="mix&match.html" className="btn" aria-label="Plan your meals and order food packages now">Place your order</a> 
+                    <Link to="/groceries"  className="btn" aria-label="Plan your meals and order food packages now">Place your order</Link> 
                 </div>              
             </div> 
         </section>
@@ -143,7 +143,7 @@ const Home = () => {
                         <div>
                             <p>Join our Sailor's Feast community and unlock <strong>exclusive benefits!</strong> Members enjoy discounts, special packages, and access to an easy-to-use interactive platform.</p>
                             <p>Plan ahead and save! Place your order by <b>31.03.2025.</b> to enjoy up to <strong>20% off</strong> and special gift.</p>
-                            <a href="mix&match.html" className="btn me-2">Place Your Order</a>
+                            <Link to="/groceries" className="btn me-2">Place Your Order</Link>
                         </div>  
                     </div>
                 </div>
@@ -151,8 +151,8 @@ const Home = () => {
         </section>
 
         <section id="categories" className="py-md-5">
-        <h2>Shop by category</h2>
-        <HomePageCategories categories={categories} />
+          <h2>Shop by category</h2>
+          <HomePageCategories categories={categories} />
         </section> 
 
         <section id="product-carousel">
@@ -163,63 +163,41 @@ const Home = () => {
                 <div className="carousel-inner">
                   <div className="carousel-item active">
                     <div className="box-carousel-img">
-                      <img
-                        src="img/home/home-carousel-friends-family-box.jpg"
-                        width={660}
-                        height={350}
-                        alt="Friends & Family Food Box by Sailor's Feast - perfect for group meals"
-                        title="Friends & Family Food Box by Sailor's Feast - perfect for group meals"
-                        className="d-block w-100"
-                      />
+                      <img src="img/home/home-carousel-friends-family-box.jpg" width={660} height={350} alt="Friends & Family Food Box by Sailor's Feast - perfect for group meals" title="Friends & Family Food Box by Sailor's Feast - perfect for group meals" className="d-block w-100" />
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Friends & Family Box</h3>
                         <p>Some representative placeholder content for the first slide.</p>
-                        <a href="ff-box.html" className="btn">Order CTA</a>
+                        <Link to="/standard-box" className="btn">Order CTA</Link>
                       </div>
                     </div>
                   </div>
                   <div className="carousel-item">
                     <div className="box-carousel-img">
-                      <img
-                        src="img/home/home-carusel-standard-box.jpg"
-                        alt="Standard Food Box by Sailor's Feast - essential provisions"
-                        title="Standard Food Box by Sailor's Feast - essential provisions"
-                        className="d-block w-100"
-                      />
+                      <img src="img/home/home-carusel-standard-box.jpg" alt="Standard Food Box by Sailor's Feast - essential provisions" title="Standard Food Box by Sailor's Feast - essential provisions" className="d-block w-100" />
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Standard box</h3>
                         <p>Some representative placeholder content for the second slide.</p>
-                        <a href="standard-box.html" className="btn">Order CTA</a>
+                        <Link to="/standard-box" className="btn">Order CTA</Link>
                       </div>
                     </div>
                   </div>
                   <div className="carousel-item">
                     <div className="box-carousel-img">
-                      <img
-                        src="img/home/home-carousel-feast-box.jpg"
-                        alt="Feast Food Box by Sailor's Feast - gourmet meals"
-                        title="Feast Food Box by Sailor's Feast - gourmet meals"
-                        className="d-block w-100"
-                      />
+                      <img src="img/home/home-carousel-feast-box.jpg" alt="Feast Food Box by Sailor's Feast - gourmet meals" title="Feast Food Box by Sailor's Feast - gourmet meals" className="d-block w-100" />
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Feast Box</h3>
                         <p>Some representative placeholder content for the third slide.</p>
-                        <a href="feast-box.html" className="btn">Order CTA</a>
+                        <Link to="/standard-box" className="btn">Order CTA</Link>
                       </div>
                     </div>
                   </div>
                   <div className="carousel-item">
                     <div className="box-carousel-img">
-                      <img
-                        src="img/home/home-carousel-healthy-box.jpg"
-                        alt="Healthy Food Box - Fresh and healthy options"
-                        title="Healthy Food Box - Fresh and healthy options"
-                        className="d-block w-100"
-                      />
+                      <img src="img/home/home-carousel-healthy-box.jpg" alt="Healthy Food Box - Fresh and healthy options" title="Healthy Food Box - Fresh and healthy options" className="d-block w-100" />
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Healthy Box</h3>
                         <p>Some representative placeholder content for the third slide.</p>
-                        <a href="feast-box.html" className="btn">Order CTA</a>
+                        <Link to="standard-box" className="btn">Order CTA</Link>
                       </div>
                     </div>
                   </div>
@@ -259,82 +237,81 @@ const Home = () => {
         </section>
 
         <section id="your-box" className="bg-white py-3">
-            <div className="container d-flex flex-column justify-content-center align-items-center">
-                <h2>Mix & Match</h2>
-                <img className="mb-3" src="https://placehold.co/300x50" alt="" title=""/>
-                <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est. Proin velit </p>
-                <a href="mix&match.html" className="btn">Order CTA</a>
-            </div> 
+          <div className="container d-flex flex-column justify-content-center align-items-center">
+              <h2>Mix & Match</h2>
+              <img className="mb-3" src="https://placehold.co/300x50" alt="" title=""/>
+              <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est. Proin velit </p>
+              <Link to="/groceries" className="btn">Order CTA</Link>
+          </div> 
         </section>
 
         <section id="delivery">
             <div className="container">
-            <div className="row justify-content-center">
-                <h2>Marina Delivery Points:</h2>
-                <div className="col-md-8">
-                <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1u5Hx3EedR34xYeOG-zZPcCueSxX0I5o&ehbc=2E312F&noprof=1" width="100%" height="350"></iframe>
-                </div>
-            </div>
+              <div className="row justify-content-center">
+                  <h2>Marina Delivery Points:</h2>
+                  <div className="col-md-8">
+                    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1u5Hx3EedR34xYeOG-zZPcCueSxX0I5o&ehbc=2E312F&noprof=1" width="100%" height="350" title="Sailor's Feast - Marina Delivery Points Map"></iframe>
+                  </div>
+              </div>
             </div>  
         </section>
 
         <section id="recepies">
-        <div className="container">
-            <div className="row align-items-center mb-3">
-            <div className="col-6">
-                <a href=""><h2 className="text-start">Recipes</h2></a>
-            </div>
-            <div className="col-6 text-end">
-                <a href="recipes.html">View more</a>
-            </div>
-            </div>
-        </div>  
-        <RecipeBlock />
-
-        
+          <div className="container">
+              <div className="row align-items-center mb-3">
+                <div className="col-6">
+                    <Link to="/recipes"><h2 className="text-start">Recipes</h2></Link>
+                </div>
+                <div className="col-6 text-end">
+                    <Link to="/recipes">View more</Link>
+                </div>
+              </div>
+          </div>  
+          <RecipeBlock />
         </section>
 
         <section id="recent-posts">
-        <div className="container py-5">
+          <div className="container py-5">
             <div className="row justify-content-center">
-            <div className="col-11 col-sm-12 col-md-10 col-lg-8">
-            <h3>Recent posts</h3>
-            <HomePageBlog />    
-            </div>
+              <div className="col-11 col-sm-12 col-md-10 col-lg-8">
+                <h3>Recent posts</h3>
+                <HomePageBlog />    
+              </div>
 
-            <div className="col-md-2">
-                <div>
+              <div className="col-md-2">
+                  <div>
                     <h4>Follow us</h4>
-                    <a className="d-inline-flex align-items-center" href="#"><FontAwesomeIcon icon={faInstagram} />#sailorsfeast</a>
+                    <Link to="/" className="d-inline-flex align-items-center"><FontAwesomeIcon icon={faInstagram} />#sailorsfeast</Link>
+                  </div>
+                  <div className="instagram">
+                    <Slider {...settings}>
+                      <div>
+                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                      </div>
+                      <div>
+                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                      </div>
+                      <div>
+                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                      </div>
+                      <div>
+                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
+                      </div>
+                      </Slider>
+                  </div>
                 </div>
-                <div className="instagram">
-                  <Slider {...settings}>
-                    <div>
-                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    </div>
-                    <div>
-                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    </div>
-                    <div>
-                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    </div>
-                    <div>
-                    <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                    </div>
-                    </Slider>
-                </div>
-                </div>
-            </div>
-        </div>
+              </div>
+          </div>
         </section>
+
         <section id="Faq">
           <Faq />
         </section>

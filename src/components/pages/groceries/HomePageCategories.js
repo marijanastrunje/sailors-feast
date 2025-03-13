@@ -21,7 +21,7 @@ const HomePageCategories = ({ categories }) => {
       infinite: true,
       speed: 300,
       slidesToShow: 4, 
-      slidesToScroll: 3,
+      slidesToScroll: 2,
       swipeToSlide: true,
       dots: true,
     };
@@ -31,14 +31,14 @@ const HomePageCategories = ({ categories }) => {
         <div className="d-none d-sm-block col-sm-9 col-md-8 col-lg-7 mx-auto">
           <Slider {...desktopSettings}>
               {categories.map(category => (             
-                <CategoryItem category={category} onClick={(id) => navigate("/groceries", { state: { categoryId: id } })} />
+                <CategoryItem key={category.id} category={category} onClick={(id) => navigate("/groceries", { state: { categoryId: id } })} />
               ))}
           </Slider>
         </div>
         <div className="mobileHomePageCategories d-block d-sm-none mx-auto p-2">
           <Slider {...mobileSettings}>
               {categories.map(category => (             
-                <CategoryItem category={category} onClick={(id) => navigate("/groceries", { state: { categoryId: id } })} />
+                <CategoryItem key={category.id} category={category} onClick={(id) => navigate("/groceries", { state: { categoryId: id } })} />
               ))}
           </Slider>
         </div>

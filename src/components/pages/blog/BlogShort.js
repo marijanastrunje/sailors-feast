@@ -22,7 +22,6 @@ const BlogShort = ({ post, limit }) => {
                         {post.categories.map(catID => (
                         <PostCategory key={catID} categoryID={catID} />
                         ))}
-                        <span className="category">{post.category}</span>
                     </p>
                     <p dangerouslySetInnerHTML={{ __html: post.excerpt.rendered.slice(0, limit)}} />
                 </div>
