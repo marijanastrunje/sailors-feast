@@ -13,6 +13,7 @@ import Blog from './components/pages/blog/Blog';
 import BlogSingle from './components/pages/blog/BlogSingle';
 import Contact from './components/pages/contact/Contact';
 import Login from './components/pages/login/Login';
+import Register from './components/pages/login/Register';
 import RecipesPage from './components/pages/recipes/RecipesPage';
 import RecipeDetails from './components/pages/recipes/RecipeDetails';
 import CartPage from './components/pages/groceries/CartPage';
@@ -48,6 +49,7 @@ function App() {
         <Route path="/blogsingle/:id" element={<BlogSingle />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/recipes" element={<RecipesPage />} />
         <Route path="/recipes/:slug" element={<RecipeDetails />} />
         <Route path="/cart" element={<CartPage />} />

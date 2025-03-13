@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import './LoginRegister.css'
@@ -7,12 +7,16 @@ import './LoginRegister.css'
 const Login = () => {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const queryParams = new URLSearchParams(location.search);
+    const redirect = queryParams.get("redirect") || "/";
 
     useEffect( () => {
         if(localStorage.getItem('token')){
-            navigate('/');
+            navigate(redirect);
         }    
-    }, [navigate])
+    }, [navigate, redirect])
 
     const[form, setForm] = useState({
         username: "",
@@ -59,7 +63,7 @@ const Login = () => {
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.user_display_name);
-        navigate('/');
+        navigate(redirect);
         window.location.reload();
     });
     }
@@ -112,7 +116,7 @@ const Login = () => {
                     </form>
 
                     <div class="text-center mt-3">
-                        <p>Don't have an account? <Link to={"/Register"}>Sign up</Link></p>
+                        <p>Don't have an account? <Link to={"/register"}>Sign up</Link></p>
                     </div>
                 </div>
             </div>        

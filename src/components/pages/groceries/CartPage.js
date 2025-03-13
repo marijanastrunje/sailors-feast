@@ -74,8 +74,10 @@ const CartPage = () => {
                     {cart.length > 0 && (
                         <div className="text-center mt-3">
                             <h4>Ukupna cijena: {totalPrice()} €</h4>
+                            <a href="/checkout" className="btn btn-primary">Idi na plaćanje</a>
                         </div>
                     )}
+
                 </div>
             </div>
         </div>
