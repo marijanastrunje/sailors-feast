@@ -16,9 +16,9 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch("https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
+    fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=50", {
       headers: {
-        Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
       }
     })
     .then(response => response.json())
@@ -27,6 +27,9 @@ const Home = () => {
         .filter(category => ![16, 668, 672].includes(category.id))
         .sort((a, b) => a.menu_order - b.menu_order);
       setCategories(filtered);
+    })
+    .catch(error => {
+      console.error("Fetch error:", error);
     });
   }, []);
 

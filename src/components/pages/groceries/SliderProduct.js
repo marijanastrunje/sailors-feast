@@ -13,9 +13,9 @@ const SliderProduct = ({ subcategory }) => {
 
     useEffect(
         () => {
-            fetch(`https://sailorsfeast.com/wp-json/wc/v3/products?category=${subcategory}`, {
+            fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${subcategory}`, {
                 headers: {
-                    Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+                    Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
                 }
             })
             .then(response => response.json())

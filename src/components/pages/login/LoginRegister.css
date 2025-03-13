@@ -21,7 +21,7 @@
         position: relative;
         background-image: url('C:\Users\Marijana\Desktop\www\izm\sailors-feast\public\img\login/login.jpg');
         background-size: cover;
-        z-index: -2;
+        z-index: 1;
 
     }
 

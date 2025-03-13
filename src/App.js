@@ -8,7 +8,6 @@ import Footer from './components/footer/Footer';
 import Home from './components/pages/home/Home';
 import Groceries from './components/pages/groceries/Groceries';
 import StandardBox from './components/pages/boxes/StandardBox';
-import Products from './components/pages/products/Products';
 import Blog from './components/pages/blog/Blog';
 import BlogSingle from './components/pages/blog/BlogSingle';
 import Contact from './components/pages/contact/Contact';
@@ -27,7 +26,6 @@ import Countries from './components/pages/izm/countries/Countries';
 import SingleCountry from './components/pages/izm/countries/SingleCountry';
 import Cro from './components/pages/izm/countries/Cro';
 import Exchange from './components/pages/izm/zadatak/Exchange';
-import Categories1 from './components/pages/products/Categories1';
 
 
 
@@ -44,7 +42,6 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/groceries" element={<Groceries />} />
         <Route path="/standard-box" element={<StandardBox />} />
-        <Route path="/products" element={<Products />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blogsingle/:id" element={<BlogSingle />} />
         <Route path="/contact" element={<Contact />} />
@@ -62,7 +59,6 @@ function App() {
         <Route path="/croatia" element={<SingleCountry />} />
         <Route path="/countries" element={<Cro />} />
         <Route path="/zadatak" element={<Exchange />} />
-        <Route path="/categories1" element={<Categories1 />} />
 
       </Routes>
       <Footer />

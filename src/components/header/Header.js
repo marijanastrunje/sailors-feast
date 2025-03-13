@@ -70,7 +70,13 @@ const Header = () => {
 
     const location = useLocation();    
     
-    if (location.pathname === "/Login") {document.body.style.marginTop = "0px"; 
+    if (location.pathname === "/login") {document.body.style.marginTop = "0px"; 
+        return null; 
+    } 
+    else {document.body.style.marginTop = "89px";
+    }
+
+    if (location.pathname === "/register") {document.body.style.marginTop = "0px"; 
         return null; 
     } 
     else {document.body.style.marginTop = "89px";
@@ -97,7 +103,7 @@ const Header = () => {
                     {username ? (
                         <Link onClick={logout} className="user ms-auto me-3"><FontAwesomeIcon icon={faUser} className="me-1" />Welcome, {username}</Link>
                         ) : (
-                        <Link to={"/Login"} className="user ms-auto me-sm-3 me-1"><FontAwesomeIcon icon={faUser} className="me-1" />Login </Link>
+                        <Link to={"/login"} className="user ms-auto me-sm-3 me-1"><FontAwesomeIcon icon={faUser} className="me-1" />Login </Link>
                     )}
                     <Link to={"/"} className="language-hr mx-2">HR</Link>
                     <p className="lang m-0">/</p>

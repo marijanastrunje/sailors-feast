@@ -11,9 +11,9 @@ const BoxLayout = ({ categoryId, image, categoryMapping }) => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetch(`https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+    fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
       headers: {
-        Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949"),
+        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
       },
     })
       .then(response => response.json())
@@ -26,9 +26,9 @@ const BoxLayout = ({ categoryId, image, categoryMapping }) => {
   const [categoryInfo, setCategoryInfo] = useState({ name: "", description: "" });
 
 useEffect(() => {
-  fetch(`https://sailorsfeast.com/wp-json/wc/v3/products/categories/${categoryId}`, {
+  fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories/${categoryId}`, {
     headers: {
-      Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949"),
+      Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
     },
   })
     .then(response => response.json())
@@ -45,9 +45,9 @@ useEffect(() => {
 
 
   const fetchProducts = (subcategoryId) => {
-    fetch(`https://sailorsfeast.com/wp-json/wc/v3/products?category=${subcategoryId}`, {
+    fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${subcategoryId}`, {
       headers: {
-        Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949"),
+        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
       },
     })
       .then(response => response.json())
@@ -65,10 +65,10 @@ useEffect(() => {
 
   const fetchExtraSubcategories = async (parentCategoryId) => {
     const response = await fetch(
-      `https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`,
+      `https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`,
       {
         headers: {
-          Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949"),
+          Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
         },
       }
     );
@@ -77,10 +77,10 @@ useEffect(() => {
     const subcategoriesWithProducts = await Promise.all(
       subcategories.map(async (subcategory) => {
         const response = await fetch(
-          `https://sailorsfeast.com/wp-json/wc/v3/products?category=${subcategory.id}`,
+          `https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${subcategory.id}`,
           {
             headers: {
-              Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949"),
+              Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
             },
           }
         );

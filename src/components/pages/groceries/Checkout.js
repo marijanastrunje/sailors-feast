@@ -86,11 +86,11 @@ const Checkout = () => {
             ],
         };
 
-        fetch("https://sailorsfeast.com/wp-json/wc/v3/orders", {
+        fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/orders", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
             },
             body: JSON.stringify(orderData)
         })
@@ -101,7 +101,7 @@ const Checkout = () => {
             if (data.id && data.order_key) {
                 localStorage.removeItem("cart");
                 setCart([]);
-                window.location.href = "https://sailorsfeast.com/checkout/order-pay/" + data.id + "/?pay_for_order=true&key=" + data.order_key;
+                window.location.href = "https://backend.sailorsfeast.com/checkout/order-pay/" + data.id + "/?pay_for_order=true&key=" + data.order_key;
             } else {
                 alert("Greška: Narudžba nema order_key.");
             }

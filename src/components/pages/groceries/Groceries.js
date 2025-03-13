@@ -15,9 +15,9 @@ const Groceries = () => {
     const excludedCategories = [16, 668, 672];
 
     useEffect(() => {
-        fetch("https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
+        fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
             headers: {
-                Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
             }
         })
         .then(response => response.json())
@@ -52,9 +52,9 @@ const Groceries = () => {
 
     const fetchSubcategories = (categoryId) => {
       
-        fetch(`https://sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+        fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
             headers: {
-                Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
             }
         })
         .then(response => response.json())
@@ -76,9 +76,9 @@ const Groceries = () => {
     const [subcategoryProducts, setSubcategoryProducts] = useState({});
 
     const fetchProducts = (categoryId, isDirectClick = false) => {
-        fetch(`https://sailorsfeast.com/wp-json/wc/v3/products?category=${categoryId}`, {
+        fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${categoryId}`, {
             headers: {
-                Authorization: "Basic " + btoa("ck_971b783339775575928ecdba150f83870eb118b1:cs_eaa4759ea0dd6465903fea8879f9f711fe496949")
+                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
             }
         })
         .then(response => response.json())
