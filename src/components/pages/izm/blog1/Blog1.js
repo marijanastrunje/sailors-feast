@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PostDate from "../../../data/PostDate";
 import PostAuthor from "../../../data/PostAuthor";
-import MediaImg from "../../../media/MediaImg";
 import "./Blog1.css";
 
 const Blog1 = () => {
@@ -24,7 +23,7 @@ const Blog1 = () => {
                 <div className="row mb-3" key={post.id}>
                     <div className="col-md-5">
         
-                            <MediaImg id={post.featured_media} size="medium" />
+                    <img src={post.img} alt={post.title} title={post.title} />
                     
                     </div>
                     <div className="col-md-6 offset-md-1">

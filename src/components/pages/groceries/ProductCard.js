@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import './ProductCard.css';
 
 const ProductCard = ({ product, onProductClick }) => {
     const [quantity, setQuantity] = useState('');
+    const [addedToCart, setAddedToCart] = useState(false);
 
     // Dohvati postojeću količinu proizvoda iz košarice prilikom mountanja
     useEffect(() => {
@@ -16,7 +18,6 @@ const ProductCard = ({ product, onProductClick }) => {
     const updateCart = (newQuantity) => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        // Ako je količina 0 ili prazna, ukloni proizvod iz košarice
         if (newQuantity === '' || newQuantity <= 0) {
             cart = cart.filter(item => item.id !== product.id);
         } else {
@@ -35,7 +36,15 @@ const ProductCard = ({ product, onProductClick }) => {
         }
 
         localStorage.setItem('cart', JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated")); // Obavještava Header o promjeni
+        window.dispatchEvent(new Event("cartUpdated")); 
+
+        // Postavi obavijest da je proizvod dodan
+        if (newQuantity > 0) {
+            setAddedToCart(true);
+            setTimeout(() => {
+                setAddedToCart(false);
+            }, 700);
+        }
     };
 
     const handleIncrease = () => {
@@ -68,7 +77,7 @@ const ProductCard = ({ product, onProductClick }) => {
         const handleCartUpdate = () => {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const productInCart = cart.find((item) => item.id === product.id);
-            setQuantity(productInCart ? productInCart.quantity : ''); // Ažurira quantity
+            setQuantity(productInCart ? productInCart.quantity : '');
         };
         
         window.addEventListener("cartUpdated", handleCartUpdate);
@@ -76,7 +85,7 @@ const ProductCard = ({ product, onProductClick }) => {
         return () => {
             window.removeEventListener("cartUpdated", handleCartUpdate);
         };
-    }, []);
+    }, [product.id]);
 
     useEffect(() => {
         const handleStorageChange = (event) => {
@@ -92,10 +101,8 @@ const ProductCard = ({ product, onProductClick }) => {
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
-    }, []);
+    }, [product.id]);
     
-    
-
     return (
         <div className="products card flex-column justify-content-between p-3" key={product.id}>
             <img src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
@@ -105,9 +112,16 @@ const ProductCard = ({ product, onProductClick }) => {
             </div>
             <div className="d-flex align-items-center justify-content-center mt-auto">
                 <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
-                <input type="number"  className="quantity-input mx-1" value={quantity}  onChange={handleInputChange} min="0" />
+                <input type="number" className="quantity-input mx-1" value={quantity} onChange={handleInputChange} min="0" />
                 <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
             </div>
+
+            {/* Prikaz obavijesti o dodavanju u košaricu */}
+            {addedToCart && (
+                <div className="cart-notification">
+                    ✅ Proizvod je dodan u košaricu! <Link to="/cart">Pogledaj košaricu</Link>
+                </div>
+            )}
         </div>
     );
 };

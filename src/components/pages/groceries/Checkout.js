@@ -11,7 +11,7 @@ const Checkout = () => {
         if (!token) {
             navigate("/login?redirect=/checkout"); 
         }
-    }, []);
+    }, [navigate]);
 
     const [cart, setCart] = useState([]);
     const [billing, setBilling] = useState({
@@ -101,7 +101,9 @@ const Checkout = () => {
             if (data.id && data.order_key) {
                 localStorage.removeItem("cart");
                 setCart([]);
-                window.location.href = "https://backend.sailorsfeast.com/checkout/order-pay/" + data.id + "/?pay_for_order=true&key=" + data.order_key;
+                
+                
+                                window.location.href = "https://backend.sailorsfeast.com/checkout/order-pay/" + data.id + "/?pay_for_order=true&key=" + data.order_key;
             } else {
                 alert("Greška: Narudžba nema order_key.");
             }

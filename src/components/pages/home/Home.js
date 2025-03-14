@@ -152,7 +152,7 @@ const Home = () => {
 
         <section id="categories" className="py-md-5">
           <h2>Shop by category</h2>
-          <HomePageCategories categories={categories} />
+            <HomePageCategories categories={categories} />
         </section> 
 
         <section id="product-carousel">

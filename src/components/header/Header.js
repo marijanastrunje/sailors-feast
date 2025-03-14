@@ -48,16 +48,6 @@ const Header = () => {
         setMenu(!menu);
       }
     const handleClose = () => setMenu(false);
-
-    //Moram pitati Tomislava dal trebam isključiti bootstrep js iz projekta ako smo ovu funkciju napisali sami ili je ovaj kod od chat-a u redu?:
-    //import Collapse from 'bootstrap/js/dist/collapse';
-    //const closeMenu = () => {
-    //    const navbarCollapse = document.getElementById('navbarSupportedContent');
-    //    const bsCollapse = Collapse.getInstance(navbarCollapse);
-    //    if (bsCollapse) {
-    //    bsCollapse.hide();
-    //    }
-    //};
   
     const toggleSearch = () => {
         setIsSearchVisible(prev => !prev);
