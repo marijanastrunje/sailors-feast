@@ -68,7 +68,7 @@ const Groceries = () => {
 
     useEffect(() => {
 
-        const excludedCategories = [16, 668, 672];
+        const excludedCategories = [17, 108];
 
         fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
             headers: {

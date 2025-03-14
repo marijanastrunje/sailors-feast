@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BoxHeader from "./BoxHeader";
 import BoxProductTable from "./BoxProductTable";
+import ModalProduct from "../groceries/ModalProduct";
 import BoxModal from "./BoxModal";
 import "./Box.css";
 
@@ -56,6 +57,12 @@ useEffect(() => {
       });
   };
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  
+      const handleShowProductModal = (product) => {
+          setSelectedProduct(product);
+      };
+
   const handleRemoveProduct = (subcategoryId, productId) => {
     setSubcategoryProducts(prev => ({
       ...prev,
@@ -110,6 +117,7 @@ useEffect(() => {
         image={image}
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
+        onShowProductModal={handleShowProductModal}
         handleRemoveProduct={handleRemoveProduct}
         handleShowModal={handleShowModal}
         categoryMapping={categoryMapping}
@@ -119,8 +127,10 @@ useEffect(() => {
           extraProducts={extraProducts}
           handleAddProduct={handleAddProduct}
           closeModal={() => setShowModal(false)}
+          onShowProductModal={handleShowProductModal}
         />
       )}
+      {selectedProduct && (<ModalProduct  product={selectedProduct}  onClose={() => setSelectedProduct(null)} />)}
     </>
   );
 };

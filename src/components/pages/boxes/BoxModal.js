@@ -1,6 +1,6 @@
 import React from "react";
 
-const BoxModal = ({ extraProducts, handleAddProduct, closeModal }) => {
+const BoxModal = ({ extraProducts, handleAddProduct, closeModal, onShowProductModal }) => {
   return (
     <div className="modal fade show d-block" id="boxModal" tabIndex="-1">
       <div className="modal-dialog modal-md">
@@ -46,7 +46,7 @@ const BoxModal = ({ extraProducts, handleAddProduct, closeModal }) => {
                             />
                           </td>
                           <td>
-                            <p className="m-0">
+                            <p className="m-0" onClick={() => onShowProductModal(product)}>
                               {product.name} <br /> {product.price} €
                             </p>
                           </td>

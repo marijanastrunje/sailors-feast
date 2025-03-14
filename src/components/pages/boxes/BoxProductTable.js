@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const BoxProductTable = ({ subcategories, subcategoryProducts, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
+const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModal, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
 }) => {
   // State za praćenje količina proizvoda u paketu
   const [productQuantities, setProductQuantities] = useState({});
@@ -125,7 +125,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, handleRemoveProdu
                         <img src={ product.images?.length > 0 ? product.images[0].src : "https://placehold.co/100"} alt={product.name} width="90" />
                       </td>
                       <td className="ps-lg-0">
-                        <p className="m-0"> {product.name} <br /> {product.price} €</p>
+                        <p className="m-0" onClick={() => onShowProductModal(product)}> {product.name} <br /> {product.price} €</p>
                       </td>
                       <td className="px-0">
                         <div className="d-flex">
