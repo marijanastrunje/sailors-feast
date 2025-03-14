@@ -5,3 +5,14 @@ h3.subcategory-title{
 h3.subcategory-title:hover {
     text-decoration: underline;
 }
+
+/* Veći razmak kad ima puno proizvoda */
+.slick-slide.has-many-products {
+    padding: 5px; 
+  }
+  
+  /* Manji razmak kad ima malo proizvoda */
+  .slick-slide.has-few-products {
+    padding: 0px; /* Smanji razmak kada ima malo proizvoda */
+  }
+  

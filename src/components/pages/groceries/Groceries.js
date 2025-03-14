@@ -47,7 +47,9 @@ const Groceries = () => {
         })
         .then(response => response.json())
         .then(data => {
-            setSubcategories(prev => ({ ...prev, [categoryId]: data }));
+            const sortedData = data.sort((a, b) => a.menu_order - b.menu_order);
+
+            setSubcategories(prev => ({ ...prev, [categoryId]: sortedData }));
             setActiveSubcategory(null);
             setOpenCategory(categoryId);
 
