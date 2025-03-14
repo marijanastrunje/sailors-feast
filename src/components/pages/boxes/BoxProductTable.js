@@ -18,6 +18,8 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
 
   // Funkcija za promjenu količine proizvoda
   const handleQuantityChange = (productId, newQuantity) => {
+    if (newQuantity < 1) newQuantity = 1;
+    
     setProductQuantities((prev) => ({
       ...prev,
       [productId]: newQuantity,

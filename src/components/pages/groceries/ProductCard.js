@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import './ProductCard.css';
 
 const ProductCard = ({ product, onShowModal }) => {
@@ -43,9 +42,9 @@ const ProductCard = ({ product, onShowModal }) => {
             setAddedToCart(true);
             setTimeout(() => {
                 setAddedToCart(false);
-            }, 700);
-        }
-    };
+            }, 1000);
+            }
+        };
 
     const handleIncrease = () => {
         const newQuantity = (quantity || 0) + 1;
@@ -117,11 +116,19 @@ const ProductCard = ({ product, onShowModal }) => {
             </div>
 
             {/* Prikaz obavijesti o dodavanju u košaricu */}
-            {addedToCart && (
-                <div className="cart-notification">
-                    ✅ Proizvod je dodan u košaricu! <Link to="/cart">Pogledaj košaricu</Link>
+            {/* Bootstrap Toast - Zeleni popup */}
+            <div 
+                className={`toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 p-0 ${addedToCart ? "show" : "hide"}`} 
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+            >
+                <div className="d-flex">
+                    <div className="toast-body p-2">
+                        ✅ Added to cart!
+                    </div>
                 </div>
-            )}
+            </div>
             
         </div>
     );
