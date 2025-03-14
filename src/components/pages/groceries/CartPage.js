@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const CartPage = () => {
     const [cart, setCart] = useState([]);
+    const [listName, setListName] = useState(""); // Naziv liste za spremanje
+    const navigate = useNavigate();
 
     // Dohvati košaricu iz localStorage
     const fetchCart = () => {
@@ -44,6 +47,33 @@ const CartPage = () => {
         localStorage.setItem("cart", JSON.stringify(updatedCart));
         setCart(updatedCart);
         window.dispatchEvent(new Event("cartUpdated"));
+    };
+
+    // Očisti cijelu košaricu
+    const clearCart = () => {
+        localStorage.removeItem("cart");
+        setCart([]);
+        window.dispatchEvent(new Event("cartUpdated"));
+    };
+
+    // Spremi trenutnu košaricu u korisničku listu
+    const saveToList = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login?redirect=/cart"); // Ako korisnik nije prijavljen, preusmjeri ga
+            return;
+        }
+
+        if (!listName.trim()) {
+            alert("Unesite naziv liste prije spremanja.");
+            return;
+        }
+
+        const savedLists = JSON.parse(localStorage.getItem("savedLists")) || {};
+        savedLists[listName] = cart;
+
+        localStorage.setItem("savedLists", JSON.stringify(savedLists));
+        alert(`Lista "${listName}" je uspješno spremljena!`);
     };
 
     // Razdvajanje proizvoda u Box i Groceries sekcije
@@ -153,10 +183,18 @@ const CartPage = () => {
                     {cart.length > 0 && (
                         <div className="text-center mt-3">
                             <h4>Ukupna cijena: {totalPrice()} €</h4>
-                            <a href="/checkout" className="btn btn-primary">Idi na plaćanje</a>
+                            <button onClick={clearCart} className="btn btn-danger me-2">Očisti košaricu</button>
+                            <input 
+                                type="text" 
+                                placeholder="Unesite naziv liste" 
+                                value={listName} 
+                                onChange={(e) => setListName(e.target.value)}
+                                className="me-2"
+                            />
+                            <button onClick={saveToList} className="btn btn-secondary">Spremi u listu</button>
+                            <Link to="/checkout" className="btn btn-primary">Idi na plaćanje</Link>
                         </div>
                     )}
-
                 </div>
             </div>
         </div>

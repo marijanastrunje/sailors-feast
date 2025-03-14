@@ -17,6 +17,7 @@ import RecipesPage from './components/pages/recipes/RecipesPage';
 import RecipeDetails from './components/pages/recipes/RecipeDetails';
 import CartPage from './components/pages/groceries/CartPage';
 import Checkout from './components/pages/groceries/Checkout';
+import UserDashboard from './components/pages/login/userDashboard';
 import ScrollToTop from "./components/ScrollToTop";
 
 import Home1 from './components/pages/izm/home1/Home1';
@@ -51,6 +52,7 @@ function App() {
         <Route path="/recipes/:slug" element={<RecipeDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/user" element={<UserDashboard />} />
 
         <Route path="/home1" element={<Home1 />} />
         <Route path="/blog1" element={<Blog1 />} />

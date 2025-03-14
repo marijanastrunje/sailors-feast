@@ -4,6 +4,7 @@ import './ProductCard.css';
 const ProductCard = ({ product, onShowModal }) => {
     const [quantity, setQuantity] = useState('');
     const [addedToCart, setAddedToCart] = useState(false);
+    const [showControls, setShowControls] = useState(false); // Novo: kontrolira prikaz inputa i "-" gumba
 
     // Dohvati postojeću količinu proizvoda iz košarice prilikom mountanja
     useEffect(() => {
@@ -11,6 +12,7 @@ const ProductCard = ({ product, onShowModal }) => {
         const productInCart = cart.find((item) => item.id === product.id);
         if (productInCart) {
             setQuantity(productInCart.quantity);
+            setShowControls(productInCart.quantity > 0); // Prikaži kontrole ako proizvod postoji
         }
     }, [product.id]);
 
@@ -19,6 +21,7 @@ const ProductCard = ({ product, onShowModal }) => {
 
         if (newQuantity === '' || newQuantity <= 0) {
             cart = cart.filter(item => item.id !== product.id);
+            setShowControls(false); // Sakrij input i "-" ako količina padne na 0
         } else {
             const productInCart = cart.find(item => item.id === product.id);
             if (productInCart) {
@@ -35,7 +38,7 @@ const ProductCard = ({ product, onShowModal }) => {
         }
 
         localStorage.setItem('cart', JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated")); 
+        window.dispatchEvent(new Event("cartUpdated"));
 
         // Postavi obavijest da je proizvod dodan
         if (newQuantity > 0) {
@@ -43,17 +46,18 @@ const ProductCard = ({ product, onShowModal }) => {
             setTimeout(() => {
                 setAddedToCart(false);
             }, 1000);
-            }
-        };
+        }
+    };
 
     const handleIncrease = () => {
         const newQuantity = (quantity || 0) + 1;
         setQuantity(newQuantity);
+        setShowControls(true);
         updateCart(newQuantity);
     };
 
     const handleDecrease = () => {
-        const newQuantity = (quantity > 1 ? quantity - 1 : '');
+        const newQuantity = quantity > 1 ? quantity - 1 : '';
         setQuantity(newQuantity);
         updateCart(newQuantity);
     };
@@ -78,9 +82,9 @@ const ProductCard = ({ product, onShowModal }) => {
             const productInCart = cart.find((item) => item.id === product.id);
             setQuantity(productInCart ? productInCart.quantity : '');
         };
-        
+
         window.addEventListener("cartUpdated", handleCartUpdate);
-    
+
         return () => {
             window.removeEventListener("cartUpdated", handleCartUpdate);
         };
@@ -96,12 +100,12 @@ const ProductCard = ({ product, onShowModal }) => {
         };
 
         window.addEventListener("storage", handleStorageChange);
-    
+
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
     }, [product.id]);
-    
+
     return (
         <div className="products card flex-column justify-content-between p-3" key={product.id}>
             <img src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
@@ -110,15 +114,26 @@ const ProductCard = ({ product, onShowModal }) => {
                 <p className="mb-1">{product.price} €</p>
             </div>
             <div className="d-flex align-items-center justify-content-center mt-auto">
-                <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
-                <input type="number" className="quantity-input mx-1" value={quantity} onChange={handleInputChange} min="0" />
-                <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
+                {showControls ? (
+                    <>
+                        <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
+                        <input 
+                            type="number" 
+                            className="quantity-input mx-1" 
+                            value={quantity} 
+                            onChange={handleInputChange} 
+                            min="0" 
+                        />
+                        <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
+                    </>
+                ) : (
+                    <button onClick={handleIncrease} className="quantity-btn btn btn-l">+</button>
+                )}
             </div>
 
             {/* Prikaz obavijesti o dodavanju u košaricu */}
-            {/* Bootstrap Toast - Zeleni popup */}
             <div 
-                className={`toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 p-0 ${addedToCart ? "show" : "hide"}`} 
+                className={`toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-0 ${addedToCart ? "show" : "hide"}`} 
                 role="alert"
                 aria-live="assertive"
                 aria-atomic="true"
@@ -129,7 +144,6 @@ const ProductCard = ({ product, onShowModal }) => {
                     </div>
                 </div>
             </div>
-            
         </div>
     );
 };

@@ -65,7 +65,7 @@ const Checkout = () => {
         if (cart.length === 0) {
             alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
             return;
-        }
+        }    
 
         const orderData = {
             payment_method: "vivawallet",
@@ -113,12 +113,24 @@ const Checkout = () => {
         });
     };
 
+    const autofillCheckoutData = () => {
+        const savedUserData = JSON.parse(localStorage.getItem("user"));
+        if (savedUserData) {
+            setBilling(savedUserData);
+        } else {
+            alert("Nema spremljenih podataka.");
+        }
+    };    
+
     return (
         <div className="container pb-5">
             <div className="py-5 text-center">
                 <img className="d-block mx-auto mb-4" src="/img/logo.png" alt="Logo" width="72" height="57" />
                 <h2>Checkout form</h2>
                 <p className="lead">Ispunite podatke za dostavu i plaćanje.</p>
+                <button type="button" className="btn btn-secondary" onClick={autofillCheckoutData}>
+                    Popuni podatke iz usera
+                </button>
             </div>
 
             <div className="row g-5">
