@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import './ProductCard.css';
 
-const ProductCard = ({ product, onProductClick }) => {
+const ProductCard = ({ product, onShowModal }) => {
     const [quantity, setQuantity] = useState('');
     const [addedToCart, setAddedToCart] = useState(false);
 
@@ -107,7 +107,7 @@ const ProductCard = ({ product, onProductClick }) => {
         <div className="products card flex-column justify-content-between p-3" key={product.id}>
             <img src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
             <div className="product-description-3">
-                <h6 data-bs-toggle="modal" data-bs-target="#productModal" onClick={onProductClick}>{product.name}</h6>
+                <h6 onClick={() => onShowModal(product)}>{product.name}</h6>
                 <p className="mb-1">{product.price} €</p>
             </div>
             <div className="d-flex align-items-center justify-content-center mt-auto">
@@ -122,6 +122,7 @@ const ProductCard = ({ product, onProductClick }) => {
                     ✅ Proizvod je dodan u košaricu! <Link to="/cart">Pogledaj košaricu</Link>
                 </div>
             )}
+            
         </div>
     );
 };

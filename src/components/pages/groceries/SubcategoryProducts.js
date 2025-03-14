@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './SubcategoryProducts.css'
 
-const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts, setActiveSubcategory, fetchProducts, onProductClick }) => {
+const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts, setActiveSubcategory, fetchProducts, onShowModal }) => {
 
   if (!openCategory || !subcategories[openCategory]) {
     return null; // Ako nema otvorene kategorije ili podkategorija, ne prikazuje se ništa
@@ -47,7 +47,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
           <Slider {...sliderSettings}>
             {subcategoryProducts[subcategory.id] && subcategoryProducts[subcategory.id].length > 0 ? (
               subcategoryProducts[subcategory.id].map((product) => (
-                <ProductCard key={product.id} product={product} onProductClick={onProductClick} />
+                <ProductCard key={product.id} product={product} onShowModal={onShowModal} />
               ))
             ) : (
               <p>Učitavanje proizvoda...</p>
