@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 const UserDashboard = () => {
@@ -6,174 +6,111 @@ const UserDashboard = () => {
     const [userData, setUserData] = useState({
         first_name: "",
         last_name: "",
-        email: "",
         phone: "",
-        address_1: "",
-        city: "",
         marina: "",
         charter: "",
         boat: "",
         gate: "",
-        delivery_date: "",
-        delivery_time: "",
     });
 
-    const [savedLists, setSavedLists] = useState({});
-    const [selectedList, setSelectedList] = useState(null);
+    const token = localStorage.getItem("token");
 
-    // Dohvati podatke korisnika i liste iz localStorage
+    // Dohvati korisničke podatke
+    const fetchUserData = useCallback(() => {
+        if (!token) return;
+
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Greška pri dohvaćanju podataka.");
+            return res.json();
+        })
+        .then(data => {
+            if (data.id) {
+                setUserData({
+                    first_name: data.first_name ?? "",
+                    last_name: data.last_name ?? "",
+                    phone: data.phone ?? "",
+                    marina: data.marina ?? "",
+                    charter: data.charter ?? "",
+                    boat: data.boat ?? "",
+                    gate: data.gate ?? "",
+                });
+            }
+        })
+        .catch(err => console.error("Greška pri dohvaćanju podataka:", err));
+    }, [token]);
+
+    // Učitavanje korisničkih podataka prilikom dolaska na stranicu
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (!token) {
-            navigate("/login?redirect=/user");
+            navigate("/login?redirect=/user", { replace: true });
+            return;
         }
+        fetchUserData();
+    }, [navigate, token, fetchUserData]);
 
-        // Dohvati spremljene podatke korisnika
-        const savedUserData = JSON.parse(localStorage.getItem("user")) || {};
-        setUserData(savedUserData);
-
-        // Dohvati spremljene liste
-        const lists = JSON.parse(localStorage.getItem("savedLists")) || {};
-        setSavedLists(lists);
-    }, [navigate]);
-
-    // Funkcija za spremanje korisničkih podataka u localStorage
+    // Spremanje podataka
     const saveUserData = () => {
-        localStorage.setItem("user", JSON.stringify(userData));
-        alert("Podaci su spremljeni!");
+        if (!token) {
+            alert("Niste prijavljeni!");
+            return;
+        }
+    
+        console.log("Podaci prije slanja:", userData); // Debugging
+    
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(res => {
+            console.log("Odgovor servera (status):", res.status);
+            if (!res.ok) throw new Error("Greška pri spremanju podataka.");
+            return res.json();
+        })
+        .then(updatedData => {
+            console.log("Odgovor s backenda:", updatedData);
+            if (updatedData.id) {
+                alert("Podaci su uspješno ažurirani!");
+                fetchUserData(); // Osvježi podatke nakon spremanja
+            } else {
+                alert("Greška pri spremanju podataka.");
+            }
+        })
+        .catch(err => {
+            console.error("Greška pri spremanju podataka:", err);
+            alert("Greška pri spremanju podataka.");
+        });
     };
-
-    // Funkcija za unos podataka u state
-    const handleChange = (e) => {
-        setUserData({ ...userData, [e.target.name]: e.target.value });
-    };
-
-    // Učitaj listu u košaricu
-    const loadListToCart = (listName) => {
-        const list = savedLists[listName];
-        if (!list) return;
-
-        localStorage.setItem("cart", JSON.stringify(list));
-        window.dispatchEvent(new Event("cartUpdated"));
-        alert(`Lista "${listName}" je učitana u košaricu!`);
-        navigate("/cart");
-    };
-
-    // Obriši spremljenu listu
-    const deleteList = (listName) => {
-        const updatedLists = { ...savedLists };
-        delete updatedLists[listName];
-
-        setSavedLists(updatedLists);
-        localStorage.setItem("savedLists", JSON.stringify(updatedLists));
-        alert(`Lista "${listName}" je obrisana.`);
-    };
-
-    // Prikaži ili sakrij proizvode unutar liste
-    const toggleListView = (listName) => {
-        setSelectedList(selectedList === listName ? null : listName);
-    };
+    
 
     return (
         <div className="container mt-5">
             <h2 className="text-center">Korisnički profil</h2>
 
-            {/* Forma za unos korisničkih podataka */}
-            <div className="card p-4 mb-5">
+            <div className="card p-4">
                 <h4>Osobni podaci</h4>
                 <div className="row">
-                    <div className="col-md-6">
-                        <label className="form-label">Ime</label>
-                        <input type="text" name="first_name" className="form-control" value={userData.first_name} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-6">
-                        <label className="form-label">Prezime</label>
-                        <input type="text" name="last_name" className="form-control" value={userData.last_name} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-6">
-                        <label className="form-label">Email</label>
-                        <input type="email" name="email" className="form-control" value={userData.email} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-6">
-                        <label className="form-label">Telefon</label>
-                        <input type="text" name="phone" className="form-control" value={userData.phone} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-6">
-                        <label className="form-label">Marina</label>
-                        <input type="text" name="marina" className="form-control" value={userData.marina} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-6">
-                        <label className="form-label">Charter</label>
-                        <input type="text" name="charter" className="form-control" value={userData.charter} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Brod</label>
-                        <input type="text" name="boat" className="form-control" value={userData.boat} onChange={handleChange} />
-                    </div>
-                    <div className="col-md-3">
-                        <label className="form-label">Gate</label>
-                        <input type="text" name="gate" className="form-control" value={userData.gate} onChange={handleChange} />
-                    </div>
-                </div>
-                <button className="btn btn-primary mt-3" onClick={saveUserData}>Spremi podatke</button>
-            </div>
-
-            <h3 className="mt-5">Spremljene liste</h3>
-            {Object.keys(savedLists).length > 0 ? (
-                <div className="list-group">
-                    {Object.keys(savedLists).map((listName) => (
-                        <div key={listName} className="list-group-item">
-                            <div className="d-flex justify-content-between align-items-center">
-                                <span 
-                                    className="fw-bold text-primary cursor-pointer"
-                                    onClick={() => toggleListView(listName)}
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    {listName} {selectedList === listName ? "▲" : "▼"}
-                                </span>
-                                <div>
-                                    <button className="btn btn-sm btn-success me-2" onClick={() => loadListToCart(listName)}>Učitaj u košaricu</button>
-                                    <button className="btn btn-sm btn-danger" onClick={() => deleteList(listName)}>Obriši</button>
-                                </div>
-                            </div>
-
-                            {/* Prikaz proizvoda unutar odabrane liste */}
-                            {selectedList === listName && (
-                                <div className="mt-3">
-                                    <table className="table table-bordered table-hover text-center">
-                                        <thead className="table-secondary">
-                                            <tr>
-                                                <th>Slika</th>
-                                                <th>Proizvod</th>
-                                                <th>Količina</th>
-                                                <th>Ukupno</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {savedLists[listName].map((item) => (
-                                                <tr key={item.id}>
-                                                    <td className="p-0">
-                                                        <img 
-                                                            src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"} 
-                                                            alt={item.title} 
-                                                            width="50" 
-                                                        />
-                                                    </td>
-                                                    <td>{item.title} <br /> {item.price} €</td>
-                                                    <td>{item.quantity}</td>
-                                                    <td>{(item.price * item.quantity).toFixed(2)} €</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
+                    {["first_name", "last_name", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
+                        <div key={index} className="col-md-6">
+                            <label className="form-label">{field.replace("_", " ").toUpperCase()}</label>
+                            <input 
+                                type="text" 
+                                name={field} 
+                                className="form-control" 
+                                value={userData[field]} 
+                                onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+                            />
                         </div>
                     ))}
                 </div>
-            ) : (
-                <p className="text-center">Nema spremljenih lista.</p>
-            )}
+                <button className="btn btn-primary mt-3" onClick={saveUserData}>Spremi podatke</button>
+            </div>
         </div>
     );
 };

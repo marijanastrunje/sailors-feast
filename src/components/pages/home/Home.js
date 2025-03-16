@@ -81,8 +81,8 @@ const Home = () => {
                 <div>
                     <h1 className="m-0">Sailor's Feast</h1>
                     <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
-                    <p className="d-none d-md-block">From luxury yacht charters to family sailing trip, we deliver fresh, high-quality provisions, beverages, and personalized food packages straight to your boat.</p>
-                    <Link to="/groceries"  className="btn" aria-label="Plan your meals and order food packages now">Place your order</Link> 
+                    <p className="d-none d-md-block">Whether for luxury yacht charters or family sailing adventures, we deliver fresh provisions, drinks, and customizable food packages directly to your boat.</p>
+                    <Link to="/groceries"  className="btn" aria-label="Plan your meals and order food packages now">Shop now</Link> 
                 </div>              
             </div> 
         </section>
@@ -91,7 +91,7 @@ const Home = () => {
             <div className="container">
                 <div className="row">
                 <div className="p-4">
-                <strong><p className="d-block d-md-none text-center">From luxury yacht charters to family sailing trip, we deliver fresh, high-quality provisions, beverages, and personalized food packages straight to your boat.</p></strong>
+                <strong><p className="d-block d-md-none text-center">Whether for luxury yacht charters or family sailing adventures, we deliver fresh provisions, drinks, and customizable food packages directly to your boat.</p></strong>
                 </div>
                     <div className="col-md-4 advantage-item mb-4 mb-md-0">
                         <div className="row px-2">
