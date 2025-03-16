@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 const Checkout = () => {
 
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
         if (!token) {
             navigate("/login?redirect=/checkout"); 
         }
-    }, [navigate]);
+    }, [navigate, token]);
 
     const [cart, setCart] = useState([]);
     const [billing, setBilling] = useState({
@@ -19,11 +18,6 @@ const Checkout = () => {
         last_name: "",
         email: "",
         phone: "",
-        address_1: "",
-        city: "",
-        state: "",
-        postcode: "",
-        country: "HR",
         number_of_guests: "",
         marina: "",
         charter: "",
@@ -60,6 +54,14 @@ const Checkout = () => {
         product_id: item.id,
         quantity: item.quantity
     }));
+
+    // Razdvajanje proizvoda
+    const boxProducts = cart.filter(item => item.box);
+    const groceriesProducts = cart.filter(item => !item.box);
+
+    const totalPrice = () => {
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+    };
 
     const handleOrder = () => {
         if (cart.length === 0) {
@@ -114,13 +116,41 @@ const Checkout = () => {
     };
 
     const autofillCheckoutData = () => {
-        const savedUserData = JSON.parse(localStorage.getItem("user"));
-        if (savedUserData) {
-            setBilling(savedUserData);
-        } else {
-            alert("Nema spremljenih podataka.");
+        if (!token) {
+            alert("Morate biti prijavljeni da biste popunili podatke.");
+            return;
         }
-    };    
+
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                setBilling({
+                    first_name: data.first_name || "",
+                    last_name: data.last_name || "",
+                    phone: data.phone || "",
+                    marina: data.marina || "",
+                    charter: data.charter || "",
+                    boat: data.boat || "",
+                    gate: data.gate || "",
+                    delivery_date: billing.delivery_date,  // Ostavlja korisnikov unos ako ga ima
+                    delivery_time: billing.delivery_time,
+                    order_notes: billing.order_notes
+                });
+                alert("Podaci su uspješno popunjeni!");
+            } else {
+                alert("Greška pri dohvaćanju podataka korisnika.");
+            }
+        })
+        .catch(error => {
+            console.error("Greška pri dohvaćanju podataka korisnika:", error);
+            alert("Nije moguće dohvatiti korisničke podatke.");
+        });
+    };  
 
     return (
         <div className="container pb-5">
@@ -143,18 +173,47 @@ const Checkout = () => {
                         </button>
                     </h4>
                     {showCart && (
-                        <ul className="list-group mb-3">
-                            {cart.map((item) => (
-                                <li key={item.id} className="list-group-item d-flex justify-content-between lh-sm">
-                                    <div>
-                                        <h6 className="my-0">{item.title}</h6>
-                                        <small className="text-muted">x{item.quantity}</small>
-                                    </div>
-                                    <span className="text-muted">{item.price} €</span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}    
+                        <>
+                            {/* Sekcija za Box proizvode */}
+                            {boxProducts.length > 0 && (
+                                <>
+                                    <h5 className="text-success">From Box</h5>
+                                    <ul className="list-group mb-3">
+                                        {boxProducts.map((item) => (
+                                            <li key={item.id} className="list-group-item d-flex justify-content-between lh-sm">
+                                                <div>
+                                                    <h6 className="my-0">{item.title}</h6>
+                                                    <small className="text-muted">x{item.quantity}</small>
+                                                </div>
+                                                <span className="text-muted">{item.price} €</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+
+                            {/* Sekcija za Groceries proizvode */}
+                            {groceriesProducts.length > 0 && (
+                                <>
+                                    <h5 className="text-primary">From Groceries</h5>
+                                    <ul className="list-group mb-3">
+                                        {groceriesProducts.map((item) => (
+                                            <li key={item.id} className="list-group-item d-flex justify-content-between lh-sm">
+                                                <div>
+                                                    <h6 className="my-0">{item.title}</h6>
+                                                    <small className="text-muted">x{item.quantity}</small>
+                                                </div>
+                                                <span className="text-muted">{item.price} €</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+                        </>
+                    )}
+                    <div className="text-center">
+                        <h4>Ukupna cijena: {totalPrice()} €</h4>
+                    </div>
                 </div>
 
                 <div className="col-md-7 col-lg-8">
