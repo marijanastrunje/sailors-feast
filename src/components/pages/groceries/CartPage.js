@@ -4,7 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 const CartPage = () => {
     const [cart, setCart] = useState([]);
     const [listName, setListName] = useState(""); // Naziv liste za spremanje
+    const [savedLists, setSavedLists] = useState({});
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
 
     // Dohvati košaricu iz localStorage
     const fetchCart = () => {
@@ -56,11 +58,26 @@ const CartPage = () => {
         window.dispatchEvent(new Event("cartUpdated"));
     };
 
-    // Spremi trenutnu košaricu u korisničku listu
-    const saveToList = () => {
-        const token = localStorage.getItem("token");
+    // Dohvati spremljene liste s backenda
+    useEffect(() => {
+        if (!token) return;
+
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.meta && data.meta.saved_lists) {
+                setSavedLists(JSON.parse(data.meta.saved_lists));
+            }
+        })
+        .catch(err => console.error("Greška pri dohvaćanju lista:", err));
+    }, [token]);
+
+    // Spremi trenutnu košaricu na backend
+    const saveToBackend = () => {
         if (!token) {
-            navigate("/login?redirect=/cart"); // Ako korisnik nije prijavljen, preusmjeri ga
+            navigate("/login?redirect=/cart");
             return;
         }
 
@@ -69,11 +86,23 @@ const CartPage = () => {
             return;
         }
 
-        const savedLists = JSON.parse(localStorage.getItem("savedLists")) || {};
-        savedLists[listName] = cart;
-
-        localStorage.setItem("savedLists", JSON.stringify(savedLists));
-        alert(`Lista "${listName}" je uspješno spremljena!`);
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ meta: { saved_lists: JSON.stringify({ ...savedLists, [listName]: cart }) } })
+        })
+        .then(res => res.json())
+        .then(() => {
+            setSavedLists(prevLists => ({ ...prevLists, [listName]: cart }));
+            alert(`Lista "${listName}" je uspješno spremljena!`);
+        })
+        .catch(err => {
+            console.error("Greška pri spremanju liste:", err);
+            alert("Nije moguće spremiti listu.");
+        });
     };
 
     // Razdvajanje proizvoda u Box i Groceries sekcije
@@ -191,7 +220,7 @@ const CartPage = () => {
                                 onChange={(e) => setListName(e.target.value)}
                                 className="me-2"
                             />
-                            <button onClick={saveToList} className="btn btn-secondary">Spremi u listu</button>
+                            <button onClick={saveToBackend} className="btn btn-secondary">Spremi u listu</button>
                             <Link to="/checkout" className="btn btn-primary">Idi na plaćanje</Link>
                         </div>
                     )}
