@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import './LoginRegister.css';
 
 const Register = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const queryParams = new URLSearchParams(location.search);
+    const redirect = queryParams.get("redirect") || "/";
+
+
     const [form, setForm] = useState({
         username: "",
         email: "",
@@ -65,7 +71,7 @@ const Register = () => {
 
                 localStorage.setItem("token", loginData.token);
                 localStorage.setItem("username", loginData.user_display_name);
-                navigate("/");
+                navigate(redirect);
                 window.location.reload();
             });
         })

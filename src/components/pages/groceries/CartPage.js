@@ -98,6 +98,7 @@ const CartPage = () => {
         .then(() => {
             setSavedLists(prevLists => ({ ...prevLists, [listName]: cart }));
             alert(`Lista "${listName}" je uspješno spremljena!`);
+            navigate("/user");
         })
         .catch(err => {
             console.error("Greška pri spremanju liste:", err);

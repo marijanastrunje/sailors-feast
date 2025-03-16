@@ -76,3 +76,9 @@ margin-top: 24px;
   margin-top: -10px;
   margin-left: -3px;
 }  
+
+.btn-user{
+  background: none;
+  border: none;
+  margin-top: -2px;
+}

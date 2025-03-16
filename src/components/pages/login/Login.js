@@ -116,7 +116,7 @@ const Login = () => {
                     </form>
 
                     <div class="text-center mt-3">
-                        <p>Don't have an account? <Link to={"/register"}>Sign up</Link></p>
+                        <p>Don't have an account? <Link to={`/register?redirect=${encodeURIComponent(redirect)}`}>Sign up</Link></p>
                     </div>
                 </div>
             </div>        

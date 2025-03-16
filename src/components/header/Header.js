@@ -91,13 +91,25 @@ const Header = () => {
                         <span className="d-none d-sm-inline">info@sailorsfeast.com</span>
                     </Link>
                     {username ? (
-                        <Link onClick={logout} className="user ms-auto me-3"><FontAwesomeIcon icon={faUser} className="me-1" />Welcome, {username}</Link>
+                        <div className="dropdown ms-auto me-0">
+                             <button className="btn-user dropdown-toggle p-0" type="button" id="userDropdown" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                                <Link className="user"><FontAwesomeIcon icon={faUser} className="me-1" />
+                                    {username} 
+                                </Link>
+                            </button>  
+                            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <Link to="/user" className="dropdown-item">User Dashboard</Link>
+                                </li>
+                                <li><hr className="dropdown-divider" /></li>
+                                <li>
+                                    <button className="dropdown-item text-danger" onClick={logout}>Logout</button>
+                                </li>
+                            </ul>  
+                        </div>
                         ) : (
                         <Link to={"/login"} className="user ms-auto me-sm-3 me-1"><FontAwesomeIcon icon={faUser} className="me-1" />Login </Link>
                     )}
-                    <Link to={"/"} className="language-hr mx-2">HR</Link>
-                    <p className="lang m-0">/</p>
-                    <Link to={"/"} className="language-en mx-sm-2 ms-2">EN</Link>
                 </div>
             </nav>
 

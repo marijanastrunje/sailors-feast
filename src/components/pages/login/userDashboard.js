@@ -132,82 +132,86 @@ const UserDashboard = () => {
     return (
         <div className="container mt-5">
             <h2 className="text-center">Korisnički profil</h2>
-
-            <div className="card p-4">
-                <h4>Osobni podaci</h4>
-                <div className="row">
-                    {["first_name", "last_name", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
-                        <div key={index} className="col-md-6">
-                            <label className="form-label">{field.replace("_", " ").toUpperCase()}</label>
-                            <input 
-                                type="text" 
-                                name={field} 
-                                className="form-control" 
-                                value={userData[field]} 
-                                onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} 
-                            />
-                        </div>
-                    ))}
-                </div>
-                <button className="btn btn-primary mt-3" onClick={saveUserData}>Spremi podatke</button>
-            </div>
-
-            {Object.keys(savedLists).length > 0 && (
-                <div className="mt-4">
-                    <h4>Moje spremljene liste</h4>
-                    <div className="list-group">
-                        {Object.keys(savedLists).map((listName) => (
-                            <div key={listName} className="list-group-item">
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <span 
-                                        className="fw-bold text-primary cursor-pointer"
-                                        onClick={() => toggleListView(listName)}
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        {listName} {selectedList === listName ? "▲" : "▼"}
-                                    </span>
-                                    <div>
-                                        <button className="btn btn-sm btn-success me-2" onClick={() => loadListToCart(listName)}>Učitaj u košaricu</button>
-                                        <button className="btn btn-sm btn-danger" onClick={() => deleteList(listName)}>Obriši</button>
-                                    </div>
+            <div className="row">
+                <div className="col-md-4">
+                    <div className="card p-4">
+                        <h4>Osobni podaci</h4>
+                        <div className="row">
+                            {["first_name", "last_name", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
+                                <div key={index} className="col-md-6">
+                                    <label className="form-label">{field.replace("_", " ").toUpperCase()}</label>
+                                    <input 
+                                        type="text" 
+                                        name={field} 
+                                        className="form-control" 
+                                        value={userData[field]} 
+                                        onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} 
+                                    />
                                 </div>
-
-                                {/* Prikaz proizvoda unutar liste */}
-                                {selectedList === listName && (
-                                    <div className="mt-3">
-                                        <table className="table table-bordered table-hover text-center">
-                                            <thead className="table-secondary">
-                                                <tr>
-                                                    <th>Slika</th>
-                                                    <th>Proizvod</th>
-                                                    <th>Količina</th>
-                                                    <th>Ukupno</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {savedLists[listName].map((item) => (
-                                                    <tr key={item.id}>
-                                                        <td className="p-0">
-                                                            <img 
-                                                                src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"} 
-                                                                alt={item.title} 
-                                                                width="50" 
-                                                            />
-                                                        </td>
-                                                        <td>{item.title} <br /> {item.price} €</td>
-                                                        <td>{item.quantity}</td>
-                                                        <td>{(item.price * item.quantity).toFixed(2)} €</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                        <button className="btn btn-primary mt-3" onClick={saveUserData}>Spremi podatke</button>
                     </div>
                 </div>
-            )}
+                <div className="col-md-8">    
+                    {Object.keys(savedLists).length > 0 && (
+                        <div className="mt-4">
+                            <h4>Moje spremljene liste</h4>
+                            <div className="list-group">
+                                {Object.keys(savedLists).map((listName) => (
+                                    <div key={listName} className="list-group-item">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <span 
+                                                className="fw-bold text-primary cursor-pointer"
+                                                onClick={() => toggleListView(listName)}
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                {listName} {selectedList === listName ? "▲" : "▼"}
+                                            </span>
+                                            <div>
+                                                <button className="btn btn-sm btn-success me-2" onClick={() => loadListToCart(listName)}>Učitaj u košaricu</button>
+                                                <button className="btn btn-sm btn-danger" onClick={() => deleteList(listName)}>Obriši</button>
+                                            </div>
+                                        </div>
+
+                                        {/* Prikaz proizvoda unutar liste */}
+                                        {selectedList === listName && (
+                                            <div className="mt-3">
+                                                <table className="table table-bordered table-hover text-center">
+                                                    <thead className="table-secondary">
+                                                        <tr>
+                                                            <th>Slika</th>
+                                                            <th>Proizvod</th>
+                                                            <th>Količina</th>
+                                                            <th>Ukupno</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {savedLists[listName].map((item) => (
+                                                            <tr key={item.id}>
+                                                                <td className="p-0">
+                                                                    <img 
+                                                                        src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"} 
+                                                                        alt={item.title} 
+                                                                        width="50" 
+                                                                    />
+                                                                </td>
+                                                                <td>{item.title} <br /> {item.price} €</td>
+                                                                <td>{item.quantity}</td>
+                                                                <td>{(item.price * item.quantity).toFixed(2)} €</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>        
         </div>
     );
 };
