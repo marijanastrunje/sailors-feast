@@ -13,7 +13,8 @@ const Footer = () => {
 
     const location = useLocation();    
 
-    if(location.pathname === '/Login') return null;
+    if(location.pathname === '/login') return null;
+    if(location.pathname === '/register') return null;
 
     return(
         <footer className="footer">
@@ -34,16 +35,16 @@ const Footer = () => {
                     <h4>Newsletter</h4>
                     <p>Subscribe to our newsletter to get more free tip</p>
                     <div><input type="text" placeholder="Write your email here" className="form-control"/></div>
-                    <a href="#" className="btn my-3">Subscribe</a>
+                    <Link className="btn my-3">Subscribe</Link>
                 </div>
                 </div>
                 <div className="footer-bottom row text-center">
                     <p>© 2025 Sailor's Feast. All Right Reserved</p>
                 <div className="icons text-center">
-                    <a href="#"><FontAwesomeIcon icon={faSquareFacebook} /></a>
-                    <a href="#"><FontAwesomeIcon icon={faInstagram} /></a>
-                    <a href="#"><FontAwesomeIcon icon={faTwitter} /></a>
-                    <a href="#"><FontAwesomeIcon icon={faLinkedin} /></a>
+                    <Link to="/linkedin"><FontAwesomeIcon icon={faSquareFacebook} /></Link>
+                    <Link to="/linkedin"><FontAwesomeIcon icon={faInstagram} /></Link>
+                    <Link to="/linkedin"><FontAwesomeIcon icon={faTwitter} /></Link>
+                    <Link to="/linkedin"><FontAwesomeIcon icon={faLinkedin} /></Link>
                 </div>
                 </div>
             </div>

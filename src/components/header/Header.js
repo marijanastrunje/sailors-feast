@@ -120,9 +120,9 @@ const Header = () => {
                         <img src="/img/logo/white-color-logo-horizontal-sailors-feast.svg" width={230} height={40} alt="Sailor's Feast logo" title="Sailor's Feast logo"/>
                     </Link>
                     <div className="d-flex align-items-center order-lg-2">
-                        <a id="search-icon" className="mx-2 mx-md-4" onClick={toggleSearch}>
+                        <button id="search-icon" className="search-button mx-1 mx-md-2" onClick={toggleSearch}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        </a>
+                        </button>
                         <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`}>
                             <form className="d-flex p-2">
                                 <input type="text" className="form-control" placeholder="Upiši pojam za pretraživanje" />
@@ -143,7 +143,7 @@ const Header = () => {
                                 <Link to="/groceries" onClick={handleClose} className="nav-link"><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-md-none" />Groceries</Link>
                             </li>
                             <li className="nav-item dropdown me-2">
-                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-md-none" />Food Box</a>
+                                <Link className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-md-none" />Food Box</Link>
                                 <ul className="dropdown-menu">  
                                     <li>
                                         <Link to="/standard-box" onClick={handleClose} className="dropdown-item">Standard Box</Link>
@@ -170,7 +170,7 @@ const Header = () => {
                                         <hr className="dropdown-divider"/>
                                     </li>
                                     <li>
-                                        <a className="dropdown-item">All boxes</a>
+                                        <Link to="/all-boxes" className="dropdown-item">All boxes</Link>
                                     </li>
                                 </ul>
                             </li>
