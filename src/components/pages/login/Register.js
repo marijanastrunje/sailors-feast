@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import "./LoginRegister.css";
-
-const siteKey = "6LcKVPYqAAAAAA4uQAeFwz0aG3BxiAUZyy0DmRS9"; 
 
 const Register = () => {
     const navigate = useNavigate();
@@ -19,7 +16,6 @@ const Register = () => {
         password: ""
     });
 
-    const [captchaValue, setCaptchaValue] = useState(null);
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,38 +26,12 @@ const Register = () => {
         });
     };
 
-    const handleCaptchaChange = (value) => {
-        console.log("Captcha potvrđena:", value);
-        setCaptchaValue(value);
-    };
-
     const handleRegister = async (e) => {
         e.preventDefault();
-
-        // ✅ Provjeri da je reCAPTCHA potvrđena
-        if (!captchaValue) {
-            alert("Molimo potvrdite da niste robot!");
-            return;
-        }
-
         setIsLoading(true);
 
         try {
-            // ✅ Pošalji captcha token backendu na provjeru
-            const captchaResponse = await fetch("https://backend.sailorsfeast.com/verify-recaptcha", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: captchaValue }),
-            });
-
-            const captchaResult = await captchaResponse.json();
-            if (!captchaResult.success) {
-                setError("Captcha verification failed. Please try again.");
-                setIsLoading(false);
-                return;
-            }
-
-            // ✅ Sada pošalji podatke za registraciju
+            // ✅ Pošalji podatke za registraciju
             const registerResponse = await fetch("https://backend.sailorsfeast.com/wp-json/simple-jwt-login/v1/users", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -141,10 +111,6 @@ const Register = () => {
                             <label className="text-start w-100">Password</label>
                             <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
                             <input type="password" name="password" value={form.password} onChange={handleChange} className="form-control" placeholder="Create a password" required />
-                        </div>
-
-                        <div className="mt-3">
-                            <ReCAPTCHA sitekey={siteKey} onChange={handleCaptchaChange} />
                         </div>
 
                         {error && <p className="alert alert-danger p-1 p-sm-2 text-center">{error}</p>}

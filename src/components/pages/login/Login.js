@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import "./LoginRegister.css";
 
-const siteKey = "6LcKVPYqAAAAAA4uQAeFwz0aG3BxiAUZyy0DmRS9"; // Zamijeni svojim ključem
-
 const Login = () => {
-    const [captchaValue, setCaptchaValue] = useState(null);
     const [form, setForm] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -28,38 +24,12 @@ const Login = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleCaptchaChange = (value) => {
-        console.log("Captcha value:", value);
-        setCaptchaValue(value);
-    };
-
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        // PRVO provjeri da li je captcha potvrđena
-        if (!captchaValue) {
-            alert("Molimo potvrdite da niste robot!");
-            return;
-        }
-
         setIsLoading(true);
 
         try {
-            // Prvo pošalji reCAPTCHA token backendu na provjeru
-            const captchaResponse = await fetch("https://backend.sailorsfeast.com/verify-recaptcha", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: captchaValue }),
-            });
-
-            const captchaResult = await captchaResponse.json();
-            if (!captchaResult.success) {
-                setError("Captcha verification failed. Please try again.");
-                setIsLoading(false);
-                return;
-            }
-
-            // Sada pošalji podatke za prijavu
+            // Pošalji podatke za prijavu
             const loginResponse = await fetch(
                 "https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token",
                 {
@@ -131,10 +101,6 @@ const Login = () => {
                             <input type="checkbox" id="remember-me" />
                             <label htmlFor="remember-me" className="text-start ms-1 w-100">Remember me</label>
                             <div className="text-end"><Link to="/forgot-password">Forgot password?</Link></div>
-                        </div>
-
-                        <div className="mt-3">
-                            <ReCAPTCHA sitekey={siteKey} onChange={handleCaptchaChange} />
                         </div>
 
                         {error && <p className="alert alert-danger p-1 p-sm-2 text-center">{error}</p>}
