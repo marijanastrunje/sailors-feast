@@ -5,6 +5,7 @@
     max-width: 210px;
     display: flex !important;
     cursor: pointer;
+    position: relative;
 }
 
 .products.card:hover {
@@ -23,6 +24,10 @@
 
 .quantity-btn {
     font-size: 16px;
+}
+
+.quantity-btn-front{
+    font-size: 22px;
 }
 
 .quantity-input {
@@ -44,4 +49,12 @@ input.quantity-input:focus-visible {
     margin: 0;
 }
 
+.toast {
+    max-width: 130px;
+    transform: translateX(-6%);
+    position: absolute;
+    bottom: 60px;
+    z-index: 10;
+    
+}
   

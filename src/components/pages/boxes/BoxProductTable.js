@@ -112,9 +112,9 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
                 <React.Fragment key={subcategory.id}>
                   <tr>
                     <td colSpan="4" className="table-secondary">
-                      <div className="d-flex justify-content-center fw-bold">
+                      <div className="d-flex justify-content-center align-items-center fw-bold">
                         <h3 className="mb-0 me-2">{subcategory.name}</h3>
-                        <button className="add-products-button ms-auto ms-sm-0 me-0" onClick={() => handleShowModal(categoryMapping[subcategory.id])}>
+                        <button className="add-products-button btn btn-secondary ms-auto ms-sm-0 me-0" onClick={() => handleShowModal(categoryMapping[subcategory.id])}>
                           Add more products
                         </button>
                       </div>
@@ -124,7 +124,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
                   {subcategoryProducts[subcategory.id]?.map((product) => (
                     <tr key={product.id}>
                       <td className="py-0 pe-md-0">
-                        <img src={ product.images?.length > 0 ? product.images[0].src : "https://placehold.co/100"} alt={product.name} width="90" />
+                        <img onClick={() => onShowProductModal(product)} src={ product.images?.length > 0 ? product.images[0].src : "https://placehold.co/100"} alt={product.name} width="90" />
                       </td>
                       <td className="ps-lg-0">
                         <p className="m-0" onClick={() => onShowProductModal(product)}> {product.name} <br /> {product.price} €</p>

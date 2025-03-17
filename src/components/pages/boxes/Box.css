@@ -28,7 +28,6 @@ input.quantity-input-box:focus-visible {
     margin: 0;
 }
 
-.add-products-button{
-        background: none; 
-        border-radius: 8px; 
+.box-products img, .box-products p{
+        cursor: pointer;
 }

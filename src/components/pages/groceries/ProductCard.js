@@ -108,7 +108,7 @@ const ProductCard = ({ product, onShowModal }) => {
 
     return (
         <div className="products card flex-column justify-content-between p-3" key={product.id}>
-            <img src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
+            <img onClick={() => onShowModal(product)} src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
             <div className="product-description-3">
                 <h6 onClick={() => onShowModal(product)}>{product.name}</h6>
                 <p className="mb-1">{product.price} €</p>
@@ -127,13 +127,13 @@ const ProductCard = ({ product, onShowModal }) => {
                         <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
                     </>
                 ) : (
-                    <button onClick={handleIncrease} className="quantity-btn btn btn-l">+</button>
+                    <button onClick={handleIncrease} className="quantity-btn-front btn p-0 w-50">+</button>
                 )}
             </div>
 
             {/* Prikaz obavijesti o dodavanju u košaricu */}
             <div 
-                className={`toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 p-0 ${addedToCart ? "show" : "hide"}`} 
+                className={`toast align-items-center text-white bg-success p-0 ${addedToCart ? "show" : "hide"}`} 
                 role="alert"
                 aria-live="assertive"
                 aria-atomic="true"

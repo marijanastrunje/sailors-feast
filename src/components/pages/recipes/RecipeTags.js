@@ -28,25 +28,25 @@ const RecipeTags = ({ postID }) => {
   return (
     <div className="recipe-tags pb-1 d-flex justify-content-center">
       {healthyTags.map(tag => (
-        <span key={tag.id} className="healthy mx-1">
+        <span key={tag.id} className="healthy me-1">
           {tag.name}
         </span>
       ))}
 
       {lunchTags.map(tag => (
-        <span key={tag.id} className="lunch mx-1">
+        <span key={tag.id} className="lunch me-1">
           {tag.name}
         </span>
       ))}
 
       {fitTags.map(tag => (
-        <span key={tag.id} className="fit mx-1">
+        <span key={tag.id} className="fit me-1">
           {tag.name}
         </span>
       ))}
 
       {dinnerTags.map(tag => (
-        <span key={tag.id} className="dinner mx-1">
+        <span key={tag.id} className="dinner">
           {tag.name}
         </span>
       ))}

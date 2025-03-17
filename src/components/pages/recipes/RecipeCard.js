@@ -13,9 +13,11 @@ const RecipeCard = ({ recipe }) => {
 
   return (
     <div className="card">
-      <Link to={"/recipes/" + recipe.slug}>
-        <MediaImg mediaId={recipe.featured_media} alt={recipe.title.rendered} />
-      </Link>
+      <div className="recipe-img">
+        <Link to={"/recipes/" + recipe.slug}>
+          <MediaImg mediaId={recipe.featured_media} alt={recipe.title.rendered} />
+        </Link>
+      </div>
       <div className="card-body p-2 pt-0">
         <div className="recipe-meta py-1">
           <div className="row">
@@ -40,7 +42,7 @@ const RecipeCard = ({ recipe }) => {
         <Link to={"/recipes/" + recipe.slug}>
           <h3 className="recipe-title text-center mb-0">{recipe.title?.rendered || "No Title"}</h3>
         </Link>
-        <p dangerouslySetInnerHTML={{ __html: recipe.excerpt?.rendered?.slice(0, 100) || "" }} />
+        <p dangerouslySetInnerHTML={{ __html: recipe.excerpt?.rendered?.slice(0, 40) || "" }} />
       </div>
     </div>
   );
