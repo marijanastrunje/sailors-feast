@@ -63,16 +63,18 @@ const Checkout = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
     };
 
-    const handleOrder = () => {
+    const handleOrder = async () => {
         if (cart.length === 0) {
             alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
             return;
-        }    
-
+        }
+    
+        // Kreiranje podataka za WooCommerce narudžbu
         const orderData = {
             payment_method: "vivawallet",
             payment_method_title: "Viva Wallet",
-            set_paid: false,
+            set_paid: false, // Ne označavamo kao plaćeno jer čekamo potvrdu plaćanja
+            status: "pending", // Ovdje postavljamo status narudžbe kao "pending_payment"
             billing,
             shipping: billing,
             line_items: lineItems,
@@ -87,32 +89,77 @@ const Checkout = () => {
                 { key: "billing_order_notes", value: billing.order_notes }
             ],
         };
+    
+        try {
+            // Slanje narudžbe u WooCommerce
+            const response = await fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
+                },
+                body: JSON.stringify(orderData)
+            });
+    
+            const data = await response.json();
+            if (!data.id) throw new Error("Greška: Nema `order_id`.");
+    
+            console.log("WooCommerce narudžba kreirana:", data.id);
+    
+            // Vraćamo `order_id` kako bismo ga koristili u `handlePayment`
+            return data.id;
+    
+        } catch (error) {
+            console.error("Greška pri kreiranju WooCommerce narudžbe:", error.message);
+            alert("Došlo je do greške pri kreiranju narudžbe.");
+        }
+    };
 
-        fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/orders", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
-            },
-            body: JSON.stringify(orderData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Narudžba uspješno kreirana:", data);
+    const handlePayment = async () => {
+        if (cart.length === 0) {
+            alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
+            return;
+        }
 
-            if (data.id && data.order_key) {
-                localStorage.removeItem("cart");
-                setCart([]);
-                
-                
-                                window.location.href = "https://backend.sailorsfeast.com/checkout/order-pay/" + data.id + "/?pay_for_order=true&key=" + data.order_key;
-            } else {
-                alert("Greška: Narudžba nema order_key.");
-            }
-        })
-        .catch(error => {
-            console.error("Greška pri slanju narudžbe:", error.message);
-        });
+         // Prvo kreiramo narudžbu u WooCommerce i dobijemo `order_id`
+         const orderId = await handleOrder();
+         if (!orderId) throw new Error("Nije moguće kreirati narudžbu.");   
+    
+        // Priprema podataka za slanje na backend
+        const data = {
+            amount: totalPrice() * 100,  // Viva Payments traži iznos u centima
+            email: billing.email,
+            fullName: `${billing.first_name} ${billing.last_name}`,
+            orderId: orderId,
+        };
+    
+        try {
+            // Slanje podataka na backend
+            const response = await fetch("https://backend.sailorsfeast.com/wp-json/viva/v1/order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+    
+            if (!response.ok) throw new Error("Neuspješno slanje podataka.");
+            console.log("Podaci poslani. Sada dohvaćam orderCode...");
+    
+            // Sada posebno dohvaćamo orderCode iz GET endpointa
+            const orderCodeResponse = await fetch("https://backend.sailorsfeast.com/wp-json/viva/v1/order-code");
+            if (!orderCodeResponse.ok) throw new Error("Neuspješno dohvaćanje orderCode-a.");
+    
+            const orderCodeData = await orderCodeResponse.json();
+            if (!orderCodeData.orderCode) throw new Error("Order Code nije vraćen.");
+    
+            console.log("Viva orderCode:", orderCodeData.orderCode);
+    
+            // Preusmjeri korisnika na Viva Payments Checkout
+            window.location.href = `https://www.vivapayments.com/web/checkout?ref=${orderCodeData.orderCode}`;
+            
+        } catch (error) {
+            console.error("Greška pri obradi plaćanja:", error.message);
+            alert("Došlo je do greške pri obradi plaćanja.");
+        }
     };
 
     const autofillCheckoutData = () => {
@@ -282,7 +329,7 @@ const Checkout = () => {
                         </div>
 
                         <hr className="my-4" />
-                        <button className="w-100 btn btn-primary btn-lg" type="button" onClick={handleOrder}>Plati s Viva Wallet</button>
+                        <button className="w-100 btn btn-primary btn-lg" type="button" onClick={handlePayment}>Plati s Viva Wallet</button>
                     </form>
                 </div>
             </div>
