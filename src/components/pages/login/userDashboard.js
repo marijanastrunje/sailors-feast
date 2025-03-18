@@ -6,6 +6,7 @@ const UserDashboard = () => {
     const [userData, setUserData] = useState({
         first_name: "",
         last_name: "",
+        email:"",
         phone: "",
         marina: "",
         charter: "",
@@ -29,10 +30,12 @@ const UserDashboard = () => {
             return res.json();
         })
         .then(data => {
+            console.log("Podaci s backenda:", data); 
             if (data.id) {
                 setUserData({
                     first_name: data.first_name ?? "",
                     last_name: data.last_name ?? "",
+                    email: data.name ?? "",
                     phone: data.phone ?? "",
                     marina: data.marina ?? "",
                     charter: data.charter ?? "",
@@ -137,7 +140,7 @@ const UserDashboard = () => {
                     <div className="card p-4">
                         <h4>Osobni podaci</h4>
                         <div className="row">
-                            {["first_name", "last_name", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
+                            {["first_name", "last_name", "email", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
                                 <div key={index} className="col-md-6">
                                     <label className="form-label">{field.replace("_", " ").toUpperCase()}</label>
                                     <input 

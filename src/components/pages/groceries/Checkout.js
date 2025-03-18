@@ -179,6 +179,7 @@ const Checkout = () => {
                 setBilling({
                     first_name: data.first_name || "",
                     last_name: data.last_name || "",
+                    email: data.name || "",
                     phone: data.phone || "",
                     marina: data.marina || "",
                     charter: data.charter || "",
@@ -263,16 +264,16 @@ const Checkout = () => {
                     </div>
                 </div>
 
-                <div className="col-md-7 col-lg-8">
+                <div className="col-md-7 ms-lg-5">
                     <h4 className="mb-3">Billing details</h4>
                     <form className="needs-validation">
                         <div className="row g-3">
-                            <div className="col-sm-6">
+                            <div className="col-6">
                                 <label className="form-label">First name</label>
                                 <input type="text" className="form-control" value={billing.first_name} onChange={e => setBilling({ ...billing, first_name: e.target.value })} required />
                             </div>
 
-                            <div className="col-sm-6">
+                            <div className="col-6">
                                 <label className="form-label">Last name</label>
                                 <input type="text" className="form-control" value={billing.last_name} onChange={e => setBilling({ ...billing, last_name: e.target.value })} required />
                             </div>
@@ -287,37 +288,32 @@ const Checkout = () => {
                                 <input type="text" className="form-control" value={billing.phone} onChange={e => setBilling({ ...billing, phone: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-6">
-                                <label className="form-label">Number of guests</label>
-                                <input type="number" className="form-control" value={billing.number_of_guests} onChange={e => setBilling({ ...billing, number_of_guests: e.target.value })} required />
-                            </div>
-
-                            <div className="col-md-6">
+                            <div className="col-6">
                                 <label className="form-label">Marina</label>
                                 <input type="text" className="form-control" value={billing.marina} onChange={e => setBilling({ ...billing, marina: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="col-6">
                                 <label className="form-label">Charter</label>
                                 <input type="text" className="form-control" value={billing.charter} onChange={e => setBilling({ ...billing, charter: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-6">
                                 <label className="form-label">Boat</label>
                                 <input type="text" className="form-control" value={billing.boat} onChange={e => setBilling({ ...billing, boat: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-6">
                                 <label className="form-label">Gate</label>
                                 <input type="text" className="form-control" value={billing.gate} onChange={e => setBilling({ ...billing, gate: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="col-6">
                                 <label className="form-label">Preferred delivery date</label>
                                 <input type="date" className="form-control" value={billing.delivery_date} onChange={e => setBilling({ ...billing, delivery_date: e.target.value })} required />
                             </div>
 
-                            <div className="col-md-6">
+                            <div className="col-6">
                                 <label className="form-label">Preferred delivery time</label>
                                 <input type="time" className="form-control" value={billing.delivery_time} onChange={e => setBilling({ ...billing, delivery_time: e.target.value })} required />
                             </div>
