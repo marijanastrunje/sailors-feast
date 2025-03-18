@@ -50,11 +50,11 @@ input.quantity-input:focus-visible {
 }
 
 .toast {
+    font-size: 12px;
     max-width: 130px;
     transform: translateX(-6%);
     position: absolute;
     bottom: 60px;
-    z-index: 10;
-    
+    z-index: 10; 
 }
   

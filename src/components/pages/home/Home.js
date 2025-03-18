@@ -82,7 +82,7 @@ const Home = () => {
                     <h1 className="m-0">Sailor's Feast</h1>
                     <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
                     <p className="d-none d-md-block">Whether for luxury yacht charters or family sailing adventures, we deliver fresh provisions, drinks, and customizable food packages directly to your boat.</p>
-                    <Link to="/groceries"  className="btn" aria-label="Plan your meals and order food packages now">Shop now</Link> 
+                    <Link to="/groceries"  className="btn btn-prim" aria-label="Plan your meals and order food packages now">Shop now</Link> 
                 </div>              
             </div> 
         </section>
@@ -143,7 +143,7 @@ const Home = () => {
                         <div>
                             <p>Join our Sailor's Feast community and unlock <strong>exclusive benefits!</strong> Members enjoy discounts, special packages, and access to an easy-to-use interactive platform.</p>
                             <p>Plan ahead and save! Place your order by <b>31.03.2025.</b> to enjoy up to <strong>20% off</strong> and special gift.</p>
-                            <Link to="/groceries" className="btn me-2">Place Your Order</Link>
+                            <Link to="/groceries" className="btn btn-prim me-2">Place Your Order</Link>
                         </div>  
                     </div>
                 </div>
@@ -167,7 +167,7 @@ const Home = () => {
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Friends & Family Box</h3>
                         <p>Some representative placeholder content for the first slide.</p>
-                        <Link to="/standard-box" className="btn">Order CTA</Link>
+                        <Link to="/standard-box" className="btn btn-prim">Order CTA</Link>
                       </div>
                     </div>
                   </div>
@@ -177,7 +177,7 @@ const Home = () => {
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Standard box</h3>
                         <p>Some representative placeholder content for the second slide.</p>
-                        <Link to="/standard-box" className="btn">Order CTA</Link>
+                        <Link to="/standard-box" className="btn btn-prim">Order CTA</Link>
                       </div>
                     </div>
                   </div>
@@ -187,7 +187,7 @@ const Home = () => {
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Feast Box</h3>
                         <p>Some representative placeholder content for the third slide.</p>
-                        <Link to="/standard-box" className="btn">Order CTA</Link>
+                        <Link to="/standard-box" className="btn btn-prim">Order CTA</Link>
                       </div>
                     </div>
                   </div>
@@ -197,7 +197,7 @@ const Home = () => {
                       <div className="box-carousel-text mx-5 mx-xl-0">
                         <h3>Healthy Box</h3>
                         <p>Some representative placeholder content for the third slide.</p>
-                        <Link to="standard-box" className="btn">Order CTA</Link>
+                        <Link to="standard-box" className="btn btn-prim">Order CTA</Link>
                       </div>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ const Home = () => {
               <h2>Mix & Match</h2>
               <img className="mb-3" src="https://placehold.co/300x50" alt="" title=""/>
               <p className="text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est. Proin velit </p>
-              <Link to="/groceries" className="btn">Order CTA</Link>
+              <Link to="/groceries" className="btn btn-prim">Order CTA</Link>
           </div> 
         </section>
 

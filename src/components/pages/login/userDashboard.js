@@ -153,7 +153,7 @@ const UserDashboard = () => {
                                 </div>
                             ))}
                         </div>
-                        <button className="btn btn-primary mt-3" onClick={saveUserData}>Spremi podatke</button>
+                        <button className="btn btn-prim mt-3" onClick={saveUserData}>Spremi podatke</button>
                     </div>
                 </div>
                 <div className="col-md-8">    

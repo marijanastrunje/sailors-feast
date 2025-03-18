@@ -35,7 +35,7 @@ const Footer = () => {
                     <h4>Newsletter</h4>
                     <p>Subscribe to our newsletter to get more free tip</p>
                     <div><input type="text" placeholder="Write your email here" className="form-control"/></div>
-                    <Link className="btn my-3">Subscribe</Link>
+                    <Link className="btn btn-prim my-3">Subscribe</Link>
                 </div>
                 </div>
                 <div className="footer-bottom row text-center">

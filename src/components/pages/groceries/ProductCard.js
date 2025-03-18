@@ -127,7 +127,7 @@ const ProductCard = ({ product, onShowModal }) => {
                         <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
                     </>
                 ) : (
-                    <button onClick={handleIncrease} className="quantity-btn-front btn p-0 w-50">+</button>
+                    <button onClick={handleIncrease} className="quantity-btn-front btn btn-prim p-0 w-75">+</button>
                 )}
             </div>
 

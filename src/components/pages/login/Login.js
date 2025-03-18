@@ -105,7 +105,7 @@ const Login = () => {
 
                         {error && <p className="alert alert-danger p-1 p-sm-2 text-center">{error}</p>}
 
-                        <button type="submit" className="btn w-100" disabled={isLoading}>
+                        <button type="submit" className="btn btn-prim w-100" disabled={isLoading}>
                             {isLoading ? "Logging in..." : "Log In"}
                         </button>
                     </form>

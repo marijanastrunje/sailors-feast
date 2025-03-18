@@ -94,7 +94,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
           <h1 className="mb-2 mb-md-4 mt-2">{title}</h1>
           <p>{description}</p>
           <h3>SUM: {totalSum.toFixed(2)}€<span className="text-muted">VAT is included</span></h3>
-          <button className="btn btn-l" onClick={addToCart}>Add to cart</button>
+          <button className="btn btn-prim btn-l" onClick={addToCart}>Add to cart</button>
         </div>
       </div>
     </div>
@@ -152,7 +152,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
                   <h3>SUM: {totalSum.toFixed(2)}€</h3>
                 </td>
                 <td colSpan="2">
-                  <button className="btn btn-sm" onClick={addToCart}>
+                  <button className="btn btn-prim btn-sm" onClick={addToCart}>
                     Add to cart
                   </button>
                 </td>
