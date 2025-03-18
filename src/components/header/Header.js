@@ -97,11 +97,11 @@ const Header = () => {
                                     {username} 
                                 </Link>
                             </button>  
-                            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <ul className="dropdown-menu dropdown-menu-end p-0" data-bs-display="static" aria-labelledby="userDropdown">
                                 <li>
                                     <Link to="/user" className="dropdown-item">User Dashboard</Link>
                                 </li>
-                                <li><hr className="dropdown-divider" /></li>
+                                <li><hr className="dropdown-divider m-0" /></li>
                                 <li>
                                     <button className="dropdown-item text-danger" onClick={logout}>Logout</button>
                                 </li>

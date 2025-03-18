@@ -5,6 +5,7 @@
 .top-navbar{
 height: 24px;
 border-bottom: 1px solid #495057;
+z-index: 1040;
 }
 
 .top-navbar a, .top-navbar p{
@@ -81,6 +82,11 @@ margin-top: 24px;
   background: none;
   border: none;
   margin-top: -2px;
+  color: var(--secondary-color);
+}
+
+.btn-user:hover{
+  color: var(--primary-color);
 }
 
 .search-button{
@@ -88,3 +94,14 @@ margin-top: 24px;
   border: none;
   font-size: 18px;
 }
+
+.dropdown-divider{
+  background-color: #495057;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: lightgray !important; /* Boja na hover */
+  color: black !important;
+}
+
