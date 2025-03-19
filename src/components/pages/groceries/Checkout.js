@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom"; 
 
 const Checkout = () => {
@@ -30,15 +30,15 @@ const Checkout = () => {
 
     const [showCart, setShowCart] = useState(window.innerWidth >= 768);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setShowCart(window.innerWidth >= 768);
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        return () => window.removeEventListener("resize", handleResize);
+    const handleResize = useCallback(() => {
+        setShowCart(window.innerWidth >= 768);
     }, []);
+    
+    useEffect(() => {
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [handleResize]); // Funkcija se ne mijenja svaki render
+    
 
 
     const toggleCart = () => {
@@ -211,7 +211,7 @@ const Checkout = () => {
                 </button>
             </div>
 
-            <div className="row g-5">
+            <div className="row g-3">
                 <div className="col-md-5 col-lg-4 order-md-last">
                     <h4 className="d-flex justify-content-between align-items-center mb-3">
                         <span className="text-primary">Vaša košarica</span>

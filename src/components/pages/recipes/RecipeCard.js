@@ -23,14 +23,14 @@ const RecipeCard = ({ recipe }) => {
           <div className="row">
             <div className="col-8 col-md-8 d-flex">
               <span>
-                <img src="/img/recipes/time.svg" width="20px" height="20px" alt="Time" />
+                <img src="/img/recipes/time.svg" width="22px" height="22px" alt="Time" />
               </span>
               <time>{recipe.time} min</time>
             </div>
             <div className="col-4 col-md-4 d-flex justify-content-end">
               {recipe.icon?.map(iconId => 
                 iconMap[iconId] ? (
-                  <img key={iconId} src={iconMap[iconId]} className="me-1" width="24px" height="24px" alt={"Icon" + iconId} />
+                  <img key={iconId} src={iconMap[iconId]} className="me-1" width="22px" height="22px" alt={"Icon" + iconId} />
                 ) : null
               )}
             </div>

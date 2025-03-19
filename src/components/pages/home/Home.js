@@ -17,7 +17,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=50", {
+    fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=20", {
       headers: {
         Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
       }

@@ -21,7 +21,7 @@ const HomePageCategories = ({ categories }) => {
       infinite: true,
       speed: 300,
       slidesToShow: 4, 
-      slidesToScroll: 2,
+      slidesToScroll: 3,
       swipeToSlide: true,
       dots: true,
     };

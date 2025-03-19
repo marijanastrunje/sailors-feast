@@ -51,6 +51,7 @@ const Login = () => {
             // Spremi token i preusmjeri korisnika
             localStorage.setItem("token", data.token);
             localStorage.setItem("username", data.user_display_name);
+            localStorage.setItem("user_email", form.username);
             navigate(redirect);
             window.location.reload();
 

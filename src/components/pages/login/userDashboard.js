@@ -22,7 +22,7 @@ const UserDashboard = () => {
     const fetchUserData = useCallback(() => {
         if (!token) return;
 
-        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+        fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
             headers: { "Authorization": `Bearer ${token}` }
         })
         .then(res => {
@@ -35,7 +35,7 @@ const UserDashboard = () => {
                 setUserData({
                     first_name: data.first_name ?? "",
                     last_name: data.last_name ?? "",
-                    email: data.name ?? "",
+                    email: localStorage.getItem("user_email") ?? "",
                     phone: data.phone ?? "",
                     marina: data.marina ?? "",
                     charter: data.charter ?? "",
@@ -137,21 +137,49 @@ const UserDashboard = () => {
             <h2 className="text-center">Korisnički profil</h2>
             <div className="row">
                 <div className="col-md-4">
-                    <div className="card p-4">
+                    <div className="card p-3">
                         <h4>Osobni podaci</h4>
-                        <div className="row">
-                            {["first_name", "last_name", "email", "phone", "marina", "charter", "boat", "gate"].map((field, index) => (
-                                <div key={index} className="col-md-6">
-                                    <label className="form-label">{field.replace("_", " ").toUpperCase()}</label>
-                                    <input 
-                                        type="text" 
-                                        name={field} 
-                                        className="form-control" 
-                                        value={userData[field]} 
-                                        onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} 
-                                    />
-                                </div>
-                            ))}
+                        <div className="row g-1">
+                           
+                            <div className="col-6">
+                                <label className="form-label">First name</label>
+                                <input type="text" name="first_name" className="form-control" value={userData.first_name}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-6">
+                                <label className="form-label">Last name</label>
+                                <input type="text" name="last_name" className="form-control" value={userData.last_name}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label">Email</label>
+                                <input type="text" name="email" className="form-control" value={userData.email}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} disabled />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label">Phone</label>
+                                <input type="text" name="phone" className="form-control" value={userData.phone}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label">Marina</label>
+                                <input type="text" name="marina" className="form-control" value={userData.marina}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-12">
+                                <label className="form-label">Charter</label>
+                                <input type="text" name="charter" className="form-control" value={userData.charter}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-8">
+                                <label className="form-label">Boat</label>
+                                <input type="text" name="boat" className="form-control" value={userData.boat}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
+
+                            <div className="col-4">
+                                <label className="form-label">Gate</label>
+                                <input type="text" name="gate" className="form-control" value={userData.gate}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            </div>
                         </div>
                         <button className="btn btn-prim mt-3" onClick={saveUserData}>Spremi podatke</button>
                     </div>

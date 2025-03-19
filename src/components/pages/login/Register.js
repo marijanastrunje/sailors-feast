@@ -31,14 +31,16 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-            // ✅ Pošalji podatke za registraciju
+            // Pošalji podatke za registraciju
             const registerResponse = await fetch("https://backend.sailorsfeast.com/wp-json/simple-jwt-login/v1/users", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    username: form.username,
+                    username: form.email,
+                    first_name: form.first_name,  
+                    last_name: form.last_name,   
                     email: form.email,
-                    password: form.password
+                    password: form.password,
                 })
             });
 
@@ -50,7 +52,7 @@ const Register = () => {
                 return;
             }
 
-            // ✅ Automatski login nakon registracije
+            // Automatski login nakon registracije
             const loginResponse = await fetch("https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -66,9 +68,10 @@ const Register = () => {
                 return;
             }
 
-            // ✅ Spremi token i preusmjeri korisnika
+            // Spremi token i preusmjeri korisnika
             localStorage.setItem("token", loginData.token);
             localStorage.setItem("username", loginData.user_display_name);
+            localStorage.setItem("user_email", form.email);
             navigate(redirect);
             window.location.reload();
 
@@ -95,10 +98,16 @@ const Register = () => {
                     <p>Sign up to get started</p>
 
                     <form className={isLoading ? "loading" : ""} onSubmit={handleRegister}>
-                        <div className="input-group">
-                            <label className="text-start w-100">Username</label>
+                    <div className="input-group">
+                            <label className="text-start w-100">First Name</label>
                             <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
-                            <input type="text" name="username" value={form.username} onChange={handleChange} className="form-control" placeholder="Enter your username" required />
+                            <input type="text" name="first_name" value={form.first_name} onChange={handleChange} className="form-control" placeholder="Enter your first name" required />
+                        </div>
+
+                        <div className="input-group">
+                            <label className="text-start w-100">Last Name</label>
+                            <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
+                            <input type="text" name="last_name" value={form.last_name} onChange={handleChange} className="form-control" placeholder="Enter your last name" required />
                         </div>
 
                         <div className="input-group">

@@ -33,7 +33,7 @@ const Header = () => {
             setCartCount(totalItems);
         };
 
-        // Pozivamo funkciju odmah kako bi se broj proizvoda prikazao
+        // Pozivamo funkciju kako bi se broj proizvoda prikazao
         handleCartUpdate(); 
 
         window.addEventListener("cartUpdated", handleCartUpdate);
