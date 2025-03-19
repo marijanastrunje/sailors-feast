@@ -15,12 +15,12 @@ import Login from './components/pages/login/Login';
 import Register from './components/pages/login/Register';
 import RecipesPage from './components/pages/recipes/RecipesPage';
 import RecipeDetails from './components/pages/recipes/RecipeDetails';
-import CartPage from './components/pages/groceries/CartPage';
-import Checkout from './components/pages/groceries/Checkout';
+import CartPage from './components/pages/cart-checkout/CartPage';
+import Checkout from './components/pages/cart-checkout/Checkout';
 import UserDashboard from './components/pages/login/userDashboard';
 import ScrollToTop from "./components/ScrollToTop";
-import Success from './components/pages/groceries/Success';
-import Failure from './components/pages/groceries/Failure';
+import Success from './components/pages/cart-checkout/Success';
+import Failure from './components/pages/cart-checkout/Failure';
 import TestOrder from './components/pages/groceries/TestOrder';
 
 import Home1 from './components/pages/izm/home1/Home1';

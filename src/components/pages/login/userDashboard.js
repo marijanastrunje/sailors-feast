@@ -1,62 +1,34 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useBillingData from "../cart-checkout/useBillingData";
 
 const UserDashboard = () => {
     const navigate = useNavigate();
-    const [userData, setUserData] = useState({
-        first_name: "",
-        last_name: "",
-        email:"",
-        phone: "",
-        marina: "",
-        charter: "",
-        boat: "",
-        gate: "",
-    });
-
-    const [savedLists, setSavedLists] = useState({});
-    const [selectedList, setSelectedList] = useState(null);
     const token = localStorage.getItem("token");
 
-    // Dohvati korisničke podatke
-    const fetchUserData = useCallback(() => {
-        if (!token) return;
+    const [billing, setBilling, fetchUserData] = useBillingData(); // Koristi podatke iz useBillingData
+    const [savedLists, setSavedLists] = useState({});
+    const [selectedList, setSelectedList] = useState(null);
 
-        fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
-            headers: { "Authorization": `Bearer ${token}` }
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Greška pri dohvaćanju podataka.");
-            return res.json();
-        })
-        .then(data => {
-            console.log("Podaci s backenda:", data); 
-            if (data.id) {
-                setUserData({
-                    first_name: data.first_name ?? "",
-                    last_name: data.last_name ?? "",
-                    email: localStorage.getItem("user_email") ?? "",
-                    phone: data.phone ?? "",
-                    marina: data.marina ?? "",
-                    charter: data.charter ?? "",
-                    boat: data.boat ?? "",
-                    gate: data.gate ?? "",
-                });
-                if (data.meta && data.meta.saved_lists) {
-                    setSavedLists(JSON.parse(data.meta.saved_lists));
-                }
-            }
-        })
-        .catch(err => console.error("Greška pri dohvaćanju podataka:", err));
-    }, [token]);
-
-    // Učitavanje korisničkih podataka prilikom dolaska na stranicu
+    // Dohvati spremljene liste posebno
     useEffect(() => {
         if (!token) {
             navigate("/login?redirect=/user", { replace: true });
             return;
         }
-        fetchUserData();
+
+        fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.meta && data.meta.saved_lists) {
+                setSavedLists(JSON.parse(data.meta.saved_lists));
+            }
+        })
+        .catch(err => console.error("Greška pri dohvaćanju podataka:", err));
+
+        fetchUserData(); // Ponovno dohvaćanje korisničkih podataka
     }, [navigate, token, fetchUserData]);
 
     // Spremanje korisničkih podataka
@@ -65,19 +37,16 @@ const UserDashboard = () => {
             alert("Niste prijavljeni!");
             return;
         }
-    
+
         fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(userData)
+            body: JSON.stringify(billing)
         })
-        .then(res => {
-            if (!res.ok) throw new Error("Greška pri spremanju podataka.");
-            return res.json();
-        })
+        .then(res => res.json())
         .then(updatedData => {
             if (updatedData.id) {
                 alert("Podaci su uspješno ažurirani!");
@@ -92,46 +61,6 @@ const UserDashboard = () => {
         });
     };
 
-    // Učitaj listu u košaricu
-    const loadListToCart = (listName) => {
-        const list = savedLists[listName];
-        if (!list) return;
-
-        localStorage.setItem("cart", JSON.stringify(list));
-        window.dispatchEvent(new Event("cartUpdated"));
-        alert(`Lista "${listName}" je učitana u košaricu!`);
-        navigate("/cart");
-    };
-
-    // Obriši spremljenu listu s backenda
-    const deleteList = (listName) => {
-        const updatedLists = { ...savedLists };
-        delete updatedLists[listName];
-
-        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ meta: { saved_lists: JSON.stringify(updatedLists) } })
-        })
-        .then(res => res.json())
-        .then(() => {
-            setSavedLists(updatedLists);
-            alert(`Lista "${listName}" je obrisana.`);
-        })
-        .catch(err => {
-            console.error("Greška pri brisanju liste:", err);
-            alert("Nije moguće obrisati listu.");
-        });
-    };
-
-    // Prikaži ili sakrij proizvode unutar liste
-    const toggleListView = (listName) => {
-        setSelectedList(selectedList === listName ? null : listName);
-    };
-
     return (
         <div className="container mt-5">
             <h2 className="text-center">Korisnički profil</h2>
@@ -140,51 +69,48 @@ const UserDashboard = () => {
                     <div className="card p-3">
                         <h4>Osobni podaci</h4>
                         <div className="row g-1">
-                           
                             <div className="col-6">
                                 <label className="form-label">First name</label>
-                                <input type="text" name="first_name" className="form-control" value={userData.first_name}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <input type="text" name="first_name" className="form-control" value={billing.first_name} onChange={(e) => setBilling(prev => ({ ...prev, first_name: e.target.value }))} />
+                            </div>
+                            <div className="col-6">
+                                <label className="form-label">Last name</label>
+                                <input type="text" name="last_name" className="form-control" value={billing.last_name} onChange={(e) => setBilling(prev => ({ ...prev, last_name: e.target.value }))} />
+                            </div>
+                            <div className="col-12">
+                                <label className="form-label">Email</label>
+                                <input type="text" name="email" className="form-control" value={billing.email} disabled />
+                            </div>
+                            <div className="col-12">
+                                <label className="form-label">Phone</label>
+                                <input type="text" name="phone" className="form-control" value={billing.phone} onChange={(e) => setBilling(prev => ({ ...prev, phone: e.target.value }))} />
+                            </div>
+                            <div className="col-6">
+                                <label className="form-label">Marina</label>
+                                <input type="text" className="form-control" value={billing.marina} onChange={e => setBilling({ ...billing, marina: e.target.value })} required />
                             </div>
 
                             <div className="col-6">
-                                <label className="form-label">Last name</label>
-                                <input type="text" name="last_name" className="form-control" value={userData.last_name}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
-                            </div>
-
-                            <div className="col-12">
-                                <label className="form-label">Email</label>
-                                <input type="text" name="email" className="form-control" value={userData.email}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} disabled />
-                            </div>
-
-                            <div className="col-12">
-                                <label className="form-label">Phone</label>
-                                <input type="text" name="phone" className="form-control" value={userData.phone}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
-                            </div>
-
-                            <div className="col-12">
-                                <label className="form-label">Marina</label>
-                                <input type="text" name="marina" className="form-control" value={userData.marina}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
-                            </div>
-
-                            <div className="col-12">
                                 <label className="form-label">Charter</label>
-                                <input type="text" name="charter" className="form-control" value={userData.charter}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <input type="text" className="form-control" value={billing.charter} onChange={e => setBilling({ ...billing, charter: e.target.value })} required />
                             </div>
 
-                            <div className="col-8">
+                            <div className="col-6">
                                 <label className="form-label">Boat</label>
-                                <input type="text" name="boat" className="form-control" value={userData.boat}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <input type="text" className="form-control" value={billing.boat} onChange={e => setBilling({ ...billing, boat: e.target.value })} required />
                             </div>
 
-                            <div className="col-4">
+                            <div className="col-6">
                                 <label className="form-label">Gate</label>
-                                <input type="text" name="gate" className="form-control" value={userData.gate}  onChange={(e) => setUserData(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <input type="text" className="form-control" value={billing.gate} onChange={e => setBilling({ ...billing, gate: e.target.value })} required />
                             </div>
                         </div>
                         <button className="btn btn-prim mt-3" onClick={saveUserData}>Spremi podatke</button>
                     </div>
                 </div>
-                <div className="col-md-8">    
+
+                {/* Prikaz spremljenih listi */}
+                <div className="col-md-8">
                     {Object.keys(savedLists).length > 0 && (
                         <div className="mt-4">
                             <h4>Moje spremljene liste</h4>
@@ -192,26 +118,20 @@ const UserDashboard = () => {
                                 {Object.keys(savedLists).map((listName) => (
                                     <div key={listName} className="list-group-item">
                                         <div className="d-flex justify-content-between align-items-center">
-                                            <span 
-                                                className="fw-bold text-primary cursor-pointer"
-                                                onClick={() => toggleListView(listName)}
-                                                style={{ cursor: "pointer" }}
-                                            >
+                                            <span className="fw-bold text-primary cursor-pointer" onClick={() => setSelectedList(selectedList === listName ? null : listName)} style={{ cursor: "pointer" }}>
                                                 {listName} {selectedList === listName ? "▲" : "▼"}
                                             </span>
                                             <div>
-                                                <button className="btn btn-sm btn-success me-2" onClick={() => loadListToCart(listName)}>Učitaj u košaricu</button>
-                                                <button className="btn btn-sm btn-danger" onClick={() => deleteList(listName)}>Obriši</button>
+                                                <button className="btn btn-sm btn-success me-2">Učitaj u košaricu</button>
+                                                <button className="btn btn-sm btn-danger">Obriši</button>
                                             </div>
                                         </div>
 
-                                        {/* Prikaz proizvoda unutar liste */}
                                         {selectedList === listName && (
                                             <div className="mt-3">
                                                 <table className="table table-bordered table-hover text-center">
                                                     <thead className="table-secondary">
                                                         <tr>
-                                                            <th>Slika</th>
                                                             <th>Proizvod</th>
                                                             <th>Količina</th>
                                                             <th>Ukupno</th>
@@ -220,14 +140,7 @@ const UserDashboard = () => {
                                                     <tbody>
                                                         {savedLists[listName].map((item) => (
                                                             <tr key={item.id}>
-                                                                <td className="p-0">
-                                                                    <img 
-                                                                        src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"} 
-                                                                        alt={item.title} 
-                                                                        width="50" 
-                                                                    />
-                                                                </td>
-                                                                <td>{item.title} <br /> {item.price} €</td>
+                                                                <td>{item.title}</td>
                                                                 <td>{item.quantity}</td>
                                                                 <td>{(item.price * item.quantity).toFixed(2)} €</td>
                                                             </tr>
@@ -242,7 +155,7 @@ const UserDashboard = () => {
                         </div>
                     )}
                 </div>
-            </div>        
+            </div>
         </div>
     );
 };
