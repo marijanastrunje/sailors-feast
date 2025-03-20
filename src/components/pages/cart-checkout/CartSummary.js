@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 const CartSummary = ({ cart, setTotalPrice }) => {
     const [showCart, setShowCart] = useState(window.innerWidth >= 768);
@@ -12,14 +12,14 @@ const CartSummary = ({ cart, setTotalPrice }) => {
     const boxProducts = cart.filter(item => item.box);
     const groceriesProducts = cart.filter(item => !item.box);
 
-    const totalPrice = useCallback(() => {
+    const totalPrice = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
-    }, [cart]);
+    };
 
     // Ažuriraj totalPrice u Checkout komponenti
     useEffect(() => {
         setTotalPrice(totalPrice());
-    }, [totalPrice, setTotalPrice]);
+    }, [cart, totalPrice, setTotalPrice]);
 
     return (
         <>

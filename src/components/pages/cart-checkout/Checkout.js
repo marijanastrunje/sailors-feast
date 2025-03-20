@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, useLocation } from "react-router-dom"; 
 import useBillingData from "./useBillingData";
 import BillingForm from "./BillingForm";
 import CartSummary from "./CartSummary";
@@ -12,9 +12,19 @@ const Checkout = () => {
         if (!token) navigate("/login?redirect=/checkout");
     }, [navigate, token]);
 
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("payment") === "failed") {
+            setPaymentFailed(true);
+        }
+    }, [location]);    
+
     const [billing, setBilling] = useBillingData();
     const [cart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [paymentFailed, setPaymentFailed] = useState(false);
 
     const lineItems = cart.map(item => ({
         product_id: item.id,
@@ -63,6 +73,8 @@ const Checkout = () => {
         const orderId = await handleOrder();
         if (!orderId) return;
 
+        localStorage.setItem("lastOrderId", orderId);
+
         try {
             const response = await fetch("https://backend.sailorsfeast.com/wp-json/viva/v1/order", {
                 method: "POST",
@@ -95,6 +107,12 @@ const Checkout = () => {
                 <h2>Checkout form</h2>
                 <p className="lead">Ispunite podatke za dostavu i plaćanje.</p>
             </div>
+
+            {paymentFailed && (
+                <div className="alert alert-danger text-center">
+                    <strong>Plaćanje nije uspjelo.</strong> Pokušajte ponovno ili odaberite drugi način plaćanja.
+                </div>
+            )}
 
             <div className="row g-3">
                 <div className="col-md-5 col-lg-4 order-md-last">
