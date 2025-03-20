@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModal, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
+const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryProducts, onShowProductModal, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
 }) => {
   // State za praćenje količina proizvoda u paketu
   const [productQuantities, setProductQuantities] = useState({});
@@ -16,15 +16,50 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, onShowProductModa
     setProductQuantities(initialQuantities);
   }, [subcategories, subcategoryProducts]);
 
-  // Funkcija za promjenu količine proizvoda
+  useEffect(() => {
+    const updatedQuantities = { ...productQuantities };
+
+    subcategories.forEach((subcategory) => {
+        subcategoryProducts[subcategory.id]?.forEach((product) => {
+            if (!(product.id in updatedQuantities)) {
+                updatedQuantities[product.id] = product.quantity || 1;
+            }
+        });
+    });
+
+    setProductQuantities((prevQuantities) => {
+      if (JSON.stringify(prevQuantities) === JSON.stringify(updatedQuantities)) {
+          return prevQuantities; // Sprečava beskonačnu petlju
+      }
+      return updatedQuantities;
+  });
+  
+  }, [subcategories, subcategoryProducts, productQuantities]);
+
+
   const handleQuantityChange = (productId, newQuantity) => {
-    if (newQuantity < 1) newQuantity = 1;
-    
+    if (newQuantity < 0) newQuantity = 0; // Dopuštamo da polje ostane prazno
+
     setProductQuantities((prev) => ({
-      ...prev,
-      [productId]: newQuantity,
+        ...prev,
+        [productId]: newQuantity,
     }));
-  };
+
+    // Ažuriramo količinu i u `subcategoryProducts`
+    setSubcategoryProducts((prev) => {
+        const updatedProducts = { ...prev };
+
+        Object.keys(updatedProducts).forEach((subcategoryId) => {
+            updatedProducts[subcategoryId] = updatedProducts[subcategoryId].map((product) =>
+                product.id === productId ? { ...product, quantity: newQuantity } : product
+            );
+        });
+
+        return updatedProducts;
+    });
+};
+
+
 
   // Računanje ukupne cijene paketa (SUM)
   const totalSum = subcategories.reduce((sum, subcategory) => {

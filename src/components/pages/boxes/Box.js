@@ -104,9 +104,63 @@ useEffect(() => {
     setShowModal(true);
   };
 
-  const handleAddProduct = (product) => {
-    console.log("Dodajem proizvod:", product);
-  };
+  const handleAddProduct = async (product, quantity) => {
+
+
+    let targetSubcategoryId = null;
+
+    for (const [subcategoryId, categoryId] of Object.entries(categoryMapping)) {
+        // 1. Ako je proizvod već direktno u toj kategoriji
+        if (product.categories.some(cat => cat.id === subcategoryId || cat.id === categoryId)) {
+            targetSubcategoryId = parseInt(subcategoryId);
+            break;
+        }
+
+        // 2. Ako proizvod ima samo podkategoriju, dohvati roditelja kategorije
+        for (const cat of product.categories) {
+            try {
+                const response = await fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories/${cat.id}`, {
+                    headers: {
+                        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
+                    },
+                });
+                const categoryData = await response.json();
+
+                console.log(` Kategorija ${cat.id} ima parent ID:`, categoryData.parent);
+
+                if (categoryData.parent === categoryId) {
+                    targetSubcategoryId = parseInt(subcategoryId);
+                    break;
+                }
+            } catch (error) {
+                console.error(" Greška pri dohvaćanju roditeljske kategorije:", error);
+            }
+        }
+
+        if (targetSubcategoryId) break;
+    }
+
+    if (!targetSubcategoryId) {
+        console.warn(" Nije pronađena odgovarajuća podkategorija za proizvod:", product.name);
+        return;
+    }
+
+    setSubcategoryProducts((prev) => {
+        const existingProducts = prev[targetSubcategoryId] || [];
+        
+        if (existingProducts.some(p => p.id === product.id)) {
+            console.warn(" Proizvod je već dodan u podkategoriju:", product.name);
+            return prev;
+        }
+
+        return {
+            ...prev,
+            [targetSubcategoryId]: [...existingProducts, { ...product, quantity }]
+        };
+    });
+
+    setShowModal(false);
+};
 
   return (
     <>
@@ -117,6 +171,7 @@ useEffect(() => {
         image={image}
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
+        setSubcategoryProducts={setSubcategoryProducts}
         onShowProductModal={handleShowProductModal}
         handleRemoveProduct={handleRemoveProduct}
         handleShowModal={handleShowModal}
