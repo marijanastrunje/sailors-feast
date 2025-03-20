@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useBillingData from "../cart-checkout/useBillingData";
 
 const UserDashboard = () => {
+    
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
@@ -95,12 +96,12 @@ const UserDashboard = () => {
                                 <input type="text" className="form-control" value={billing.charter} onChange={e => setBilling({ ...billing, charter: e.target.value })} required />
                             </div>
 
-                            <div className="col-6">
+                            <div className="col-8">
                                 <label className="form-label">Boat</label>
                                 <input type="text" className="form-control" value={billing.boat} onChange={e => setBilling({ ...billing, boat: e.target.value })} required />
                             </div>
 
-                            <div className="col-6">
+                            <div className="col-4">
                                 <label className="form-label">Gate</label>
                                 <input type="text" className="form-control" value={billing.gate} onChange={e => setBilling({ ...billing, gate: e.target.value })} required />
                             </div>
@@ -132,6 +133,7 @@ const UserDashboard = () => {
                                                 <table className="table table-bordered table-hover text-center">
                                                     <thead className="table-secondary">
                                                         <tr>
+                                                            <th>Slika</th>
                                                             <th>Proizvod</th>
                                                             <th>Količina</th>
                                                             <th>Ukupno</th>
@@ -140,6 +142,7 @@ const UserDashboard = () => {
                                                     <tbody>
                                                         {savedLists[listName].map((item) => (
                                                             <tr key={item.id}>
+                                                                <td className="p-0"><img src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"} alt={item.title} width="50"  /></td>
                                                                 <td>{item.title}</td>
                                                                 <td>{item.quantity}</td>
                                                                 <td>{(item.price * item.quantity).toFixed(2)} €</td>

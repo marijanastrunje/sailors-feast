@@ -11,7 +11,8 @@ const Register = () => {
     const redirect = queryParams.get("redirect") || "/";
 
     const [form, setForm] = useState({
-        username: "",
+        first_name: "",
+        last_name: "",
         email: "",
         password: ""
     });
@@ -26,60 +27,60 @@ const Register = () => {
         });
     };
 
-    const handleRegister = async (e) => {
+    const registerUser = (userData) => {
+        return fetch("https://backend.sailorsfeast.com/wp-json/simple-jwt-login/v1/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(userData),
+        }).then(response => response.json());
+    };
+    
+    const loginUser = (email, password) => {
+        return fetch("https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: email, password }),
+        }).then(response => response.json());
+    };
+    
+    const handleRegister = (e) => {
         e.preventDefault();
         setIsLoading(true);
-
-        try {
-            // Pošalji podatke za registraciju
-            const registerResponse = await fetch("https://backend.sailorsfeast.com/wp-json/simple-jwt-login/v1/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: form.email,
-                    first_name: form.first_name,  
-                    last_name: form.last_name,   
-                    email: form.email,
-                    password: form.password,
-                })
-            });
-
-            const data = await registerResponse.json();
-            setIsLoading(false);
-
+    
+        registerUser({
+            username: form.email,
+            first_name: form.first_name,
+            last_name: form.last_name,
+            email: form.email,
+            password: form.password,
+        })
+        .then(data => {
             if (data?.code) {
                 setError("Registration failed: " + data.message);
-                return;
+                return Promise.reject("Registration error");
             }
-
-            // Automatski login nakon registracije
-            const loginResponse = await fetch("https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: form.email, // Koristi email za prijavu
-                    password: form.password
-                })
-            });
-
-            const loginData = await loginResponse.json();
+            return loginUser(form.email, form.password);
+        })
+        .then(loginData => {
             if (loginData?.code) {
                 setError("Login failed after registration.");
                 return;
             }
-
-            // Spremi token i preusmjeri korisnika
+    
             localStorage.setItem("token", loginData.token);
             localStorage.setItem("username", loginData.user_display_name);
             localStorage.setItem("user_email", form.email);
             navigate(redirect);
             window.location.reload();
-
-        } catch (error) {
+        })
+        .catch(() => {
             setError("Something went wrong. Please try again.");
+        })
+        .finally(() => {
             setIsLoading(false);
-        }
+        });
     };
+    
 
     return (
         <section id="register">
@@ -98,7 +99,8 @@ const Register = () => {
                     <p>Sign up to get started</p>
 
                     <form className={isLoading ? "loading" : ""} onSubmit={handleRegister}>
-                    <div className="input-group">
+                        
+                        <div className="input-group">
                             <label className="text-start w-100">First Name</label>
                             <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
                             <input type="text" name="first_name" value={form.first_name} onChange={handleChange} className="form-control" placeholder="Enter your first name" required />
@@ -122,9 +124,9 @@ const Register = () => {
                             <input type="password" name="password" value={form.password} onChange={handleChange} className="form-control" placeholder="Create a password" required />
                         </div>
 
-                        {error && <p className="alert alert-danger p-1 p-sm-2 text-center">{error}</p>}
+                        {error && <p className="alert alert-danger p-1 p-sm-2 text-center mt-3">{error}</p>}
                         
-                        <button type="submit" className="btn btn-prim w-100" disabled={isLoading}>
+                        <button type="submit" className="btn btn-prim w-100 mt-3" disabled={isLoading}>
                             {isLoading ? "Signing up..." : "Sign Up"}
                         </button>
                     </form>

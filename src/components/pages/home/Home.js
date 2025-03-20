@@ -37,36 +37,12 @@ const Home = () => {
 
   const settings = {
     slidesToShow: 1,
-    slidesToScroll: 3,
     autoplay: true,
     autoplaySpeed: 4000,
-    arrow: false,
     responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 3,
-          infinite: true,
-          arrow: false,
-        }
-      },
-      {
-        breakpoint: 776,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 3,
-          arrow: false,
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 3,
-          arrow: false,
-        },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 1 } },
+      { breakpoint: 776, settings: { slidesToShow: 2 } },
+      { breakpoint: 480, settings: { slidesToShow: 2 } },
     ],
   };
 

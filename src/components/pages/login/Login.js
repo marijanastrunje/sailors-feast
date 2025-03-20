@@ -8,7 +8,7 @@ const Login = () => {
     const [form, setForm] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -24,42 +24,35 @@ const Login = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
         setIsLoading(true);
 
-        try {
-            // Pošalji podatke za prijavu
-            const loginResponse = await fetch(
-                "https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token",
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(form),
-                }
-            );
-
-            const data = await loginResponse.json();
-            setIsLoading(false);
-            setForm({ username: "", password: "" });
-
+        fetch("https://backend.sailorsfeast.com/wp-json/jwt-auth/v1/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(form),
+        })
+        .then(response => response.json())
+        .then(data => {
             if (data?.code) {
                 setError("Invalid username or password. Please try again.");
                 return;
             }
 
-            // Spremi token i preusmjeri korisnika
             localStorage.setItem("token", data.token);
             localStorage.setItem("username", data.user_display_name);
             localStorage.setItem("user_email", form.username);
             navigate(redirect);
             window.location.reload();
-
-        } catch (error) {
-            console.error("Login error:", error);
+        })
+        .catch(() => {
             setError("Something went wrong. Please try again.");
+        })
+        .finally(() => {
             setIsLoading(false);
-        }
+            setForm({ username: "", password: "" });
+        });
     };
 
     return (
@@ -92,7 +85,7 @@ const Login = () => {
                             <input type="email" name="username" value={form.username} onChange={handleChange} className="form-control" placeholder="Enter your email" required />
                         </div>
 
-                        <div className="input-group">
+                        <div className="input-group mt-3">
                             <label className="text-start w-100">Password</label>
                             <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
                             <input type="password" name="password" value={form.password} onChange={handleChange} className="form-control" placeholder="Enter your password" required />

@@ -9,16 +9,12 @@ const Checkout = () => {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (!token) return navigate("/login?redirect=/checkout");
+        if (!token) navigate("/login?redirect=/checkout");
     }, [navigate, token]);
 
     const [billing, setBilling] = useBillingData();
-    const [cart, setCart] = useState([]);
+    const [cart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
     const [totalPrice, setTotalPrice] = useState(0);
-
-    useEffect(() => {
-        setCart(JSON.parse(localStorage.getItem("cart")) || []);
-    }, []);
 
     const lineItems = cart.map(item => ({
         product_id: item.id,
@@ -27,7 +23,8 @@ const Checkout = () => {
 
     const handleOrder = async () => {
         if (cart.length === 0) {
-            return alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
+            alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
+            return null;
         }
 
         const orderData = {
@@ -58,16 +55,13 @@ const Checkout = () => {
         } catch (error) {
             console.error("Greška pri kreiranju narudžbe:", error.message);
             alert("Došlo je do greške pri kreiranju narudžbe.");
+            return null;
         }
     };
 
     const handlePayment = async () => {
-        if (cart.length === 0) {
-            return alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
-        }
-
         const orderId = await handleOrder();
-        if (!orderId) throw new Error("Nije moguće kreirati narudžbu.");   
+        if (!orderId) return;
 
         try {
             const response = await fetch("https://backend.sailorsfeast.com/wp-json/viva/v1/order", {
