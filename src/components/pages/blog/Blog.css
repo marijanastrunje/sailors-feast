@@ -3,3 +3,26 @@
     margin-left: 40px;
     color: var(--h-color);
 }
+
+.blog-home{
+    border-bottom: 1px solid #E0E0E0;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .blog-home h3 a{
+    text-decoration: none;
+    color: var(--tekst-color);
+  }
+  
+  .blog-home .year, .article .year {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    padding: 0 16px;
+    border-radius: 8px;
+    margin-right: 20px;
+  }
+  
+  .blog-home .category, .article .category {
+    color: #8695A4;
+  }

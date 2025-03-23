@@ -5,7 +5,7 @@ const BlogBlock = () => {
    const [posts, setPosts] = useState([]);
    
        useEffect(() => {
-           fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/posts?per_page=3&categories_exclude=65,66,73,74&orderby=date&order=desc")
+           fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/posts?per_page=3")
                .then(response => response.json())
                .then(data => {
                    setPosts(data);

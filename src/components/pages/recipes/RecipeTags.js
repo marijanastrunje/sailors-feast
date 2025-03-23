@@ -1,55 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./RecipeTags.css";
 
-const RecipeTags = ({ postID }) => {
-  const [healthyTags, setHealthyTags] = useState([]);
-  const [lunchTags, setLunchTags] = useState([]);
-  const [fitTags, setFitTags] = useState([]);
-  const [dinnerTags, setDinnerTags] = useState([]);
+const taxonomyMap = {
+  recipe_type: "type",
+  recipe_diet: "diet",
+  recipe_main_ingredient: "ingredient",
+  recipe_difficulty: "difficulty",
+};
 
-  useEffect(() => {
-    if (!postID) return;
-
-    const tagEndpoints = {
-      healthy: setHealthyTags,
-      lunch: setLunchTags,
-      fit: setFitTags,
-      dinner: setDinnerTags,
-    };
-
-    Object.entries(tagEndpoints).forEach(([tagType, setTagState]) => {
-      fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/${tagType}?post=${postID}`)
-        .then(response => response.json())
-        .then(data => setTagState(data))
-        .catch(error => console.error(`Error fetching ${tagType} tags:`, error));
-    });
-  }, [postID]);
+const RecipeTags = ({ recipe }) => {
+  const terms = recipe?._embedded?.["wp:term"] || [];
 
   return (
-    <div className="recipe-tags pb-1 d-flex justify-content-center">
-      {healthyTags.map(tag => (
-        <span key={tag.id} className="healthy me-1">
-          {tag.name}
-        </span>
-      ))}
+    <div className="recipe-tags pb-1 d-flex justify-content-center flex-wrap">
+      {terms.map((termGroup) =>
+        termGroup.map((term) => {
+          const className = taxonomyMap[term.taxonomy];
+          if (!className) return null;
 
-      {lunchTags.map(tag => (
-        <span key={tag.id} className="lunch me-1">
-          {tag.name}
-        </span>
-      ))}
-
-      {fitTags.map(tag => (
-        <span key={tag.id} className="fit me-1">
-          {tag.name}
-        </span>
-      ))}
-
-      {dinnerTags.map(tag => (
-        <span key={tag.id} className="dinner">
-          {tag.name}
-        </span>
-      ))}
+          return (
+            <span key={term.id} className={`${className} me-1`}>
+              {term.name}
+            </span>
+          );
+        })
+      )}
     </div>
   );
 };

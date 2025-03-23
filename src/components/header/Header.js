@@ -41,6 +41,11 @@ const Header = () => {
         window.location.reload();
     };
 
+    useEffect(() => {
+        setMenu(false); // Svaka promjena rute zatvara meni
+    }, [location.pathname]);
+    
+
     if (location.pathname === "/login" || location.pathname === "/register") return null;
 
     return (
@@ -117,7 +122,7 @@ const Header = () => {
                                     <li><Link to="/all-boxes" className="dropdown-item">All boxes</Link></li>
                                 </ul>
                             </li>
-                            <li className="nav-item me-2"><a className="nav-link" href="recipes.html"><FontAwesomeIcon icon={faSpoon} className="mx-2 d-md-none" />Recipes</a></li>
+                            <li className="nav-item me-2"><Link to="/recipes" className="nav-link" ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-md-none" />Recipes</Link></li>
                             <li className="nav-item me-2"><Link to="/blog" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faBookOpen} className="mx-2 d-md-none" />Blog</Link></li>
                             <li className="nav-item"><Link to="/contact" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faPhone} className="mx-2 d-md-none" />Contact</Link></li>
                         </ul>

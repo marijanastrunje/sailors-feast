@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import RecipeBoxSlider from "./RecipeBoxSlider";
 
 const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryProducts, onShowProductModal, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
 }) => {
@@ -194,6 +195,11 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
               </tr>
             </tbody>
           </table>
+        </div>
+        <div className="col-lg-3 d-block">
+        <RecipeBoxSlider categoryId={144} title="Breakfast" />
+        <RecipeBoxSlider categoryId={145} title="Lunch" />
+        <RecipeBoxSlider categoryId={146} title="Dinner" />
         </div>
       </div>
     </div>

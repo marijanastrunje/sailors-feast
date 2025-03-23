@@ -22,6 +22,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Success from './components/pages/cart-checkout/Success';
 import Failure from './components/pages/cart-checkout/Failure';
 import TestOrder from './components/pages/groceries/TestOrder';
+import AddRecipe from './components/pages/recipe/AddRecipe';
 
 import Home1 from './components/pages/izm/home1/Home1';
 import Blog1 from './components/pages/izm/blog1/Blog1';
@@ -47,7 +48,7 @@ function App() {
         <Route path="/groceries" element={<Groceries />} />
         <Route path="/standard-box" element={<StandardBox />} />
         <Route path="/blog" element={<Blog />} />
-        <Route path="/blogsingle/:id" element={<BlogSingle />} />
+        <Route path="/blog/:slug" element={<BlogSingle />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -59,6 +60,7 @@ function App() {
         <Route path="/failure" element={<Failure />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/testorder" element={<TestOrder />} />
+        <Route path="/addrecipe" element={<AddRecipe />} />
 
         <Route path="/home1" element={<Home1 />} />
         <Route path="/blog1" element={<Blog1 />} />
