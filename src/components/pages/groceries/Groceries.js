@@ -87,16 +87,22 @@ const Groceries = () => {
     }, []);
 
     useEffect(() => {
-        if (categories.length > 0 && preselectedCategoryId) {
-            fetchSubcategories(preselectedCategoryId);
-        }
-    }, [categories, preselectedCategoryId, fetchSubcategories]);
+  if (!preselectedCategoryId && categories.length > 0) {
+    const firstCategoryId = categories[0].id;
+    Promise.all([
+      fetchSubcategories(firstCategoryId),
+      fetchProducts(firstCategoryId, true)
+    ]);
+  }
 
-    useEffect(() => {
-        if (categories.length > 0 && !preselectedCategoryId) {
-            fetchSubcategories(categories[0].id);
-        }
-    }, [categories, preselectedCategoryId, fetchSubcategories]);
+  if (preselectedCategoryId) {
+    Promise.all([
+      fetchSubcategories(preselectedCategoryId),
+      fetchProducts(preselectedCategoryId, true)
+    ]);
+  }
+}, [categories, preselectedCategoryId, fetchSubcategories, fetchProducts]);
+
 
     return(
         <>
