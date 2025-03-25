@@ -14,6 +14,7 @@
 }
 
 .products.card .card-img-top {
+    height: 130px;
     object-fit: contain;
     margin-bottom: 5px;
 }

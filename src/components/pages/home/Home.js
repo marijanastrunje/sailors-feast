@@ -79,11 +79,11 @@ const Home = () => {
             <div className="container mt-4 mt-sm-5">
                 <div className="row">
                     <div className="col-md-4 advantage-item mb-4 mb-md-0">
-                        <div className="row px-2 align-items-center">
-                            <div className="col-5 col-md-12 col-xl-6 order-1 order-md-1 text-center">
+                        <div className="row px-2 align-items-center justify-content-center">
+                            <div className="advantage-image col-6 col-md-12 col-xl-6 order-1 order-md-1 text-center">
                                 <img src="\img\home\advantages-sailors-feast-fresh-vegetables-herbs-spices.jpg" width={180} height={130} alt="Fresh vegetables, herbs, and spices for Sailor's Feast delivery" title="Fresh vegetables, herbs, and spices for Sailor's Feast delivery" className="object-fit-cover mb-2"/>
                             </div>
-                            <div className="col-7 col-md-12 col-xl-6 order-2 order-md-2 text-start text-md-center text-xl-start">
+                            <div className="col-6 col-md-12 col-xl-6 order-2 order-md-2 text-start text-md-center text-xl-start p-0">
                                 <h4>Fresh Ingredients</h4>
                                 <p>Locally grown fruits and vegetables, always freshly delivered to your boat.</p>
                             </div>  
@@ -91,11 +91,11 @@ const Home = () => {
                     </div>
 
                     <div className="col-md-4 advantage-item mb-4 mb-md-0">
-                        <div className="row px-2 align-items-center">
-                            <div className="col-5 col-md-12 col-xl-5 order-2 order-md-1 text-center">
+                        <div className="row px-2 align-items-center justify-content-center">
+                            <div className="advantage-image col-6 col-md-12 col-xl-5 order-2 order-md-1 text-center">
                                 <img src="img\home\advantages-sailors-feast-fast-delivery.jpg" width={180} height={130} alt="Fast and reliable delivery to Split marinas by Sailor's Feast" title="Fast and reliable delivery to Split marinas by Sailor's Feast" className="object-fit-cover mb-2"/>
                             </div>
-                            <div className="col-7 col-md-12 col-xl-7 order-1 order-md-2 text-end text-md-center text-xl-start">
+                            <div className="col-6 col-md-12 col-xl-6 order-1 order-md-2 text-end text-md-center text-xl-start p-0">
                                 <h4>Fast Delivery</h4>
                                 <p>Fast and reliable delivery to 5 marinas around Split, Croatia.</p>
                             </div>  
@@ -103,11 +103,11 @@ const Home = () => {
                     </div>
 
                     <div className="col-md-4 advantage-item">
-                        <div className="row px-2 align-items-center">
-                            <div className="col-5 col-md-12 col-xl-5 order-first order-md-first text-center">
+                        <div className="row px-2 align-items-center justify-content-center">
+                            <div className="advantage-image col-6 col-md-12 col-xl-5 order-first order-md-first text-center">
                                 <img src="img\home\advantages-sailors-feast-custom-order.jpg" width={180} height={130} alt="Customizable food packages by Sailor's Feast" title="Customizable food packages by Sailor's Feast" className="object-fit-cover mb-2"/>
                             </div>
-                            <div className="col-7 col-md-12 col-xl-7 order-2 order-md-2 text-start text-md-center text-xl-start">
+                            <div className="col-6 col-md-12 col-xl-6 order-2 order-md-2 text-start text-md-center text-xl-start p-0">
                                 <h4>Custom Orders</h4>
                                 <p>Customizable packages tailored to your preferences and needs.</p>
                             </div>  

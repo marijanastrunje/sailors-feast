@@ -107,28 +107,30 @@ const ProductCard = ({ product, onShowModal }) => {
     }, [product.id]);
 
     return (
-        <div className="products card flex-column justify-content-between p-3" key={product.id}>
+        <div className="products card flex-column justify-content-between p-2" key={product.id}>
             <img onClick={() => onShowModal(product)} src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
-            <div className="product-description-3">
-                <h6 onClick={() => onShowModal(product)}>{product.name}</h6>
-                <p className="mb-1">{product.price} €</p>
-            </div>
-            <div className="d-flex align-items-center justify-content-center mt-auto">
-                {showControls ? (
-                    <>
-                        <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
-                        <input 
-                            type="number" 
-                            className="quantity-input mx-1" 
-                            value={quantity} 
-                            onChange={handleInputChange} 
-                            min="0" 
-                        />
-                        <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
-                    </>
-                ) : (
-                    <button onClick={handleIncrease} className="quantity-btn-front btn btn-prim p-0 w-75">+</button>
-                )}
+            <div className="product-footer px-2">
+                <div className="product-description-3">
+                    <h6 onClick={() => onShowModal(product)}>{product.name}</h6>
+                    <p className="mb-1">{product.price} €</p>
+                </div>
+                <div className="d-flex align-items-center justify-content-center mt-auto">
+                    {showControls ? (
+                        <>
+                            <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
+                            <input 
+                                type="number" 
+                                className="quantity-input mx-1" 
+                                value={quantity} 
+                                onChange={handleInputChange} 
+                                min="0" 
+                            />
+                            <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
+                        </>
+                    ) : (
+                        <button onClick={handleIncrease} className="quantity-btn-front btn btn-prim p-0 w-75">+</button>
+                    )}
+                </div>
             </div>
 
             {/* Prikaz obavijesti o dodavanju u košaricu */}

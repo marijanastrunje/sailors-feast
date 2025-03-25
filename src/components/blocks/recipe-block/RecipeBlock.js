@@ -17,9 +17,9 @@ const RecipeBlock = () => {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 300,
-    slidesToShow: 3.5,
+    slidesToShow: 4,
     slidesToScroll: 3,
     responsive: [
       { breakpoint: 992, settings: { slidesToShow: 3, slidesToScroll: 2 } },

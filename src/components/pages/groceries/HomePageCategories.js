@@ -12,7 +12,7 @@ const HomePageCategories = ({ categories }) => {
 
     var desktopSettings = {
       infinite: true,
-      speed: 300,
+      speed: 200,
       slidesToShow: 6,   
       swipeToSlide: true,
     };

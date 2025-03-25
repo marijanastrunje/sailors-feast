@@ -29,7 +29,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
         }
 
         // Dinamički određujemo broj slajdova i razmak
-        const slidesToShow = Math.min(products.length, 3.5);
+        const slidesToShow = Math.min(products.length, 4);
         const slidesToScroll = Math.min(products.length, 2);
         const hasEnoughProducts = products.length >= slidesToShow;
         
@@ -66,7 +66,6 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
               settings: {
                 slidesToShow: Math.min(products.length, 1.6),
                 slidesToScroll: Math.min(products.length, 1),
-                arrows: true,
                 centerPadding: hasEnoughProducts ? "10px" : "3px",
               },
             },
@@ -79,7 +78,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
               <h3 className="subcategory-title" onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>
                 {subcategory.name}
               </h3>
-              <p className="ms-auto me-0"onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>Prikaži sve</p>
+              <p className="subcategory-show-all ms-auto me-0"onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>Prikaži sve</p>
             </div>
             <Slider {...sliderSettings}>
               {products.map((product) => (
