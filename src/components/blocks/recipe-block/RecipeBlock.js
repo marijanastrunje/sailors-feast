@@ -9,7 +9,7 @@ const RecipeBlock = () => {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?_embed&per_page=12`)
+    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?_embed&per_page=10`)
       .then((response) => response.json())
       .then((data) => setRecipes(data))
       .catch((error) => console.error("Error fetching recipes:", error));
@@ -19,12 +19,12 @@ const RecipeBlock = () => {
     dots: true,
     infinite: true,
     speed: 300,
-    slidesToShow: 4,
+    slidesToShow: 3.5,
     slidesToScroll: 3,
     responsive: [
       { breakpoint: 992, settings: { slidesToShow: 3, slidesToScroll: 2 } },
-      { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-      { breakpoint: 480, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+      { breakpoint: 768, settings: { slidesToShow: 2.5, slidesToScroll: 1 } },
+      { breakpoint: 480, settings: { slidesToShow: 1.5, slidesToScroll: 1 } },
     ],
   };
 

@@ -9,9 +9,9 @@ const MobileCategoriesSlider = ({ categories, fetchSubcategories }) => {
   
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     speed: 200,
-    slidesToShow: 4,
+    slidesToShow: 3.5,
     swipeToSlide: true,
     focusOnSelect: true,
   };

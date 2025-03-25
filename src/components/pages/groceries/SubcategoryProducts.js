@@ -29,7 +29,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
         }
 
         // Dinamički određujemo broj slajdova i razmak
-        const slidesToShow = Math.min(products.length, 4);
+        const slidesToShow = Math.min(products.length, 3.5);
         const slidesToScroll = Math.min(products.length, 2);
         const hasEnoughProducts = products.length >= slidesToShow;
         
@@ -39,7 +39,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
         const sliderSettings = {
           dots: false,
           arrows: true,
-          infinite: products.length > slidesToShow, // Omogući beskonačno pomicanje samo ako ima više proizvoda od prikazanih
+          infinite: false,
           speed: 500,
           slidesToShow: slidesToShow,
           slidesToScroll: slidesToScroll,
@@ -55,9 +55,18 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
             {
               breakpoint: 768,
               settings: {
-                slidesToShow: Math.min(products.length, 2),
+                slidesToShow: Math.min(products.length, 2.6),
                 slidesToScroll: Math.min(products.length, 1),
                 arrows: false,
+                centerPadding: hasEnoughProducts ? "10px" : "3px",
+              },
+            },
+            {
+              breakpoint: 480,
+              settings: {
+                slidesToShow: Math.min(products.length, 1.6),
+                slidesToScroll: Math.min(products.length, 1),
+                arrows: true,
                 centerPadding: hasEnoughProducts ? "10px" : "3px",
               },
             },
@@ -66,9 +75,12 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
 
         return (
           <div key={subcategory.id} className="mb-4">
-            <h3 className="subcategory-title" onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>
-              {subcategory.name}
-            </h3>
+            <div className="d-flex">
+              <h3 className="subcategory-title" onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>
+                {subcategory.name}
+              </h3>
+              <p className="ms-auto me-0"onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}>Prikaži sve</p>
+            </div>
             <Slider {...sliderSettings}>
               {products.map((product) => (
                 <div key={product.id} className={`slick-slide ${productClass}`}> {/* Dinamički dodajemo klasu */}

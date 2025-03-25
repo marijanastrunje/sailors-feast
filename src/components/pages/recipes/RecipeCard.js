@@ -100,7 +100,7 @@ const RecipeCard = ({ recipe }) => {
         </div>
 
         <Link to={"/recipes/" + recipe.slug}>
-          <h3 className="recipe-title text-center mb-0">{recipe.title?.rendered || "No Title"}</h3>
+          <h3 className="recipe-title text-center my-1">{recipe.title?.rendered || "No Title"}</h3>
         </Link>
 
         <p className="recipe-description text-center">{recipe.acf?.recipe_description || ""}</p>

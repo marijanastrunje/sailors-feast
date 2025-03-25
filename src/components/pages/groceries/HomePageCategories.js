@@ -18,12 +18,10 @@ const HomePageCategories = ({ categories }) => {
     };
 
     var mobileSettings = {
-      infinite: true,
+      infinite: false,
       speed: 300,
-      slidesToShow: 4, 
-      slidesToScroll: 3,
+      slidesToShow: 3.5, 
       swipeToSlide: true,
-      dots: true,
     };
 
     return (

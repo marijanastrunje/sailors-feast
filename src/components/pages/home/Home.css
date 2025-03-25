@@ -1,5 +1,5 @@
 #hero{
-	height: 500px;
+	height: 600px;
   position: relative;
   display: flex;
   align-items: center;
@@ -23,7 +23,7 @@
 
 .hero-video{
   width: 1440px;
-  height: 500px;
+  height: 600px;
 }
 
 .icon-dynamic{
@@ -46,6 +46,12 @@
 .hero-text p{
   font-size: clamp(0.875rem, 4.5vw, 1.2rem);
 }
+
+@media (max-width: 500px) {
+  .advantage-item img{
+    height: 110px;
+    }
+  }
 
 #special-offer img{
   max-width: 60px;
