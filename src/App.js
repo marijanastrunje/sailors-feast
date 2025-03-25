@@ -31,6 +31,7 @@ import Countries from './components/pages/izm/countries/Countries';
 import SingleCountry from './components/pages/izm/countries/SingleCountry';
 import Cro from './components/pages/izm/countries/Cro';
 import Exchange from './components/pages/izm/zadatak/Exchange';
+import Pubertetlije from './components/pages/home/Gea';
 
 
 
@@ -61,6 +62,8 @@ function App() {
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/testorder" element={<TestOrder />} />
         <Route path="/addrecipe" element={<AddRecipe />} />
+        <Route path="/pubertetlije" element={<Pubertetlije />} />
+
 
         <Route path="/home1" element={<Home1 />} />
         <Route path="/blog1" element={<Blog1 />} />

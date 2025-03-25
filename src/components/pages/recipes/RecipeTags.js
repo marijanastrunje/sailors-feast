@@ -12,14 +12,14 @@ const RecipeTags = ({ recipe }) => {
   const terms = recipe?._embedded?.["wp:term"] || [];
 
   return (
-    <div className="recipe-tags pb-1 d-flex justify-content-center flex-wrap">
+    <div className="recipe-tags d-flex justify-content-center flex-wrap">
       {terms.map((termGroup) =>
         termGroup.map((term) => {
           const className = taxonomyMap[term.taxonomy];
           if (!className) return null;
 
           return (
-            <span key={term.id} className={`${className} me-1`}>
+            <span key={term.id} className={`${className}`}>
               {term.name}
             </span>
           );

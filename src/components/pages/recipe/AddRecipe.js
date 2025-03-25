@@ -340,9 +340,10 @@ const RecipeForm = () => {
             {/* Description */}
             <div className="mb-3">
               <label>Description</label>
-              <textarea className="form-control" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              <textarea className="form-control" value={description} onChange={(e) => setDescription(e.target.value)} required maxLength={70} />
+              <small className="text-muted">{70 - description.length} znakova preostalo</small>
             </div>
-  
+          
             <IngredientsField ingredients={ingredients} setIngredients={setIngredients} />
   
             <StepsField instructions={instructions} setInstructions={setInstructions} />

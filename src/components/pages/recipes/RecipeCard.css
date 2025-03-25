@@ -1,45 +1,101 @@
-.card{
+.card {
     max-width: 220px;
-    min-height: 310px;
+    min-height: 290px;
     background-color: var(--footer-bg-color);
     overflow: hidden;
-}
-
-.recipe-meta{
+  }
+  
+  .recipe-meta {
     font-size: 13px;
-}
-
-.recipe-title{
+  }
+  
+  .recipe-title {
     font-size: 18px;
     font-weight: 600;
-}
-
-.recipe-description{
+  }
+  
+  .recipe-description {
     font-size: 15px;
     margin: 0;
-}
-
-.recipe-img {
+  }
+  
+  .recipe-img {
     width: 220px;
-    height: 130px;
+    height: 150px;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-}
-
-.recipe-img img {
+  }
+  
+  .recipe-img img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
+  }
 
-.recipe-author{
+  .recipe-img a {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .recipe-author {
     font-size: 12px;
-}
-
-.recipes-results .card{
+  }
+  
+  .recipes-results .card {
     margin: 3px;
-}
+  }
+  
+  /* Wrapper za info ikonu i tagove */
+  .recipe-tags-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Hover aktivacija samo za desktop (class dodana u Reactu) */
+  .hover-enabled:hover .recipe-tags-hidden {
+    display: block !important;
+  }
+  
+  /* Ikona */
+  .info-toggle {
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+  }
+  
+  .infoIcon {
+    color: var(--secondary-color);
+    background-color: rgb(122, 122, 122);
+    padding: 3px 4px;
+    border-radius: 15%;
+    font-size: 14px;
+  }
+  
+  /* Tagovi (uvijek su display:none, kontrolira ih JS ili hover-enabled klasa) */
+  .recipe-tags-hidden {
+    position: absolute;
+    z-index: 10;
+    top: 25px;
+    transform: translateX(-90%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 150px;
+  }
+  
+  @media (min-width: 768px) {
+    .recipe-tags-hidden {
+        display: none;
+    } 
+    .recipe-tags-hidden {  
+        min-width: 200px;
+  } 
+}  

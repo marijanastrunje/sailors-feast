@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import Hls from 'hls.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';  
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
@@ -34,6 +35,18 @@ const Home = () => {
     });
   }, []);
 
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource('https://customer-609qhr7irtatscxi.cloudflarestream.com/428703937b6861109fcb800a8d3fcce5/manifest/video.m3u8');
+      hls.attachMedia(videoRef.current);
+    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+      videoRef.current.src =
+        'https://customer-609qhr7irtatscxi.cloudflarestream.com/428703937b6861109fcb800a8d3fcce5/manifest/video.m3u8';
+    }
+  }, []);
 
   const settings = {
     slidesToShow: 1,
@@ -49,26 +62,22 @@ const Home = () => {
     return(
         <>
         <section id="hero" className="align-items-md-center justify-content-md-start mb-0">
-            <video muted loop width={1440} height={500} className="position-absolute w-100 h-100 object-fit-cover">
-                <source src="img/home/Sailors-Feast-Catamaran-Dining-Croatia.mp4" type="video/mp4" />
+            <video ref={videoRef} autoPlay muted loop width={1440} height={500} className="position-absolute w-100 h-100 object-fit-cover">
             </video>
-            <div className="hero-text ms-md-5">
-                <img src="img/home/hand-drawn-boat-symbol-for-sailors-feast.png" alt="Hand-drawn boat symbol for Sailor's Feast" title="Hand-drawn boat symbol for Sailor's Feast" width={70} height={80} className="icon-dynamic me-2"/> 
+            <div className="hero-text ps-md-5 ms-md-5">
+                <img src="img/home/hand-drawn-boat-symbol-for-sailors-feast.png" alt="Hand-drawn boat symbol for Sailor's Feast" title="Hand-drawn boat symbol for Sailor's Feast" width={70} height={80} className="icon-dynamic me-2 mt-2"/> 
                 <div>
                     <h1 className="m-0">Sailor's Feast</h1>
                     <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
-                    <p className="d-none d-md-block">Whether for luxury yacht charters or family sailing adventures, we deliver fresh provisions, drinks, and customizable food packages directly to your boat.</p>
+                    <p>We provide fresh food and drinks delivered directly to your boat.</p>
                     <Link to="/groceries"  className="btn btn-prim" aria-label="Plan your meals and order food packages now">Shop now</Link> 
                 </div>              
             </div> 
         </section>
 
         <section id="advantages">
-            <div className="container">
+            <div className="container mt-4">
                 <div className="row">
-                <div className="p-4">
-                <strong><p className="d-block d-md-none text-center">Whether for luxury yacht charters or family sailing adventures, we deliver fresh provisions, drinks, and customizable food packages directly to your boat.</p></strong>
-                </div>
                     <div className="col-md-4 advantage-item mb-4 mb-md-0">
                         <div className="row px-2">
                             <div className="col-5 col-md-12 col-xl-5 order-1 order-md-1 text-center">

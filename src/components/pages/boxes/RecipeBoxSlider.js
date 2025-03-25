@@ -8,7 +8,7 @@ const RecipeBoxSlider = ({ categoryId, title }) => {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?recipe_categories=${categoryId}&per_page=5`)
+    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?recipe_categories=${categoryId}&per_page=5&_embed`)
       .then(response => response.json())
       .then(data => setRecipes(data))
       .catch(error => console.error("Error fetching recipes:", error));

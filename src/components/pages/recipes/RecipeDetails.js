@@ -50,6 +50,7 @@ const RecipeDetails = () => {
 
   return (
     <section id="recipe" className="container py-5">
+      <h1 className="text-center m-1">{recipe.title.rendered}</h1>
       <div className="row">
         {/* Glavni sadržaj */}
         <div className="col-md-10">
@@ -62,7 +63,7 @@ const RecipeDetails = () => {
               </p>
             </div>
             <div className="col-md-6">
-              <h1 className="text-center m-1">{recipe.title.rendered}</h1>
+              
         
               <RecipeTags recipe={recipe} />
 

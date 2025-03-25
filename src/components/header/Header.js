@@ -96,7 +96,7 @@ const Header = () => {
                         <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`}>
                             <form className="d-flex p-2">
                                 <input type="text" className="form-control" placeholder="Upiši pojam za pretraživanje" />
-                                <button className="btn btn-outline-success ms-1" type="submit">Search</button>
+                                <button className="btn btn-outline-secondary ms-1" type="submit">Search</button>
                             </form>
                         </div>
                         <Link to="/cart" id="ikone" className="me-2 me-md-4">
