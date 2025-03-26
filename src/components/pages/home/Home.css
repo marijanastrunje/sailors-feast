@@ -1,4 +1,5 @@
 #hero{
+  margin-top: 95px;
 	height: 600px;
   position: relative;
   display: flex;
@@ -8,7 +9,8 @@
 
 @media (max-width: 991px) {
   #hero{
-    height: 380px; 
+    height: 380px;
+    margin-top: 95px; 
   }
 }  
 

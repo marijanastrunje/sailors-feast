@@ -133,7 +133,7 @@ const RecipeForm = () => {
 
     const recipeData = {
       title,
-      status: "publish",
+      status: "pending",
       featured_media: imageId,
       recipe_categories: [selectedCategoryId],
       recipe_type: recipeTypeId ? [recipeTypeId] : [],

@@ -23,6 +23,7 @@ import Success from './components/pages/cart-checkout/Success';
 import Failure from './components/pages/cart-checkout/Failure';
 import TestOrder from './components/pages/groceries/TestOrder';
 import AddRecipe from './components/pages/recipe/AddRecipe';
+import AddBlogPost from './components/pages/blog/AddBlogPost';
 
 import Home1 from './components/pages/izm/home1/Home1';
 import Blog1 from './components/pages/izm/blog1/Blog1';
@@ -62,6 +63,7 @@ function App() {
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/testorder" element={<TestOrder />} />
         <Route path="/addrecipe" element={<AddRecipe />} />
+        <Route path="/addblog" element={<AddBlogPost />} />
         <Route path="/pubertetlije" element={<Pubertetlije />} />
 
 

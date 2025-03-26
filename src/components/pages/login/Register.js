@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import GoogleLoginButton from "./GoogleLoginButton";
 import "./LoginRegister.css";
 
 const Register = () => {
@@ -94,8 +95,8 @@ const Register = () => {
                     </div>
                 </div>
 
-                <div className="col-lg-6 login-form text-center p-5 p-lg-3 mt-lg-5 mx-auto">
-                    <h3 className="mb-0 mt-lg-5">Create Account</h3>
+                <div className="col-lg-6 login-form text-center p-5 p-lg-3 mx-auto">
+                    <h3 className="mb-0 mt-lg-4">Create Account</h3>
                     <p>Sign up to get started</p>
 
                     <form className={isLoading ? "loading" : ""} onSubmit={handleRegister}>
@@ -129,6 +130,9 @@ const Register = () => {
                         <button type="submit" className="btn btn-prim w-100 mt-3" disabled={isLoading}>
                             {isLoading ? "Signing up..." : "Sign Up"}
                         </button>
+                        <div className="text-center mt-3">
+                            <GoogleLoginButton setError={setError} />
+                        </div>
                     </form>
 
                     <div className="text-center mt-3">

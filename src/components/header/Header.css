@@ -3,21 +3,21 @@
 }
 
 .top-navbar{
-height: 24px;
+height: 30px;
 border-bottom: 1px solid #495057;
 z-index: 1040;
 }
 
 .top-navbar a, .top-navbar p{
     color: var(--secondary-color);
-    font-size: 15px;
+    font-size: 19px;
     
 }
 
 .navbar a{
     color: var(--secondary-color);
-    font-size: 18px;
-    font-weight: 450;
+    font-size: 21px;
+    font-weight: 380;
 }
 
 .top-navbar a:hover, .navbar a:hover, .nav-link:focus{
@@ -26,7 +26,7 @@ z-index: 1040;
 
 
 .navbar{
-margin-top: 24px;
+margin-top: 30px;
 }
 
 .navbar-toggler{
@@ -57,7 +57,7 @@ margin-top: 24px;
 @media (min-width: 768px) {
   .search-box {
     position: fixed; 
-    top: 89px; 
+    top: 95px; 
   }
 }
 
@@ -103,5 +103,9 @@ margin-top: 24px;
 .dropdown-item:focus {
   background-color: #d2d2d2 !important; /* Boja na hover */
   color: var(--h-color) !important;
+}
+
+.dropdown-item{
+  font-size: 18px;
 }
 

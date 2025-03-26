@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import GoogleLoginButton from "./GoogleLoginButton";
 import "./LoginRegister.css";
 
 const Login = () => {
@@ -67,7 +68,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className="col-lg-6 login-form text-center p-5 p-lg-3 mt-lg-5 mx-auto">
+                <div className="col-lg-6 login-form text-center p-5 p-lg-3 mt-lg-4 mx-auto">
                     <div className="d-flex d-lg-none">
                         <Link to="/">
                             <img src="/img/logo/white-color-logo-horizontal-sailors-feast.svg" width={450} height={90} alt="Sailor's Feast logo" />
@@ -102,6 +103,7 @@ const Login = () => {
                         <button type="submit" className="btn btn-prim w-100" disabled={isLoading}>
                             {isLoading ? "Logging in..." : "Log In"}
                         </button>
+                        <GoogleLoginButton setError={setError} />
                     </form>
 
                     <div className="text-center mt-3">

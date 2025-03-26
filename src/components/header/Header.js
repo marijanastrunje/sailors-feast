@@ -30,7 +30,7 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        document.body.style.marginTop = (location.pathname === "/login" || location.pathname === "/register") ? "0px" : "89px";
+        document.body.style.marginTop = (location.pathname === "/login" || location.pathname === "/register") ? "0px" : "95px";
     }, [location.pathname]);
 
     const toggleMenu = () => setMenu(prev => !prev);
@@ -54,7 +54,7 @@ const Header = () => {
             <nav className="top-navbar navbar-expand-md fixed-top">
                 <div className="container-fluid d-flex">
                     <Link to="tel:+385955399166" title="Call us for more details">
-                        <FontAwesomeIcon icon={faPhone} className="me-2 me-md-1" />
+                        <FontAwesomeIcon icon={faPhone} className="me-3 me-md-1" />
                         <span className="d-none d-sm-inline me-3">+385 95 539 9166</span>
                     </Link>
                     <Link to="mailto:info@sailorsfeast.com" title="Send us email">
@@ -66,7 +66,7 @@ const Header = () => {
                             <button className="btn-user dropdown-toggle p-0" id="userDropdown" data-bs-toggle="dropdown">
                                 <Link className="user"><FontAwesomeIcon icon={faUser} className="me-1" />{username}</Link>
                             </button>
-                            <ul className="dropdown-menu dropdown-menu-end p-0">
+                            <ul className="dropdown-menu dropdown-menu-end p-2">
                                 <li><Link to="/user" className="dropdown-item">User Dashboard</Link></li>
                                 <li><hr className="dropdown-divider m-0" /></li>
                                 <li><button className="dropdown-item text-danger" onClick={logout}>Logout</button></li>
