@@ -32,11 +32,13 @@ const RecipeBlock = () => {
     <div className="container">
       <div className="row">
         <div className="recepti col-sm-12 col-md-12 col-lg-10 mx-auto">
+        {recipes.length > 0 && (
           <Slider {...settings}>
             {recipes.map((recipe) => (
               <RecipeCard key={recipe.id} recipe={recipe} />
             ))}
           </Slider>
+        )}
         </div>
       </div>
     </div>

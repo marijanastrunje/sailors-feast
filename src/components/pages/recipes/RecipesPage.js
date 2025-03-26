@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import RecipeCard from "./RecipeCard";
 import RecipeSlider from "./RecipeSlider";
 import Select from "react-select";
+import './Recipe.css'
 
 const taxonomyFilters = {
   recipe_type: "Type",
@@ -20,6 +23,8 @@ const RecipesPage = () => {
   const [cookingMethod, setCookingMethod] = useState([]);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [showMethodDropdown, setShowMethodDropdown] = useState(false);
+  const [showDetailsDropdown, setShowDetailsDropdown] = useState(false);
+
 
 
   const categories = [
@@ -59,6 +64,7 @@ const RecipesPage = () => {
     );
   };
   
+  const toggleDetailsDropdown = () => setShowDetailsDropdown(prev => !prev);
   
 
   useEffect(() => {
@@ -84,18 +90,22 @@ const RecipesPage = () => {
       .then((data) => {
         let filtered = [...data];
 
-        if (cookingTime) {
+        if (cookingTime.length > 0) {
           filtered = filtered.filter((r) => {
             const prep = parseInt(r.acf?.recipe_prep_time) || 0;
             const cook = parseInt(r.acf?.recipe_cooking_time) || 0;
             const total = prep + cook;
-            if (cookingTime === "under_15") return total < 15;
-            if (cookingTime === "under_30") return total < 30;
-            if (cookingTime === "under_60") return total < 60;
-            if (cookingTime === "over_60") return total >= 60;
-            return true;
+        
+            return cookingTime.some((time) => {
+              if (time === "under_15") return total < 15;
+              if (time === "under_30") return total < 30;
+              if (time === "under_60") return total < 60;
+              if (time === "over_60") return total >= 60;
+              return false;
+            });
           });
         }
+        
 
         if (cookingMethod.length > 0) {
           filtered = filtered.filter((r) =>
@@ -122,7 +132,7 @@ const RecipesPage = () => {
   const resetFilters = () => {
     setFilters({});
     setSelectedOptions({});
-    setCookingTime("");
+    setCookingTime([]);
     setCookingMethod([]);
   };
 
@@ -140,7 +150,10 @@ const RecipesPage = () => {
           >
             <img src="/img/recipes/time.svg" alt="Time" width={25} />
             <span className="d-none d-sm-block">Vrijeme</span>
-            <i className="ms-1">{showTimeDropdown ? "▲" : "▼"}</i>
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className={`transition-icon ${showTimeDropdown ? "rotate" : ""}`}
+            />
           </button>
 
           {showTimeDropdown && (
@@ -167,7 +180,10 @@ const RecipesPage = () => {
           >
             <img src="/img/recipes/time.svg" alt="Time" width={25} />
             <span className="d-none d-sm-block">Method</span>
-            <i className="ms-1">{showMethodDropdown ? "▲" : "▼"}</i>
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className={`transition-icon ${showMethodDropdown ? "rotate" : ""}`}
+            />
           </button>
 
           {showMethodDropdown && (
@@ -186,31 +202,35 @@ const RecipesPage = () => {
         </div>
 
         {/* Details */}
-        <div className="dropdown">
+        <div className="position-relative">
           <button
-            className="btn btn-outline-secondary rounded-pill d-flex align-items-center gap-2 dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            className={`btn rounded-pill d-flex align-items-center gap-2 ${Object.values(selectedOptions).some(opts => opts?.length > 0) ? "btn-secondary text-white" : "btn-outline-secondary"}`}
+            onClick={toggleDetailsDropdown}
           >
-            <img src="/img/recipes/time.svg" alt="Time" width={25} />
+            <img src="/img/recipes/time.svg" alt="Details" width={25} />
             <span className="d-none d-sm-block">Detaljno</span>
+            <FontAwesomeIcon
+              icon={faChevronDown}
+              className={`transition-icon ${showDetailsDropdown ? "rotate" : ""}`}
+            />
           </button>
 
-          <div className="dropdown-menu p-3" style={{ minWidth: "300px" }} onClick={(e) => e.stopPropagation()}>
-            {Object.entries(taxonomyFilters).map(([taxonomy, label]) => (
-              <div key={taxonomy} className="col">
-                <label className="form-label fw-semibold">{label}</label>
-                <Select
-                  isMulti
-                  options={terms[taxonomy]?.map((term) => ({ value: term.id, label: term.name }))}
-                  value={selectedOptions[taxonomy] || []}
-                  onChange={(selected) => handleMultiSelectChange(taxonomy, selected)}
-                  placeholder={`Select ${label}`}
-                />
-              </div>
-            ))}
-          </div>
+          {showDetailsDropdown && (
+            <div className="dropdown-menu show p-3 mt-1" style={{ display: "block", minWidth: "300px" }} onClick={(e) => e.stopPropagation()}>
+              {Object.entries(taxonomyFilters).map(([taxonomy, label]) => (
+                <div key={taxonomy} className="col mb-3">
+                  <label className="form-label fw-semibold">{label}</label>
+                  <Select
+                    isMulti
+                    options={terms[taxonomy]?.map((term) => ({ value: term.id, label: term.name }))}
+                    value={selectedOptions[taxonomy] || []}
+                    onChange={(selected) => handleMultiSelectChange(taxonomy, selected)}
+                    placeholder={`Select ${label}`}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

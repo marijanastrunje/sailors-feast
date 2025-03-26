@@ -1,0 +1,10 @@
+.transition-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+  }
+  
+.transition-icon.rotate {
+transform: rotate(-180deg);
+}
+
+  
