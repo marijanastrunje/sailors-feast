@@ -17,7 +17,7 @@ import RecipesPage from './components/pages/recipes/RecipesPage';
 import RecipeDetails from './components/pages/recipes/RecipeDetails';
 import CartPage from './components/pages/cart-checkout/CartPage';
 import Checkout from './components/pages/cart-checkout/Checkout';
-import UserDashboard from './components/pages/login/userDashboard';
+import UserDashboard from './components/pages/login/user-dash/userDashboard';
 import ScrollToTop from "./components/ScrollToTop";
 import Success from './components/pages/cart-checkout/Success';
 import Failure from './components/pages/cart-checkout/Failure';

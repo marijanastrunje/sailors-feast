@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const CartPage = () => {
     const [cart, setCart] = useState([]);
     const [listName, setListName] = useState(""); // Naziv liste za spremanje
-    const [savedLists, setSavedLists] = useState({});
+    const [, setSavedLists] = useState({});
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
@@ -75,36 +75,68 @@ const CartPage = () => {
     }, [token]);
 
     // Spremi trenutnu košaricu na backend
-    const saveToBackend = () => {
+    const saveToBackend = async () => {
         if (!token) {
             navigate("/login?redirect=/cart");
             return;
         }
-
+    
         if (!listName.trim()) {
             alert("Unesite naziv liste prije spremanja.");
             return;
         }
-
-        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ meta: { saved_lists: JSON.stringify({ ...savedLists, [listName]: cart }) } })
-        })
-        .then(res => res.json())
-        .then(() => {
-            setSavedLists(prevLists => ({ ...prevLists, [listName]: cart }));
+    
+        try {
+            // 1. Dohvati trenutno spremljene liste s backenda
+            const res = await fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=" + Date.now(), {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+    
+            const data = await res.json();
+    
+            let currentLists = {};
+    
+            try {
+                const parsed = JSON.parse(data.meta?.saved_lists || "{}");
+                if (typeof parsed === "object" && parsed !== null) {
+                    currentLists = parsed;
+                }
+            } catch (err) {
+                console.warn("⚠️ Neuspjelo parsiranje saved_lists:", err);
+            }
+    
+            // 2. Dodaj novu listu u postojeće
+            const updatedLists = {
+                ...currentLists,
+                [listName]: cart
+            };
+    
+            // 3. Spremi ažurirane liste na backend
+            const saveRes = await fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    meta: {
+                        saved_lists: JSON.stringify(updatedLists)
+                    }
+                })
+            });
+    
+            const saveData = await saveRes.json();
+            console.log(" Spremljene liste:", updatedLists);
+            console.log(" Backend response:", saveData);
+    
+            setSavedLists(updatedLists);
             alert(`Lista "${listName}" je uspješno spremljena!`);
-            navigate("/user");
-        })
-        .catch(err => {
-            console.error("Greška pri spremanju liste:", err);
+        } catch (err) {
             alert("Nije moguće spremiti listu.");
-        });
+        }
     };
+    
+    
 
     // Razdvajanje proizvoda u Box i Groceries sekcije
     const boxProducts = cart.filter((item) => item.box);

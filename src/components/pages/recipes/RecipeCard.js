@@ -1,11 +1,14 @@
-import React, { useState, useRef, useEffect } from "react"; // dodano useState, useRef, useEffect
+import React, { useState, useRef, useEffect } from "react"; 
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfo } from '@fortawesome/free-solid-svg-icons'; 
+import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import BookmarkToggle from "../all-pages/Bookmark";
+
 import RecipeTags from "./RecipeTags";
 import './RecipeCard.css';
 
-const RecipeCard = ({ recipe }) => {
+const RecipeCard = ({ recipe, onUnsave }) => {
+
   const iconMap = {
     "hand": "/img/recipes/hand.svg",
     "oven": "/img/recipes/oven.svg",
@@ -42,6 +45,7 @@ const RecipeCard = ({ recipe }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  
 
   const totalTime = 
     (parseInt(recipe.acf?.recipe_prep_time) || 0) + 
@@ -56,6 +60,8 @@ const RecipeCard = ({ recipe }) => {
             alt={recipe.title?.rendered || "Recipe Image"} 
           />
         </Link>
+        <BookmarkToggle itemId={recipe.id} className="bookmark-toggle-card" onChange={(action) => {if (action === "removed") {onUnsave?.(recipe.id);}}} />
+
       </div>
       
       <div className="card-body p-1 pt-0">

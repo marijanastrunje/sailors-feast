@@ -99,3 +99,11 @@
         min-width: 200px;
   } 
 }  
+
+.bookmark-toggle-card{
+  position: absolute;
+  margin-top: 110px;
+  margin-left: 110px;
+  font-size: 25px;
+  color: white;
+}

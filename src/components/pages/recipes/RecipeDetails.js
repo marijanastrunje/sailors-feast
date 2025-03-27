@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import RecipeTags from "./RecipeTags";
 import MediaImg from "../../media/MediaImg";
+import BookmarkToggle from "../all-pages/Bookmark";
 
 const RecipeDetails = () => {
   const { slug } = useParams();
@@ -56,7 +57,10 @@ const RecipeDetails = () => {
         <div className="col-md-10">
           <div className="row">
             <div className="col-md-6">
+            <div className="position-relative">
               <MediaImg mediaId={recipe.featured_media} alt={recipe.title.rendered} />
+              <BookmarkToggle itemId={recipe.id} className="bookmark-toggle-details" />
+            </div>
               <p className="blog-author">
                 By <b>{recipe._embedded?.author?.[0]?.name || "Sailor's Feast"}</b> |{" "}
                 {new Date(recipe.date).toLocaleDateString()}

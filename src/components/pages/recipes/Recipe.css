@@ -7,4 +7,12 @@
 transform: rotate(-180deg);
 }
 
+.bookmark-toggle-details{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transition: transform 0.2s ease;
+  font-size: 25px;
+  color: white;
+}
   
