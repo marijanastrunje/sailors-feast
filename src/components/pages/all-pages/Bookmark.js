@@ -5,17 +5,20 @@ import { faBookmark as regularBookmark } from '@fortawesome/free-regular-svg-ico
 
 const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onChange }) => {
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("user_id");
   const [isSaved, setIsSaved] = useState(false);
 
+  const localKey = `${metaKey}_${userId}`;
+
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem(metaKey) || "[]");
+    const saved = JSON.parse(localStorage.getItem(localKey) || "[]");
     setIsSaved(saved.includes(itemId));
-  }, [itemId, metaKey]);
+  }, [itemId, localKey]);
 
   const handleClick = () => {
-    if (!token) return;
+    if (!token || !userId) return;
 
-    const saved = JSON.parse(localStorage.getItem(metaKey) || "[]");
+    const saved = JSON.parse(localStorage.getItem(localKey) || "[]");
     let updated;
 
     if (saved.includes(itemId)) {
@@ -28,7 +31,7 @@ const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onC
       onChange?.("added");
     }
 
-    localStorage.setItem(metaKey, JSON.stringify(updated));
+    localStorage.setItem(localKey, JSON.stringify(updated));
 
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
       method: "PUT",
@@ -44,7 +47,7 @@ const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onC
     }).catch(err => console.error("Greška pri spremanju bookmarka:", err));
   };
 
-  if (!token) return null;
+  if (!token || !userId) return null;
 
   return (
     <span

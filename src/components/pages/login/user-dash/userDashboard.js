@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 import ProfileData from "./ProfileData";
 import SavedLists from "./SavedLists";
 import SavedRecipes from "./SavedRecipes";
+import Orders from "./Orders";
 
 // TODO: Importaj ostale komponente (Orders, Invoices, SavedRecipes, SavedPosts, DeleteProfile, Logout)
 
@@ -30,6 +31,8 @@ const UserDashboard = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        localStorage.setItem("user_id", data.id); 
+
         if (data.meta && data.meta.saved_lists) {
           setSavedLists(JSON.parse(data.meta.saved_lists));
         }
@@ -97,7 +100,7 @@ const UserDashboard = () => {
       case "saved-lists":
         return <SavedLists savedLists={savedLists} setSavedLists={setSavedLists} />;
       case "orders":
-        return <div>Prikaz narudžbi</div>; // zamijenit ćemo s <Orders />
+        return <Orders />;
       case "invoices":
         return <div>Prikaz računa</div>; // zamijenit ćemo s <Invoices />
       case "saved-recipes":
@@ -108,6 +111,7 @@ const UserDashboard = () => {
         return <div>Brisanje profila</div>; // zamijenit ćemo s <DeleteProfile />
       case "logout":
         localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
         navigate("/");
         return null;
       default:

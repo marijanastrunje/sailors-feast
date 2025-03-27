@@ -7,10 +7,28 @@ import CartSummary from "./CartSummary";
 const Checkout = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         if (!token) navigate("/login?redirect=/checkout");
-    }, [navigate, token]);
+        }, [navigate, token]);
+
+        useEffect(() => {
+        if (!token) return;
+        fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        })
+            .then((res) => res.json())
+            .then((data) => {
+            setUserId(data.id);
+            })
+            .catch((err) => {
+            console.error("Greška pri dohvaćanju korisnika:", err);
+            });
+    }, [token]);
+      
 
     const location = useLocation();
 
@@ -38,6 +56,7 @@ const Checkout = () => {
         }
 
         const orderData = {
+            customer_id: userId,
             payment_method: "vivawallet",
             payment_method_title: "Viva Wallet",
             set_paid: false,
@@ -52,11 +71,12 @@ const Checkout = () => {
             const response = await fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/orders", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(orderData)
             });
+              
 
             const data = await response.json();
             if (!data.id) throw new Error("Greška: Nema `order_id`.");

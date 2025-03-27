@@ -4,7 +4,7 @@ import ProductCard from "./ProductCard";
 const ProductsGrid = ({ products, onShowModal }) => {
 
   if (!products || products.length === 0) {
-    return <p className="text-center my-4">Proizvodi se učitavaju.</p>;
+    return <p className="text-center my-4">Loading.</p>;
   }
 
   return (
