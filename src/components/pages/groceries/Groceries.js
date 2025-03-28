@@ -148,6 +148,7 @@ const Groceries = () => {
                             />
                         ) : (
                             <ProductsGrid products={products} onShowModal={handleShowModal} />
+                            
                         )}
                     </div>   
                 </div>

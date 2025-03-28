@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import compressImage from "../all-pages/compressImage";
 
 const AddBlogPost = () => {
   const token = localStorage.getItem("token");
@@ -22,8 +23,23 @@ const AddBlogPost = () => {
       });
   }, [selectedCategoryId]);
 
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    try {
+      const compressed = await compressImage(file, 800, 0.7);
+      setImage(compressed);
+    } catch (error) {
+      alert(error.message || "Neuspješna kompresija slike.");
+      imageInputRef.current.value = "";
+      setImage(null);
+    }
+  };
+  
+
   const handleImageUpload = async () => {
-    if (!image) return "";
+    if (!image) return "";  
 
     const formData = new FormData();
     formData.append("file", image);
@@ -134,7 +150,7 @@ const AddBlogPost = () => {
               <input
                 type="file"
                 className="form-control"
-                onChange={(e) => setImage(e.target.files[0])}
+                onChange={handleImageSelect}
                 ref={imageInputRef}
               />
             </div>

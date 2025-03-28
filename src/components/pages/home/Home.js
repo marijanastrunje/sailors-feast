@@ -2,16 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Hls from 'hls.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';  
-import { faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import SplitWeatherCard from "../../blocks/WeatherCard";  
 import HomePageCategories from "../groceries/HomePageCategories";
 import RecipeBlock from '../../blocks/recipe-block/RecipeBlock';
 import HomePageBlog from '../blog/HomePageBlog'
+import InstagramGallery from "../../instagram/Instagram";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
 import './Home.css';
 
 const Home = () => {
@@ -50,17 +48,6 @@ const Home = () => {
         'https://customer-609qhr7irtatscxi.cloudflarestream.com/428703937b6861109fcb800a8d3fcce5/manifest/video.m3u8';
     }
   }, []);
-
-  const settings = {
-    slidesToShow: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 1 } },
-      { breakpoint: 776, settings: { slidesToShow: 2 } },
-      { breakpoint: 480, settings: { slidesToShow: 2 } },
-    ],
-  };
 
     return(
         <>
@@ -121,8 +108,8 @@ const Home = () => {
         </section>
         
         <section id="special-offer">
-            <div className="container">
-                <div className="row justify-content-center">
+            <div className="container me-md-3">
+                <div className="row justify-content-center justify-content-lg-end">
                     <div className="col-md-6 text-center pb-2">
                         <div className="d-flex align-items-center justify-content-center mb-2">
                             <img src="img/home/special-offer-icon-fire-percent.png" width={60} height={60} alt="Fire icon with a percent sign representing special offer" title="Fire icon with a percent sign representing special offer" />
@@ -133,6 +120,9 @@ const Home = () => {
                             <p>Plan ahead and save! Place your order by <b>31.03.2025.</b> to enjoy up to <strong>20% off</strong> and special gift.</p>
                             <Link to="/groceries" className="btn btn-prim me-2">Place Your Order</Link>
                         </div>  
+                    </div>
+                    <div className="d-none d-md-block col-md-4 col-lg-3 offset-lg-1">
+                      <SplitWeatherCard />
                     </div>
                 </div>
             </div>    
@@ -259,44 +249,17 @@ const Home = () => {
         </section>
 
         <section id="recent-posts">
-          <div className="container py-5">
+          <div className="container py-5 me-md-4 me-lg-3">
             <div className="row justify-content-center">
-              <div className="col-11 col-sm-12 col-md-10 col-lg-8">
+              <div className="col-11 col-sm-12 col-md-9 col-lg-8">
                 <h3>Recent posts</h3>
                 <HomePageBlog />    
               </div>
 
-              <div className="col-md-2">
-                  <div>
-                    <h4>Follow us</h4>
-                    <Link to="/" className="d-inline-flex align-items-center"><FontAwesomeIcon icon={faInstagram} />#sailorsfeast</Link>
-                  </div>
-                  <div className="instagram">
-                    <Slider {...settings}>
-                      <div>
-                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                      </div>
-                      <div>
-                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                      </div>
-                      <div>
-                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>              
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/> 
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                      </div>
-                      <div>
-                        <img className="py-1" src="https://placehold.co/150x150" alt="" title=""/>
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                        <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" title=""/>
-                      </div>
-                      </Slider>
-                  </div>
-                </div>
+              <div className="col-md-3 col-lg-2 offset-lg-1">
+                  <InstagramGallery />
               </div>
+          </div>
           </div>
         </section>
 

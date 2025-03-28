@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from "react";
-import './Blog.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInstagram } from '@fortawesome/free-brands-svg-icons';
 import BlogShort from "./BlogShort";
+import InstagramGallery from "../../instagram/Instagram";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Pagination from "../all-pages/Pagination"; // ✅ dodaj ovo
+import './Blog.css';
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // 🔹 PAGINACIJA
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  const indexOfLastPost = currentPage * itemsPerPage;
+  const indexOfFirstPost = indexOfLastPost - itemsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const categories = [
     { id: 31, name: "Sailing" },
@@ -15,16 +27,17 @@ const Blog = () => {
     { id: 18, name: "Croatia" }
   ];
 
-  // Fetch svi postovi na početku
   useEffect(() => {
     const fetchUrl = selectedCategory
-    ? `https://backend.sailorsfeast.com/wp-json/wp/v2/posts?_embed&categories=${selectedCategory}`
-    : `https://backend.sailorsfeast.com/wp-json/wp/v2/posts?_embed&per_page=6`;
-
+      ? `https://backend.sailorsfeast.com/wp-json/wp/v2/posts?_embed&categories=${selectedCategory}`
+      : `https://backend.sailorsfeast.com/wp-json/wp/v2/posts?_embed&`;
 
     fetch(fetchUrl)
       .then(response => response.json())
-      .then(data => setPosts(data))
+      .then(data => {
+        setPosts(data);
+        setCurrentPage(1); // 🔹 Reset na prvu stranicu kod nove kategorije
+      })
       .catch(error => console.error("Error fetching posts:", error));
   }, [selectedCategory]);
 
@@ -57,33 +70,25 @@ const Blog = () => {
             </div>
 
             {/* Postovi */}
-            {posts.length > 0 ? (
-              posts.map(post => <BlogShort key={post.id} post={post} />)
+            {currentPosts.length > 0 ? (
+              <>
+                {currentPosts.map(post => <BlogShort key={post.id} post={post} />)}
+                {posts.length > itemsPerPage && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(posts.length / itemsPerPage)}
+                    onPageChange={handlePageChange}
+                  />
+                )}
+              </>
             ) : (
               <p className="text-center">No posts available.</p>
             )}
           </div>
 
           {/* Sidebar */}
-          <div className="col-md-2 mt-4 mt-md-0">
-            <div>
-              <h4>Follow us</h4>
-              <a className="d-inline-flex align-items-center" href="/">
-                <FontAwesomeIcon icon={faInstagram} /> #sailorsfeast
-              </a>
-            </div>
-            <div className="instagram">
-              <div>
-                <img className="py-1" src="https://placehold.co/150x150" alt="" />
-                <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" />
-                <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" />
-              </div>
-              <div>
-                <img className="py-1" src="https://placehold.co/150x150" alt="" />
-                <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" />
-                <img className="py-1 d-none d-md-inline" src="https://placehold.co/150x150" alt="" />
-              </div>
-            </div>
+          <div className="insta-blog-sidebar col-md-2">
+            <InstagramGallery />
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import RecipeCard from "./RecipeCard";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import RecipeSlider from "./RecipeSlider";
+import Pagination from "../all-pages/Pagination";
 import Select from "react-select";
 import './Recipe.css'
 
@@ -15,6 +16,7 @@ const taxonomyFilters = {
 };
 
 const RecipesPage = () => {
+
 
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -168,6 +170,18 @@ const RecipesPage = () => {
     setSelectedOptions({});
     setCookingTime([]);
     setCookingMethod([]);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentRecipes = recipes.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -355,15 +369,18 @@ const RecipesPage = () => {
       {isFiltering ? (
         <div className="col-md-10 mx-auto">
           <div className="row recipes-results">
-            {recipes.length > 0 ? (
-              recipes.map((recipe) => (
-                <div key={recipe.id} className="col-6 col-sm-6 col-md-4 col-lg-3 mb-4 p-0">
-                  <RecipeCard recipe={recipe} />
-                </div>
-              ))
-            ) : (
-              <p className="text-center">No recipes found.</p>
-            )}
+          {currentRecipes.map((recipe) => (
+            <div key={recipe.id} className="col-6 col-sm-6 col-md-4 col-lg-3 mb-4 p-0">
+              <RecipeCard recipe={recipe} />
+            </div>
+          ))}
+          {recipes.length > itemsPerPage && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(recipes.length / itemsPerPage)}
+              onPageChange={handlePageChange}
+            />
+          )}
           </div>
         </div>
 

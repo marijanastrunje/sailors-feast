@@ -10,7 +10,9 @@ const BlogShort = ({ post, limit }) => {
         <div className="blog-home" key={post.id}>
             <div className="row align-items-center">
                 <div className="blog-img col-sm-5 col-md-4 col-lg-3 mb-2 mb-lg-0">
-                    <MediaImg mediaId={post.featured_media} alt={post.title.rendered} />
+                    <Link to={"/blog/" + post.slug}>
+                        <MediaImg mediaId={post.featured_media} alt={post.title.rendered} />
+                    </Link>
                 </div>
                 <div className="col-12 col-sm-7 col-md-8 col-lg-9">
                     <Link to={"/blog/" + post.slug}>

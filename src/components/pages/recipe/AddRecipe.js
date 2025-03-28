@@ -1,6 +1,7 @@
 import React, { useState, useEffect , useRef} from "react";
 import IngredientsField from "./IngredientsField";
 import StepsField from "./StepsField";
+import compressImage from "../all-pages/compressImage";
 
 
 const RecipeForm = () => {
@@ -94,9 +95,20 @@ const RecipeForm = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    setImage(e.target.files[0]);
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    try {
+      const compressed = await compressImage(file, 800, 0.7);
+      setImage(compressed);
+    } catch (error) {
+      alert(error.message || "Neuspješna kompresija slike.");
+      imageInputRef.current.value = "";
+      setImage(null);
+    }
   };
+  
 
 
   const handleSubmit = async (e) => {

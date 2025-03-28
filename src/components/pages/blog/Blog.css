@@ -26,3 +26,13 @@
   .blog-home .category, .article .category {
     color: #8695A4;
   }
+
+  .insta-blog-sidebar{
+    margin-top: 90px;
+  }
+
+  @media (max-width: 768px) {
+    .insta-blog-sidebar{
+      margin-top: 0px;
+    }
+  }  
