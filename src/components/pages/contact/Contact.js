@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import Faq from "../all-pages/Faq";
 
 const ContactForm = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState("");
+  const [, setStatus] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -99,16 +100,30 @@ const ContactForm = () => {
                             required
                         ></textarea>
                         </div>
+
+                        <div className="form-check mb-3">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="privacyConsent"
+                            required
+                          />
+                          <label className="form-check-label" htmlFor="privacyConsent">
+                            Slažem se s <a href="/privacy-policy" target="_blank">pravilima privatnosti</a>.
+                          </label>
+                        </div>
+
                         <button className="btn btn-secondary" type="submit">
                         Pošalji
                         </button>
-                        {status && <p>{status}</p>}
                     </form>
                     </div>
 
             </div>
         </div>
-        
+        <div id="Faq">
+            <Faq topicId={197} topic="Contact" />
+        </div>
     </>
   );
 };

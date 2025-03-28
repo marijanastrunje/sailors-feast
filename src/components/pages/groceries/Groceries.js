@@ -7,6 +7,8 @@ import MobileSubcategoriesSlider from "./MobileSubcategoriesSlider";
 import SubcategoryProducts from "./SubcategoryProducts";
 import ProductsGrid from "./ProductsGrid";
 import ModalProduct from "./ModalProduct";
+import Faq from "../all-pages/Faq";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
 import './Groceries.css'
 
@@ -152,6 +154,10 @@ const Groceries = () => {
                 {selectedProduct && (<ModalProduct  product={selectedProduct}  onClose={() => setSelectedProduct(null)} />
             )}
             </div>
+            <div id="Faq">
+                <Faq topicId={195} topic="Groceries" />
+            </div>
+            <ScrollToTopButton />
         </>
     );
 };

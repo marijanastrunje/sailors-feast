@@ -3,6 +3,7 @@ import './Blog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram } from '@fortawesome/free-brands-svg-icons';
 import BlogShort from "./BlogShort";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);
@@ -86,6 +87,7 @@ const Blog = () => {
           </div>
         </div>
       </div>
+      <ScrollToTopButton />
     </section>
   );
 };

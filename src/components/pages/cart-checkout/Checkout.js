@@ -54,6 +54,10 @@ const Checkout = () => {
             alert("Košarica je prazna. Dodajte proizvode prije narudžbe.");
             return null;
         }
+        if (!billing.privacyConsent) {
+            alert("Molimo da prihvatite politiku privatnosti prije nastavka.");
+            return;
+          }          
 
         const orderData = {
             customer_id: userId,

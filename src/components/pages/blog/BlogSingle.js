@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MediaImg from "../../media/MediaImg";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
 const BlogSingle = () => {
   const { slug } = useParams(); // slug iz URL-a
@@ -39,6 +40,7 @@ const BlogSingle = () => {
           <h4 className="py-3">See more of similar content:</h4>
         </div>
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };

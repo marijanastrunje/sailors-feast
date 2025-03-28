@@ -24,6 +24,9 @@ import Failure from './components/pages/cart-checkout/Failure';
 import TestOrder from './components/pages/groceries/TestOrder';
 import AddRecipe from './components/pages/recipe/AddRecipe';
 import AddBlogPost from './components/pages/blog/AddBlogPost';
+import PrivacyPolicyPage from './components/pages/all-pages/PrivacyPolicy';
+import TermsAndConditions from './components/pages/all-pages/TermsAndConditions';
+import FaqPage from './components/pages/all-pages/FaqPage';
 
 import Home1 from './components/pages/izm/home1/Home1';
 import Blog1 from './components/pages/izm/blog1/Blog1';
@@ -64,6 +67,9 @@ function App() {
         <Route path="/testorder" element={<TestOrder />} />
         <Route path="/addrecipe" element={<AddRecipe />} />
         <Route path="/addblog" element={<AddBlogPost />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/faq" element={<FaqPage />} />
         <Route path="/pubertetlije" element={<Pubertetlije />} />
 
 

@@ -8,6 +8,7 @@ import HomePageCategories from "../groceries/HomePageCategories";
 import RecipeBlock from '../../blocks/recipe-block/RecipeBlock';
 import HomePageBlog from '../blog/HomePageBlog'
 import Faq from "../all-pages/Faq";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
@@ -34,6 +35,8 @@ const Home = () => {
       console.error("Fetch error:", error);
     });
   }, []);
+
+
 
   const videoRef = useRef(null);
 
@@ -298,8 +301,10 @@ const Home = () => {
         </section>
 
         <section id="Faq">
-          <Faq />
+          <Faq topic="Home" topicId={194} />
         </section>
+
+        <ScrollToTopButton />
         </>
     );
 };

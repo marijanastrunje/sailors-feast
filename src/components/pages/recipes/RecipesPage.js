@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import RecipeCard from "./RecipeCard";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import RecipeSlider from "./RecipeSlider";
 import Select from "react-select";
 import './Recipe.css'
@@ -377,6 +378,7 @@ const RecipesPage = () => {
           ))}
         </>
       )}
+      <ScrollToTopButton />
     </section>
   );
 };

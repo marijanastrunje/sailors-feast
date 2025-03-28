@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import RecipeTags from "./RecipeTags";
 import MediaImg from "../../media/MediaImg";
 import BookmarkToggle from "../all-pages/Bookmark";
+import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
 const RecipeDetails = () => {
   const { slug } = useParams();
@@ -177,6 +178,7 @@ const RecipeDetails = () => {
           </div>
         </div>  
       </div>
+      <ScrollToTopButton />
     </section>
   );
 };

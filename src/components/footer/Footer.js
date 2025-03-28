@@ -30,6 +30,12 @@ const Footer = () => {
                     OIB:42509895972
                     IBAN:HR9124020061101222221</p>
                 </div>
+
+                <div className="col-md-4 text-center pt-md-4">
+                    <Link to="/faq"><p>FAQ</p></Link>
+                    <Link to="/privacy-policy"><p>Privacy Policy</p></Link>
+                    <Link to="/terms-and-conditions"><p>Terms&Conditions</p></Link>
+                </div>
                 
                 <div className="col-md-4 text-center ms-auto px-5 pt-md-4">
                     <h4>Newsletter</h4>

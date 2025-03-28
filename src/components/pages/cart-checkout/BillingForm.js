@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const BillingForm = ({ billing, setBilling, handlePayment }) => {
     return (
@@ -62,6 +63,21 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                     </div>
                 </div>
                 <hr className="my-4" />
+                <div className="form-check mt-3">
+                    <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="privacyPolicyConsent"
+                        checked={billing.privacyConsent || false}
+                        onChange={(e) =>
+                        setBilling((prev) => ({ ...prev, privacyConsent: e.target.checked }))
+                        }
+                    />
+                    <label className="form-check-label" htmlFor="privacyPolicyConsent">
+                        Slažem se s <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">politikom privatnosti</Link>.
+                    </label>
+                    </div>
+
                 <button className="w-100 btn btn-primary btn-lg" type="button" onClick={handlePayment}>Plati s Viva Wallet</button>
             </form>
         </>
