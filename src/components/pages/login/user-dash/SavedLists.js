@@ -1,86 +1,88 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const SavedLists = ({ savedLists, setSavedLists }) => {
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-const navigate = useNavigate();
+const SavedLists = ({ savedLists, setSavedLists }) => {
+  const navigate = useNavigate();
   const [selectedList, setSelectedList] = useState(null);
   const token = localStorage.getItem("token");
 
-// Učitaj listu u košaricu
-const loadListToCart = (listName) => {
+  const loadListToCart = (listName) => {
     const list = savedLists[listName];
     if (!list) return;
 
     localStorage.setItem("cart", JSON.stringify(list));
     window.dispatchEvent(new Event("cartUpdated"));
-    alert(`Lista "${listName}" je učitana u košaricu!`);
+    alert(`List "${listName}" has been loaded into your cart!`);
     navigate("/cart");
-};
+  };
 
-// Obriši spremljenu listu s backenda
-const deleteList = (listName) => {
+  const deleteList = (listName) => {
     const updatedLists = { ...savedLists };
     delete updatedLists[listName];
 
-    fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ meta: { saved_lists: JSON.stringify(updatedLists) } })
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ meta: { saved_lists: JSON.stringify(updatedLists) } })
     })
-    .then(res => res.json())
-    .then(() => {
+      .then((res) => res.json())
+      .then(() => {
         setSavedLists(updatedLists);
-        alert(`Lista "${listName}" je obrisana.`);
-    })
-    .catch(err => {
-        console.error("Greška pri brisanju liste:", err);
-        alert("Nije moguće obrisati listu.");
-    });
-};
+        alert(`List "${listName}" was successfully deleted.`);
+      })
+      .catch((err) => {
+        console.error("Error deleting list:", err);
+        alert("Unable to delete list.");
+      });
+  };
 
   return (
     <div>
-      <h4>Moje spremljene liste</h4>
+      <h4 className="mb-3">My Saved Lists</h4>
       <div className="list-group">
         {Object.keys(savedLists).map((listName) => (
           <div key={listName} className="list-group-item">
             <div className="d-flex justify-content-between align-items-center">
-              <span
-                className="fw-bold text-primary"
-                onClick={() => setSelectedList(selectedList === listName ? null : listName)}
-                style={{ cursor: "pointer" }}
+              <button
+                className="btn btn-link fw-bold text-primary p-0"
+                onClick={() =>
+                  setSelectedList(selectedList === listName ? null : listName)
+                }
+                aria-expanded={selectedList === listName}
+                aria-controls={`list-${listName}`}
               >
                 {listName} {selectedList === listName ? "▲" : "▼"}
-              </span>
+              </button>
               <div>
                 <button
                   className="btn btn-sm btn-success me-2"
                   onClick={() => loadListToCart(listName)}
                 >
-                  Učitaj u košaricu
+                  Load to Cart
                 </button>
                 <button
                   className="btn btn-sm btn-danger"
                   onClick={() => deleteList(listName)}
                 >
-                  Obriši
+                  Delete
                 </button>
               </div>
             </div>
 
             {selectedList === listName && (
-              <div className="mt-3">
+              <div className="mt-3" id={`list-${listName}`}>
                 <table className="table table-bordered table-hover text-center">
                   <thead className="table-secondary">
                     <tr>
-                      <th>Slika</th>
-                      <th>Proizvod</th>
-                      <th>Količina</th>
-                      <th>Ukupno</th>
+                      <th>Image</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -88,9 +90,14 @@ const deleteList = (listName) => {
                       <tr key={item.id}>
                         <td className="p-0">
                           <img
-                            src={item.image?.length > 0 ? item.image[0].src : "https://placehold.co/70"}
+                            src={
+                              item.image?.length > 0
+                                ? item.image[0].src
+                                : "https://placehold.co/70"
+                            }
                             alt={item.title}
                             width="50"
+                            height="50"
                           />
                         </td>
                         <td>{item.title}</td>

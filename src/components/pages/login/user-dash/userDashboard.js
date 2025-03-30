@@ -8,7 +8,7 @@ import SavedLists from "./SavedLists";
 import SavedRecipes from "./SavedRecipes";
 import Orders from "./Orders";
 
-// TODO: Importaj ostale komponente (Orders, Invoices, SavedRecipes, SavedPosts, DeleteProfile, Logout)
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -26,51 +26,49 @@ const UserDashboard = () => {
       return;
     }
 
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        localStorage.setItem("user_id", data.id); 
+        localStorage.setItem("user_id", data.id);
 
-        if (data.meta && data.meta.saved_lists) {
+        if (data.meta?.saved_lists) {
           setSavedLists(JSON.parse(data.meta.saved_lists));
         }
-        if (data.meta && data.meta.saved_lists) {
-          setSavedLists(JSON.parse(data.meta.saved_lists));
-        }
-        if (data.meta && data.meta.saved_recipes) {
+
+        if (data.meta?.saved_recipes) {
           setSavedRecipes(JSON.parse(data.meta.saved_recipes));
         }
       })
-      .catch((err) => console.error("Greška pri dohvaćanju podataka:", err));
+      .catch((err) => console.error("Error fetching user data:", err));
 
     fetchUserData();
   }, [navigate, token, fetchUserData]);
 
   useEffect(() => {
     if (savedRecipes.length === 0) return;
-  
+
     Promise.all(
       savedRecipes.map((id) =>
-        fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe/${id}?_embed`)
-          .then((res) => res.json())
+        fetch(`${backendUrl}/wp-json/wp/v2/recipe/${id}?_embed`).then((res) =>
+          res.json()
+        )
       )
     )
       .then((recipes) => {
         setSavedRecipeData(recipes);
       })
-      .catch((err) => console.error("Greška pri dohvaćanju recepata:", err));
+      .catch((err) => console.error("Error fetching recipes:", err));
   }, [savedRecipes]);
-  
 
   const saveUserData = () => {
     if (!token) {
-      alert("Niste prijavljeni!");
+      alert("You are not logged in!");
       return;
     }
 
-    fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -81,15 +79,15 @@ const UserDashboard = () => {
       .then((res) => res.json())
       .then((updatedData) => {
         if (updatedData.id) {
-          alert("Podaci su uspješno ažurirani!");
+          alert("Your profile has been updated!");
           fetchUserData();
         } else {
-          alert("Greška pri spremanju podataka.");
+          alert("There was an error saving your data.");
         }
       })
       .catch((err) => {
-        console.error("Greška pri spremanju podataka:", err);
-        alert("Greška pri spremanju podataka.");
+        console.error("Error saving data:", err);
+        alert("There was an error saving your data.");
       });
   };
 
@@ -102,13 +100,13 @@ const UserDashboard = () => {
       case "orders":
         return <Orders />;
       case "invoices":
-        return <div>Prikaz računa</div>; // zamijenit ćemo s <Invoices />
+        return <div>Invoice display</div>; // Placeholder for <Invoices />
       case "saved-recipes":
-        return <SavedRecipes savedRecipeData={savedRecipeData} setSavedRecipeData={setSavedRecipeData}/>;
+        return <SavedRecipes savedRecipeData={savedRecipeData} setSavedRecipeData={setSavedRecipeData} />;
       case "saved-posts":
-        return <div>Prikaz spremljenih postova</div>; // zamijenit ćemo s <SavedPosts />
+        return <div>Saved posts display</div>; // Placeholder for <SavedPosts />
       case "delete-profile":
-        return <div>Brisanje profila</div>; // zamijenit ćemo s <DeleteProfile />
+        return <div>Delete profile</div>; // Placeholder for <DeleteProfile />
       case "logout":
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");

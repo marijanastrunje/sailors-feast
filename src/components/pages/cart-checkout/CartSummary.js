@@ -16,15 +16,14 @@ const CartSummary = ({ cart, setTotalPrice }) => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
     };
 
-    // Ažuriraj totalPrice u Checkout komponenti
     useEffect(() => {
         setTotalPrice(totalPrice());
     }, [cart, totalPrice, setTotalPrice]);
 
     return (
         <>
-            <h4 className="d-flex justify-content-between align-items-center mb-3">
-                <span className="text-primary">Vaša košarica</span>
+            <h4 className="d-flex justify-content-center align-items-center mb-3">
+                <span className="text-primary">Your Cart</span>
                 <span className="badge bg-primary rounded-pill">{cart.length}</span>
                 <button className="btn btn-outline-primary d-md-none" onClick={() => setShowCart(!showCart)}>
                     {showCart ? "▲" : "▼"}
@@ -33,7 +32,7 @@ const CartSummary = ({ cart, setTotalPrice }) => {
 
             {showCart && (
                 <>
-                    {/* Sekcija za Box proizvode */}
+                    {/* Box Products Section */}
                     {boxProducts.length > 0 && (
                         <>
                             <h5 className="text-success">From Box</h5>
@@ -51,7 +50,7 @@ const CartSummary = ({ cart, setTotalPrice }) => {
                         </>
                     )}
 
-                    {/* Sekcija za Groceries proizvode */}
+                    {/* Groceries Products Section */}
                     {groceriesProducts.length > 0 && (
                         <>
                             <h5 className="text-primary">From Groceries</h5>
@@ -71,7 +70,7 @@ const CartSummary = ({ cart, setTotalPrice }) => {
                 </>
             )}
             <div className="text-center">
-                <h4>Ukupna cijena: {totalPrice()} €</h4>
+                <h4>Total: {totalPrice()} €</h4>
             </div>
         </>
     );

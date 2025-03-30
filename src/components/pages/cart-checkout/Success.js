@@ -8,18 +8,16 @@ const Success = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Dohvaća orderId iz localStorage
         const orderIdFromStorage = localStorage.getItem("lastOrderId");
 
         if (!orderIdFromStorage) {
-            setError("Nema spremljenog broja narudžbe.");
+            setError("No order ID found.");
             setLoading(false);
             return;
         }
 
         setOrderId(orderIdFromStorage);
 
-        // Ažuriramo WooCommerce da je narudžba plaćena
         const updateOrderStatus = async () => {
             try {
                 const response = await fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/orders/${orderIdFromStorage}`, {
@@ -31,11 +29,11 @@ const Success = () => {
                     body: JSON.stringify({ status: "processing" }),
                 });
 
-                if (!response.ok) throw new Error("Greška pri ažuriranju statusa narudžbe.");
+                if (!response.ok) throw new Error("Error updating order status.");
                 setLoading(false);
             } catch (error) {
-                console.error("Neuspjelo ažuriranje narudžbe:", error);
-                setError("Greška pri ažuriranju narudžbe.");
+                console.error("Failed to update order:", error);
+                setError("Error updating your order.");
                 setLoading(false);
             }
         };
@@ -43,15 +41,14 @@ const Success = () => {
         updateOrderStatus();
     }, []);
 
-
     return (
         <div className="container">
             <div className="py-5 text-center">
-                <h2>Hvala na narudžbi!</h2>
-                <p className="lead">Vaša narudžba je uspješno plaćena.</p>
+                <h2>Thank you for your order!</h2>
+                <p className="lead">Your order has been successfully paid.</p>
             </div>
 
-            {loading && <p className="text-center">Obrađujemo vašu narudžbu...</p>}
+            {loading && <p className="text-center">Processing your order...</p>}
 
             {error && (
                 <div className="alert alert-danger text-center">
@@ -61,9 +58,15 @@ const Success = () => {
 
             {!loading && !error && (
                 <div className="text-center">
-                    <h4>Broj narudžbe: <strong>{orderId}</strong></h4>
-                    <p>Potvrdu ćete uskoro dobiti na e-mail.</p>
-                    <button className="btn btn-primary" onClick={() => navigate("/")}>Natrag na početnu</button>
+                    <h4>Order ID: <strong>{orderId}</strong></h4>
+                    <p>You will receive confirmation by email shortly.</p>
+                    <button
+                        className="btn btn-primary"
+                        aria-label="Back to homepage"
+                        onClick={() => navigate("/")}
+                    >
+                        Back to homepage
+                    </button>
                 </div>
             )}
         </div>

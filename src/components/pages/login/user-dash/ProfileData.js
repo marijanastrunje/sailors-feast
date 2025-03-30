@@ -1,83 +1,104 @@
 import React from "react";
-import './ProfileData.css'
+import "./ProfileData.css";
 
 const ProfileData = ({ billing, setBilling, saveUserData }) => {
   return (
     <div className="col-12 col-md-6 offset-md-1 p-3">
-      <h4>Osobni podaci</h4>
+      <h4 className="mb-3">Personal Information</h4>
       <div className="row g-1">
         <div className="col-6">
-          <label className="form-label">First name</label>
+          <label htmlFor="first_name" className="form-label">First Name</label>
           <input
+            id="first_name"
             type="text"
-            name="first_name"
             className="form-control"
             value={billing.first_name}
-            onChange={(e) => setBilling(prev => ({ ...prev, first_name: e.target.value }))}
+            onChange={(e) => setBilling((prev) => ({ ...prev, first_name: e.target.value }))}
           />
         </div>
+
         <div className="col-6">
-          <label className="form-label">Last name</label>
+          <label htmlFor="last_name" className="form-label">Last Name</label>
           <input
+            id="last_name"
             type="text"
-            name="last_name"
             className="form-control"
             value={billing.last_name}
-            onChange={(e) => setBilling(prev => ({ ...prev, last_name: e.target.value }))}
+            onChange={(e) => setBilling((prev) => ({ ...prev, last_name: e.target.value }))}
           />
         </div>
+
         <div className="col-12">
-          <label className="form-label">Email</label>
-          <input type="text" name="email" className="form-control" value={billing.email} disabled />
-        </div>
-        <div className="col-12">
-          <label className="form-label">Phone</label>
+          <label htmlFor="email" className="form-label">Email</label>
           <input
+            id="email"
             type="text"
-            name="phone"
+            className="form-control"
+            value={billing.email}
+            disabled
+            aria-label="User email address (read-only)"
+          />
+        </div>
+
+        <div className="col-12">
+          <label htmlFor="phone" className="form-label">Phone</label>
+          <input
+            id="phone"
+            type="text"
             className="form-control"
             value={billing.phone}
-            onChange={(e) => setBilling(prev => ({ ...prev, phone: e.target.value }))}
+            onChange={(e) => setBilling((prev) => ({ ...prev, phone: e.target.value }))}
           />
         </div>
+
         <div className="col-6">
-          <label className="form-label">Marina</label>
+          <label htmlFor="marina" className="form-label">Marina</label>
           <input
+            id="marina"
             type="text"
             className="form-control"
             value={billing.marina}
-            onChange={e => setBilling({ ...billing, marina: e.target.value })}
+            onChange={(e) => setBilling((prev) => ({ ...prev, marina: e.target.value }))}
           />
         </div>
+
         <div className="col-6">
-          <label className="form-label">Charter</label>
+          <label htmlFor="charter" className="form-label">Charter</label>
           <input
+            id="charter"
             type="text"
             className="form-control"
             value={billing.charter}
-            onChange={e => setBilling({ ...billing, charter: e.target.value })}
+            onChange={(e) => setBilling((prev) => ({ ...prev, charter: e.target.value }))}
           />
         </div>
+
         <div className="col-8">
-          <label className="form-label">Boat</label>
+          <label htmlFor="boat" className="form-label">Boat</label>
           <input
+            id="boat"
             type="text"
             className="form-control"
             value={billing.boat}
-            onChange={e => setBilling({ ...billing, boat: e.target.value })}
+            onChange={(e) => setBilling((prev) => ({ ...prev, boat: e.target.value }))}
           />
         </div>
+
         <div className="col-4">
-          <label className="form-label">Gate</label>
+          <label htmlFor="gate" className="form-label">Gate</label>
           <input
+            id="gate"
             type="text"
             className="form-control"
             value={billing.gate}
-            onChange={e => setBilling({ ...billing, gate: e.target.value })}
+            onChange={(e) => setBilling((prev) => ({ ...prev, gate: e.target.value }))}
           />
         </div>
       </div>
-      <button className="btn btn-prim mt-3" onClick={saveUserData}>Spremi podatke</button>
+
+      <button className="btn btn-prim mt-3" onClick={saveUserData}>
+        Save Changes
+      </button>
     </div>
   );
 };

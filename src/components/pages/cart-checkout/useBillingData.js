@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const useBillingData = () => {
     const [token, setToken] = useState(localStorage.getItem("token"));
-    
+
     const [billing, setBilling] = useState({
         first_name: "",
         last_name: "",
@@ -18,11 +20,11 @@ const useBillingData = () => {
         order_notes: ""
     });
 
-    // Funkcija za dohvaćanje podataka o korisniku
+    // Function to fetch user data
     const fetchUserData = useCallback(() => {
         if (!token) return;
 
-        fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
+        fetch(`${backendUrl}/wp-json/wp/v2/users/me?nocache=${Date.now()}`, {
             headers: { "Authorization": `Bearer ${token}` }
         })
         .then(res => res.json())
@@ -41,15 +43,15 @@ const useBillingData = () => {
                 }));
             }
         })
-        .catch(err => console.error("Greška pri dohvaćanju podataka:", err));
+        .catch(err => console.error("Error fetching user data:", err));
     }, [token]);
 
-    // Dohvati podatke pri prvom učitavanju
+    // Fetch user data on first load
     useEffect(() => {
         fetchUserData();
     }, [fetchUserData]);
 
-    // Listener koji ažurira token kad se promijeni u localStorage
+    // Listen for token changes in localStorage
     useEffect(() => {
         const handleStorageChange = () => {
             setToken(localStorage.getItem("token"));
@@ -59,7 +61,7 @@ const useBillingData = () => {
         return () => window.removeEventListener("storage", handleStorageChange);
     }, []);
 
-    return [billing, setBilling, fetchUserData]; // Vraćamo i funkciju za dohvaćanje
+    return [billing, setBilling, fetchUserData];
 };
 
 export default useBillingData;

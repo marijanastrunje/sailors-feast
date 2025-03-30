@@ -4,15 +4,14 @@ import './ProductCard.css';
 const ProductCard = ({ product, onShowModal }) => {
     const [quantity, setQuantity] = useState('');
     const [addedToCart, setAddedToCart] = useState(false);
-    const [showControls, setShowControls] = useState(false); // Novo: kontrolira prikaz inputa i "-" gumba
+    const [showControls, setShowControls] = useState(false);
 
-    // Dohvati postojeću količinu proizvoda iz košarice prilikom mountanja
     useEffect(() => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const productInCart = cart.find((item) => item.id === product.id);
         if (productInCart) {
             setQuantity(productInCart.quantity);
-            setShowControls(productInCart.quantity > 0); // Prikaži kontrole ako proizvod postoji
+            setShowControls(productInCart.quantity > 0);
         }
     }, [product.id]);
 
@@ -21,7 +20,7 @@ const ProductCard = ({ product, onShowModal }) => {
 
         if (newQuantity === '' || newQuantity <= 0) {
             cart = cart.filter(item => item.id !== product.id);
-            setShowControls(false); // Sakrij input i "-" ako količina padne na 0
+            setShowControls(false);
         } else {
             const productInCart = cart.find(item => item.id === product.id);
             if (productInCart) {
@@ -40,7 +39,6 @@ const ProductCard = ({ product, onShowModal }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
         window.dispatchEvent(new Event("cartUpdated"));
 
-        // Postavi obavijest da je proizvod dodan
         if (newQuantity > 0) {
             setAddedToCart(true);
             setTimeout(() => {
@@ -84,7 +82,6 @@ const ProductCard = ({ product, onShowModal }) => {
         };
 
         window.addEventListener("cartUpdated", handleCartUpdate);
-
         return () => {
             window.removeEventListener("cartUpdated", handleCartUpdate);
         };
@@ -100,7 +97,6 @@ const ProductCard = ({ product, onShowModal }) => {
         };
 
         window.addEventListener("storage", handleStorageChange);
-
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
@@ -108,42 +104,77 @@ const ProductCard = ({ product, onShowModal }) => {
 
     return (
         <div className="products card flex-column justify-content-between p-2" key={product.id}>
-            <img onClick={() => onShowModal(product)} src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"} width={70} height={100} className="card-img-top" alt={product.name} />
+            <img
+                onClick={() => onShowModal(product)}
+                src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"}
+                width={70}
+                height={100}
+                className="card-img-top"
+                alt={product.name}
+                title={product.name}
+                role="button"
+                tabIndex="0"
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onShowModal(product)}
+                aria-label={`View details for ${product.name}`}
+            />
             <div className="product-footer px-2">
                 <div className="product-description-3">
-                    <h6 onClick={() => onShowModal(product)}>{product.name}</h6>
-                    <p className="mb-1">{product.price} €</p>
+                    <h6
+                        onClick={() => onShowModal(product)}
+                        role="button"
+                        tabIndex="0"
+                        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onShowModal(product)}
+                        aria-label={`Open product details for ${product.name}`}
+                        title={product.name}
+                    >
+                        {product.name}
+                    </h6>
+                    <p className="mb-1" aria-label={`Price: ${product.price} euros`}>
+                        {product.price} €
+                    </p>
                 </div>
+
                 <div className="d-flex align-items-center justify-content-center mt-auto">
                     {showControls ? (
                         <>
-                            <button onClick={handleDecrease} className="quantity-btn btn btn-secondary btn-l">-</button>
-                            <input 
-                                type="number" 
-                                className="quantity-input mx-1" 
-                                value={quantity} 
-                                onChange={handleInputChange} 
-                                min="0" 
+                            <button
+                                onClick={handleDecrease}
+                                className="quantity-btn btn btn-secondary btn-l"
+                                aria-label="Decrease quantity"
+                            >-</button>
+                            <input
+                                type="number"
+                                className="quantity-input mx-1"
+                                value={quantity}
+                                onChange={handleInputChange}
+                                min="0"
+                                aria-label="Quantity"
                             />
-                            <button onClick={handleIncrease} className="quantity-btn btn btn-secondary btn-l">+</button>
+                            <button
+                                onClick={handleIncrease}
+                                className="quantity-btn btn btn-secondary btn-l"
+                                aria-label="Increase quantity"
+                            >+</button>
                         </>
                     ) : (
-                        <button onClick={handleIncrease} className="quantity-btn-front btn btn-prim p-0 w-75">+</button>
+                        <button
+                            onClick={handleIncrease}
+                            className="quantity-btn-front btn btn-prim p-0 w-75"
+                            aria-label={`Add ${product.name} to cart`}
+                        >+</button>
                     )}
                 </div>
             </div>
 
-            {/* Prikaz obavijesti o dodavanju u košaricu */}
-            <div 
-                className={`toast align-items-center text-white bg-success p-0 ${addedToCart ? "show" : "hide"}`} 
-                role="alert"
-                aria-live="assertive"
+            {/* Added to cart toast */}
+            <div
+                className={`toast align-items-center text-white bg-success p-0 ${addedToCart ? "show" : "hide"}`}
+                role="status"
+                aria-live="polite"
                 aria-atomic="true"
             >
                 <div className="d-flex">
-                    <div className="toast-body p-2">
-                        ✅ Added to cart!
-                    </div>
+                    <div className="toast-body p-2">✅ Added to cart!</div>
                 </div>
             </div>
         </div>
