@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import './WeatherCard.css'
 
-export default function SplitWeatherCard() {
+const SplitWeatherCard = () => {
+
   const [weatherToday, setWeatherToday] = useState(null);
   const [error, setError] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,7 +31,7 @@ export default function SplitWeatherCard() {
       const timeseries = data.properties.timeseries;
 
       const now = new Date();
-      const currentHour = now.toISOString().split(":")[0] + ":00:00"; // format: 2025-03-28T12:00:00
+      const currentHour = now.toISOString().split(":")[0] + ":00:00";
 
       // Nađi prvi unos za današnji dan koji odgovara satu
       const today = now.toISOString().split("T")[0];
@@ -62,7 +63,7 @@ export default function SplitWeatherCard() {
     <div className="weather-card">
       <h5>🌍 Split, Croatia</h5>
       <p>
-        {currentTime.toLocaleDateString("en-GB")} • {currentTime.toLocaleTimeString("en-GB")}
+        {currentTime.toLocaleDateString("en-GB")}   {currentTime.toLocaleTimeString("en-GB")}
       </p>
 
       {error && <p className="text-red-500">{error}</p>}
@@ -73,6 +74,7 @@ export default function SplitWeatherCard() {
             src={`https://api.met.no/images/weathericons/png/${weatherToday.symbol}.png`}
             alt={weatherToday.symbol}
             style={{ width: "48px", height: "48px" }}
+            className="mx-auto"
           />
           <p>🌡️ {weatherToday.temperature}°C</p>
           <p>💨 Wind: {weatherToday.wind} m/s</p>
@@ -84,4 +86,6 @@ export default function SplitWeatherCard() {
       )}
     </div>
   );
-}
+};
+
+export default SplitWeatherCard;

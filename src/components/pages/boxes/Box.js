@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import BoxHeader from "./BoxHeader";
 import BoxProductTable from "./BoxProductTable";
 import ModalProduct from "../groceries/ModalProduct";
 import BoxModal from "./BoxModal";
@@ -37,6 +36,7 @@ useEffect(() => {
       setCategoryInfo({
         name: data.name,
         description: data.description,
+        image: data.image?.src || "",
       });
     })
     .catch(error => {
@@ -164,11 +164,10 @@ useEffect(() => {
 
   return (
     <>
-      <BoxHeader  />
       <BoxProductTable
         title={categoryInfo.name} 
         description={categoryInfo.description} 
-        image={image}
+        image={categoryInfo.image}
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
         setSubcategoryProducts={setSubcategoryProducts}

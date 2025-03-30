@@ -8,6 +8,10 @@ import Footer from './components/footer/Footer';
 import Home from './components/pages/home/Home';
 import Groceries from './components/pages/groceries/Groceries';
 import StandardBox from './components/pages/boxes/StandardBox';
+import FFBox from './components/pages/boxes/FFBox';
+import FeastBox from './components/pages/boxes/FeastBox';
+import HealthyBox from './components/pages/boxes/HealthyBox';
+import AllBoxes from './components/pages/boxes/AllBoxes';
 import Blog from './components/pages/blog/Blog';
 import BlogSingle from './components/pages/blog/BlogSingle';
 import Contact from './components/pages/contact/Contact';
@@ -52,6 +56,10 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/groceries" element={<Groceries />} />
         <Route path="/standard-box" element={<StandardBox />} />
+        <Route path="/friendsandfamily-box" element={<FFBox />} />
+        <Route path="/feast-box" element={<FeastBox />} />
+        <Route path="/healthy-box" element={<HealthyBox />} />
+        <Route path="/all-boxes" element={<AllBoxes />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogSingle />} />
         <Route path="/contact" element={<Contact />} />

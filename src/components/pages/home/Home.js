@@ -25,7 +25,7 @@ const Home = () => {
     .then(response => response.json())
     .then(data => {
       const filtered = data
-        .filter(category => ![17, 108].includes(category.id))
+        .filter(category => ![17, 108, 206, 198, 202].includes(category.id))
         .sort((a, b) => a.menu_order - b.menu_order);
       setCategories(filtered);
     })

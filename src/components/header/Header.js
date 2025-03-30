@@ -111,15 +111,15 @@ const Header = () => {
                             <li className="nav-item dropdown me-2">
                                 <Link className="nav-link dropdown-toggle" data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-md-none" />Food Box</Link>
                                 <ul className="dropdown-menu">
+                                    <li><Link to="/all-boxes" className="dropdown-item">Compare boxes</Link></li>
+                                    <li><hr className="dropdown-divider" /></li>
                                     <li><Link to="/standard-box" onClick={toggleMenu} className="dropdown-item">Standard Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><a className="dropdown-item" href="ff-box.html">Friends&Family Box</a></li>
+                                    <li><Link to="/friendsandfamily-box" className="dropdown-item">Friends&Family Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><a className="dropdown-item" href="feast-box.html">Feast Box</a></li>
+                                    <li><Link to="/feast-box" className="dropdown-item">Feast Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><a className="dropdown-item" href="healthy-box.html">Healthy Box</a></li>
-                                    <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/all-boxes" className="dropdown-item">All boxes</Link></li>
+                                    <li><Link to="/healthy-box" className="dropdown-item" href="healthy-box.html">Healthy Box</Link></li>
                                 </ul>
                             </li>
                             <li className="nav-item me-2"><Link to="/recipes" className="nav-link" ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-md-none" />Recipes</Link></li>

@@ -15,8 +15,9 @@ const GoogleLoginButton = ({ setError }) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        token: id_token  // ← najčešći slučaj!
-      }),
+        provider: "google",
+        id_token: id_token
+      })      
     })
     
       .then((res) => res.json())

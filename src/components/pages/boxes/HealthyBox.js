@@ -3,16 +3,16 @@ import BoxLayout from "./Box";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
-const StandardBox = () => {
+const HealthyBox = () => {
 
   return (
     <>
       <BoxLayout
-        categoryId={108}
+        categoryId={206}
         categoryMapping={{
-          136: 93, // subcategory.id : category.id
-          109: 39,
-          113: 114,
+          207: 93, // subcategory.id : category.id
+          208: 39,
+          209: 114,
         }}
       />
 
@@ -24,4 +24,4 @@ const StandardBox = () => {
   );
 };
 
-export default StandardBox;
+export default HealthyBox;

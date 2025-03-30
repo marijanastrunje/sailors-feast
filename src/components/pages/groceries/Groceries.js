@@ -10,7 +10,12 @@ import ModalProduct from "./ModalProduct";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
-import './Groceries.css'
+import './Groceries.css';
+
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const wcKey = process.env.REACT_APP_WC_KEY;
+const wcSecret = process.env.REACT_APP_WC_SECRET;
+const authHeader = "Basic " + btoa(`${wcKey}:${wcSecret}`);
 
 const Groceries = () => {
     const [categories, setCategories] = useState([]);
@@ -19,14 +24,15 @@ const Groceries = () => {
     const [activeSubcategory, setActiveSubcategory] = useState(null);
     const [products, setProducts] = useState([]);
     const [subcategoryProducts, setSubcategoryProducts] = useState({});
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const location = useLocation();
     const preselectedCategoryId = location.state?.categoryId;
 
     const fetchProducts = useCallback((categoryId, isDirectClick = false) => {
-        fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${categoryId}`, {
+        fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}`, {
             headers: {
-                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
+                Authorization: authHeader
             }
         })
         .then(response => response.json())
@@ -37,93 +43,103 @@ const Groceries = () => {
             }
         })
         .catch(error => {
-            console.error(`Greška pri dohvaćanju proizvoda za kategoriju ${categoryId}:`, error);
+            console.error(`Error fetching products for category ${categoryId}:`, error);
         });  
     }, []);
 
     const fetchSubcategories = useCallback((categoryId) => {
-        fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+        fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
             headers: {
-                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
+                Authorization: authHeader
             }
         })
         .then(response => response.json())
         .then(data => {
             const sortedData = data.sort((a, b) => a.menu_order - b.menu_order);
-
             setSubcategories(prev => ({ ...prev, [categoryId]: sortedData }));
             setActiveSubcategory(null);
             setOpenCategory(categoryId);
 
             if (data.length === 0) {
-                fetchProducts(categoryId, true); // Ako nema podkategorija, prikaži proizvode
+                fetchProducts(categoryId, true);
             } else {
-                setProducts([]); // Očisti proizvode ako će ih prikazivati podkategorije
+                setProducts([]);
                 data.forEach(subcategory => fetchProducts(subcategory.id));
             }
         });
     }, [fetchProducts]);
 
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    useEffect(() => {
+        const excludedCategories = [17, 108, 206, 198, 202];
+
+        fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=0&per_page=100`, {
+            headers: {
+                Authorization: authHeader
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const filtered = data
+                .filter(category => !excludedCategories.includes(category.id))
+                .sort((a, b) => a.menu_order - b.menu_order);
+            setCategories(filtered); 
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!preselectedCategoryId && categories.length > 0) {
+            const firstCategoryId = categories[0].id;
+            Promise.all([
+                fetchSubcategories(firstCategoryId),
+                fetchProducts(firstCategoryId, true)
+            ]);
+        }
+
+        if (preselectedCategoryId) {
+            Promise.all([
+                fetchSubcategories(preselectedCategoryId),
+                fetchProducts(preselectedCategoryId, true)
+            ]);
+        }
+    }, [categories, preselectedCategoryId, fetchSubcategories, fetchProducts]);
 
     const handleShowModal = (product) => {
         setSelectedProduct(product);
     };
 
-    useEffect(() => {
-
-        const excludedCategories = [17, 108];
-
-        fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=100", {
-            headers: {
-                Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const filterCategories = data
-                .filter(category => !excludedCategories.includes(category.id))
-                .sort((a, b) => a.menu_order - b.menu_order);
-            setCategories(filterCategories); 
-        });
-    }, []);
-
-    useEffect(() => {
-  if (!preselectedCategoryId && categories.length > 0) {
-    const firstCategoryId = categories[0].id;
-    Promise.all([
-      fetchSubcategories(firstCategoryId),
-      fetchProducts(firstCategoryId, true)
-    ]);
-  }
-
-  if (preselectedCategoryId) {
-    Promise.all([
-      fetchSubcategories(preselectedCategoryId),
-      fetchProducts(preselectedCategoryId, true)
-    ]);
-  }
-}, [categories, preselectedCategoryId, fetchSubcategories, fetchProducts]);
-
-
-    return(
+    return (
         <>
-            <div className="groceries-hero p-2 text-center">
+            <div className="groceries-hero p-2 text-center" aria-label="Groceries hero section">
                 <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
                 <div className="col-lg-6 mx-auto">
-                    <p className="lead mb-4 text-white position-relative z-2">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit.</p>
+                    <p
+                        className="lead mb-4 text-white position-relative z-2"
+                        title="Bootstrap description"
+                    >
+                        Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit.
+                    </p>
                 </div>
             </div>
 
             <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />
 
-            <MobileCategoriesSlider categories={categories} fetchSubcategories={fetchSubcategories} />
-            <MobileSubcategoriesSlider subcategories={subcategories} setActiveSubcategory={setActiveSubcategory} openCategory={openCategory} fetchProducts={fetchProducts} excludedSubcategories={[671, 669, 670]} />
+            <MobileCategoriesSlider
+                categories={categories}
+                fetchSubcategories={fetchSubcategories}
+            />
 
-            <div className="container-fluid mx-auto">
+            <MobileSubcategoriesSlider
+                subcategories={subcategories}
+                setActiveSubcategory={setActiveSubcategory}
+                openCategory={openCategory}
+                fetchProducts={fetchProducts}
+                excludedSubcategories={[671, 669, 670]}
+            />
+
+            <div className="container-fluid mx-auto" aria-label="Groceries product section">
                 <div className="row">
                     <div className="col-sm-4 col-md-3 desktop-scroll d-none d-sm-block">
-                        <h5>Kategorije</h5>
+                        <h5 title="Category list heading">Categories</h5>
                         <CategoriesSidebar
                             categories={categories}
                             openCategory={openCategory}
@@ -148,16 +164,22 @@ const Groceries = () => {
                             />
                         ) : (
                             <ProductsGrid products={products} onShowModal={handleShowModal} />
-                            
                         )}
                     </div>   
                 </div>
-                {selectedProduct && (<ModalProduct  product={selectedProduct}  onClose={() => setSelectedProduct(null)} />
-            )}
+
+                {selectedProduct && (
+                    <ModalProduct
+                        product={selectedProduct}
+                        onClose={() => setSelectedProduct(null)}
+                    />
+                )}
             </div>
-            <div id="Faq">
+
+            <div id="Faq" aria-label="FAQ section">
                 <Faq topicId={195} topic="Groceries" />
             </div>
+
             <ScrollToTopButton />
         </>
     );
