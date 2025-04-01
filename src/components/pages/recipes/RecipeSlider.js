@@ -4,11 +4,13 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RecipeCard from "./RecipeCard";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const RecipeSlider = ({ categoryId }) => {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?recipe_categories=${categoryId}&_embed`)
+    fetch(`${backendUrl}/wp-json/wp/v2/recipe?recipe_categories=${categoryId}&_embed`)
       .then(response => response.json())
       .then(data => setRecipes(data))
       .catch(error => console.error("Error fetching recipes:", error));

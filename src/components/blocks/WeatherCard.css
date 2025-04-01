@@ -14,7 +14,7 @@
   
   .weather-card p {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--h-color);
     margin: 0.4rem 0;
   }
   

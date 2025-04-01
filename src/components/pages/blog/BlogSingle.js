@@ -3,17 +3,22 @@ import { useParams } from "react-router-dom";
 import MediaImg from "../../media/MediaImg";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const BlogSingle = () => {
-  const { slug } = useParams(); // slug iz URL-a
+  const { slug } = useParams();
   const [post, setPost] = useState(null);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/posts?slug=${slug}`)
+    fetch(`${backendUrl}/wp-json/wp/v2/posts?slug=${slug}`)
       .then((response) => response.json())
       .then((data) => {
-        if (data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
           setPost(data[0]);
         }
+      })
+      .catch((error) => {
+        console.error("Greška pri dohvaćanju posta:", error);
       });
   }, [slug]);
 
@@ -23,9 +28,14 @@ const BlogSingle = () => {
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-md-8">
-          <h1 className="blog-title">{post.title.rendered}</h1>
+          <h1 className="blog-title" aria-label="Post title">
+            {post.title?.rendered || "Untitled Post"}
+          </h1>
 
-          <MediaImg mediaId={post.featured_media} alt={post.title.rendered} />
+          <MediaImg
+            mediaId={post.featured_media}
+            alt={post.title?.rendered || "Blog featured image"}
+          />
 
           <p className="blog-author">
             By <b>{post.yoast_head_json?.author || "Sailor's Feast"}</b> |{" "}
@@ -34,12 +44,16 @@ const BlogSingle = () => {
 
           <div
             className="blog-content"
-            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+            aria-label="Blog content"
+            dangerouslySetInnerHTML={{
+              __html: post.content?.rendered || "<p>No content available.</p>",
+            }}
           />
 
           <h4 className="py-3">See more of similar content:</h4>
         </div>
       </div>
+
       <ScrollToTopButton />
     </div>
   );

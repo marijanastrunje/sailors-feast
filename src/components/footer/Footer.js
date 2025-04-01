@@ -47,10 +47,10 @@ const Footer = () => {
                 <div className="footer-bottom row text-center">
                     <p>© 2025 Sailor's Feast. All Right Reserved</p>
                 <div className="icons text-center">
-                    <Link to="/linkedin"><FontAwesomeIcon icon={faSquareFacebook} /></Link>
-                    <Link to="/linkedin"><FontAwesomeIcon icon={faInstagram} /></Link>
-                    <Link to="/linkedin"><FontAwesomeIcon icon={faTwitter} /></Link>
-                    <Link to="/linkedin"><FontAwesomeIcon icon={faLinkedin} /></Link>
+                    <Link to="/linkedin" aria-label="Facebook"><FontAwesomeIcon icon={faSquareFacebook} /></Link>
+                    <Link to="/linkedin" aria-label="Instagram"><FontAwesomeIcon icon={faInstagram} /></Link>
+                    <Link to="/linkedin"aria-label="Twitter"><FontAwesomeIcon icon={faTwitter} /></Link>
+                    <Link to="/linkedin" aria-label="LinkedIn"><FontAwesomeIcon icon={faLinkedin} /></Link>
                 </div>
                 </div>
             </div>

@@ -6,17 +6,20 @@ import { faBookmark as regularBookmark } from '@fortawesome/free-regular-svg-ico
 const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onChange }) => {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("user_id");
-  const [isSaved, setIsSaved] = useState(false);
-
   const localKey = `${metaKey}_${userId}`;
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem(localKey) || "[]");
     setIsSaved(saved.includes(itemId));
   }, [itemId, localKey]);
 
-  const handleClick = () => {
-    if (!token || !userId) return;
+  const handleClick = async () => {
+    if (!token || !userId || updating) return;
+
+    setUpdating(true);
 
     const saved = JSON.parse(localStorage.getItem(localKey) || "[]");
     let updated;
@@ -33,18 +36,24 @@ const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onC
 
     localStorage.setItem(localKey, JSON.stringify(updated));
 
-    fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/users/me", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        meta: {
-          [metaKey]: JSON.stringify(updated)
-        }
-      })
-    }).catch(err => console.error("Greška pri spremanju bookmarka:", err));
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/wp-json/wp/v2/users/me`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          meta: {
+            [metaKey]: JSON.stringify(updated)
+          }
+        })
+      });
+    } catch (err) {
+      console.error("Greška pri spremanju bookmarka:", err);
+    } finally {
+      setUpdating(false);
+    }
   };
 
   if (!token || !userId) return null;
@@ -54,6 +63,10 @@ const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onC
       className={`bookmark-toggle ${className}`}
       title={isSaved ? "Ukloni iz spremljenih" : "Spremi"}
       onClick={handleClick}
+      role="button"
+      aria-pressed={isSaved}
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleClick()}
     >
       <FontAwesomeIcon icon={isSaved ? solidBookmark : regularBookmark} className="bookmarkIcon" />
     </span>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import compressImage from "../all-pages/compressImage";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const AddBlogPost = () => {
   const token = localStorage.getItem("token");
 
@@ -13,20 +15,21 @@ const AddBlogPost = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/categories?per_page=100")
+    fetch(`${backendUrl}/wp-json/wp/v2/categories?per_page=100`)
       .then((res) => res.json())
       .then((data) => {
         setCategoryOptions(data);
         if (data.length > 0 && !selectedCategoryId) {
           setSelectedCategoryId(data[0].id);
         }
-      });
+      })
+      .catch(err => console.error("Greška pri dohvaćanju kategorija:", err));
   }, [selectedCategoryId]);
 
   const handleImageSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     try {
       const compressed = await compressImage(file, 800, 0.7);
       setImage(compressed);
@@ -36,22 +39,21 @@ const AddBlogPost = () => {
       setImage(null);
     }
   };
-  
 
   const handleImageUpload = async () => {
-    if (!image) return "";  
+    if (!image) return "";
 
     const formData = new FormData();
     formData.append("file", image);
     formData.append("title", title);
 
-    const response = await fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/media", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+    const response = await fetch(`${backendUrl}/wp-json/wp/v2/media`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
 
     const data = await response.json();
     return data.id;
@@ -61,7 +63,7 @@ const AddBlogPost = () => {
     e.preventDefault();
 
     if (!token) {
-      alert("User not authenticated");
+      alert("User not authenticated.");
       return;
     }
 
@@ -75,7 +77,7 @@ const AddBlogPost = () => {
       categories: [selectedCategoryId],
     };
 
-    const response = await fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/posts", {
+    const response = await fetch(`${backendUrl}/wp-json/wp/v2/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -103,11 +105,12 @@ const AddBlogPost = () => {
       <div className="row">
         <div className="col-md-6 mx-auto">
           <h1 className="text-center mb-4">Create New Blog Post</h1>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} aria-label="Form for submitting a new blog post">
             {/* Category */}
             <div className="mb-3">
-              <label>Category</label>
+              <label htmlFor="categorySelect" className="form-label">Category</label>
               <select
+                id="categorySelect"
                 className="form-select"
                 value={selectedCategoryId}
                 onChange={(e) => setSelectedCategoryId(parseInt(e.target.value))}
@@ -122,9 +125,10 @@ const AddBlogPost = () => {
 
             {/* Title */}
             <div className="mb-3">
-              <label>Title</label>
+              <label htmlFor="titleInput" className="form-label">Title</label>
               <input
                 type="text"
+                id="titleInput"
                 className="form-control"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -134,8 +138,9 @@ const AddBlogPost = () => {
 
             {/* Content */}
             <div className="mb-3">
-              <label>Content</label>
+              <label htmlFor="contentTextarea" className="form-label">Content</label>
               <textarea
+                id="contentTextarea"
                 className="form-control"
                 rows={10}
                 value={content}
@@ -146,13 +151,16 @@ const AddBlogPost = () => {
 
             {/* Image Upload */}
             <div className="mb-3">
-              <label>Featured Image</label>
+              <label htmlFor="imageUpload" className="form-label">Featured Image</label>
               <input
                 type="file"
+                id="imageUpload"
                 className="form-control"
                 onChange={handleImageSelect}
                 ref={imageInputRef}
+                aria-describedby="imageHelp"
               />
+              <div id="imageHelp" className="form-text">Optional – image will be compressed before upload.</div>
             </div>
 
             {/* Submit */}
@@ -161,7 +169,7 @@ const AddBlogPost = () => {
             </button>
 
             {/* Message */}
-            {message && <p className="mt-3">{message}</p>}
+            {message && <p className="mt-3 text-center">{message}</p>}
           </form>
         </div>
       </div>

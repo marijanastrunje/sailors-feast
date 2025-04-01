@@ -12,14 +12,19 @@ import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import './Home.css';
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const wcKey = process.env.REACT_APP_WC_KEY;
+const wcSecret = process.env.REACT_APP_WC_SECRET;
+const authHeader = "Basic " + btoa(`${wcKey}:${wcSecret}`);
+
 const Home = () => {
 
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch("https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=0&per_page=20", {
+    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=0&per_page=20`, {
       headers: {
-        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af")
+        Authorization: authHeader
       }
     })
     .then(response => response.json())

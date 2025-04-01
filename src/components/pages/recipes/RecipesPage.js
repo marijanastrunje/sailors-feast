@@ -15,6 +15,8 @@ const taxonomyFilters = {
   recipe_difficulty: "Difficulty",
 };
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const RecipesPage = () => {
 
 
@@ -105,7 +107,7 @@ const RecipesPage = () => {
   
   useEffect(() => {
     Object.keys(taxonomyFilters).forEach((taxonomy) => {
-      fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/${taxonomy}?per_page=100`)
+      fetch(`${backendUrl}/wp-json/wp/v2/${taxonomy}?per_page=100`)
         .then((res) => res.json())
         .then((data) => {
           setTerms((prev) => ({ ...prev, [taxonomy]: data }));
@@ -119,7 +121,7 @@ const RecipesPage = () => {
       .map(([key, values]) => values.map((val) => `${key}[]=${val}`).join("&"))
       .join("&");
 
-    const url = `https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?_embed&per_page=100${taxQuery ? `&${taxQuery}` : ""}`;
+    const url = `${backendUrl}/wp-json/wp/v2/recipe?_embed&per_page=100${taxQuery ? `&${taxQuery}` : ""}`;
 
     fetch(url)
       .then((res) => res.json())

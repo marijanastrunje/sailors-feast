@@ -90,7 +90,7 @@ const Header = () => {
                         <img src="/img/logo/white-color-logo-horizontal-sailors-feast.svg" width={230} height={40} alt="Sailor's Feast logo" />
                     </Link>
                     <div className="d-flex align-items-center order-lg-2">
-                        <button id="search-icon" className="search-button mx-1 mx-md-2" onClick={toggleSearch}>
+                        <button id="search-icon" className="search-button mx-1 mx-md-2" aria-label="Search" onClick={toggleSearch}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </button>
                         <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`}>
@@ -99,7 +99,7 @@ const Header = () => {
                                 <button className="btn btn-outline-secondary ms-1" type="submit">Search</button>
                             </form>
                         </div>
-                        <Link to="/cart" id="ikone" className="me-2 me-md-4">
+                        <Link to="/cart" id="ikone" aria-label="Cart" className="me-2 me-md-4">
                             <FontAwesomeIcon icon={faCartShopping} />
                             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                         </Link>

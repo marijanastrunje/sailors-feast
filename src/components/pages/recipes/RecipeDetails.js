@@ -5,12 +5,14 @@ import MediaImg from "../../media/MediaImg";
 import BookmarkToggle from "../all-pages/Bookmark";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 const RecipeDetails = () => {
   const { slug } = useParams();
   const [recipe, setRecipe] = useState(null);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?slug=${slug}&_embed`)
+    fetch(`${backendUrl}/wp-json/wp/v2/recipe?slug=${slug}&_embed`)
       .then(res => res.json())
       .then(data => {
         if (data.length > 0) setRecipe(data[0]);

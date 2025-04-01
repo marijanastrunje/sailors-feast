@@ -10,7 +10,7 @@ const HomePageCategories = ({ categories }) => {
   const navigate = useNavigate();
 
   const desktopSettings = {
-    infinite: true,
+    infinite: false,
     speed: 200,
     slidesToShow: 6,
     swipeToSlide: true,
