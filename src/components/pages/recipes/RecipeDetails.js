@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import RecipeTags from "./RecipeTags";
-import MediaImg from "../../media/MediaImg";
+import RecipeTags from "../recipes/recipe-card/RecipeTags"
+import MediaImg from "../all-pages/media/MediaImg";
 import BookmarkToggle from "../all-pages/Bookmark";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 

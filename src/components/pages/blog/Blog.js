@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BlogShort from "./BlogShort";
-import InstagramGallery from "../../instagram/Instagram";
+import InstagramGallery from "../all-pages/instagram/Instagram";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import Pagination from "../all-pages/Pagination";
 import "./Blog.css";

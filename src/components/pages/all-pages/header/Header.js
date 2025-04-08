@@ -52,30 +52,32 @@ const Header = () => {
         <header>
             {/* Top Navbar */}
             <nav className="top-navbar navbar-expand-md fixed-top">
-                <div className="container-fluid d-flex">
-                    <Link to="tel:+385955399166" title="Call us for more details">
+                <div className="container-fluid d-flex align-items-center">
+                    <Link to="tel:+385955399166" title="Call us for more details" className="d-flex align-items-center mt-1 mt-sm-0">
                         <FontAwesomeIcon icon={faPhone} className="me-3 me-md-1" />
                         <span className="d-none d-sm-inline me-3">+385 95 539 9166</span>
                     </Link>
-                    <Link to="mailto:info@sailorsfeast.com" title="Send us email">
+                    <Link to="mailto:info@sailorsfeast.com" title="Send us email" className="d-flex align-items-center mt-1 mt-sm-0">
                         <FontAwesomeIcon icon={faEnvelope} className="me-1" />
                         <span className="d-none d-sm-inline">info@sailorsfeast.com</span>
                     </Link>
                     {username ? (
-                        <div className="dropdown ms-auto me-0">
+                        <div className="dropdown ms-auto me-0 mt-1 mt-sm-0 d-flex align-items-center">
                             <button className="btn-user dropdown-toggle p-0" id="userDropdown" data-bs-toggle="dropdown">
-                                <Link className="user"><FontAwesomeIcon icon={faUser} className="me-1" />{username}</Link>
+                            <Link className="user"><FontAwesomeIcon icon={faUser} className="me-1" />{username}</Link>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end p-2">
-                                <li><Link to="/user" className="dropdown-item">User Dashboard</Link></li>
-                                <li><hr className="dropdown-divider m-0" /></li>
-                                <li><button className="dropdown-item text-danger" onClick={logout}>Logout</button></li>
+                            <li><Link to="/user" className="dropdown-item">User Dashboard</Link></li>
+                            <li><hr className="dropdown-divider m-0" /></li>
+                            <li><button className="dropdown-item text-danger" onClick={logout}>Logout</button></li>
                             </ul>
                         </div>
-                    ) : (
-                        <Link to="/login" className="user ms-auto me-sm-3 me-1">
+                        ) : (
+                        <div className="ms-auto me-sm-3 me-1 mt-1 mt-sm-0 d-flex align-items-center">
+                            <Link to="/login" className="user">
                             <FontAwesomeIcon icon={faUser} className="me-1" />Login
-                        </Link>
+                            </Link>
+                        </div>
                     )}
                 </div>
             </nav>
@@ -115,7 +117,7 @@ const Header = () => {
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><Link to="/standard-box" onClick={toggleMenu} className="dropdown-item">Standard Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/friendsandfamily-box" className="dropdown-item">Friends&Family Box</Link></li>
+                                    <li><Link to="/friends-family-box" className="dropdown-item">Friends&Family Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><Link to="/feast-box" className="dropdown-item">Feast Box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>

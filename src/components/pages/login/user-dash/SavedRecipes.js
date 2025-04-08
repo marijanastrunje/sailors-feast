@@ -1,5 +1,5 @@
 import React from "react";
-import RecipeCard from "../../recipes/RecipeCard";
+import RecipeCard from "../../recipes/recipe-card/RecipeCard"
 
 const SavedRecipes = ({ savedRecipeData, setSavedRecipeData }) => {
   if (!savedRecipeData || savedRecipeData.length === 0) {

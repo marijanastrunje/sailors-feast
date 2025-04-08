@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import RecipeCard from "./RecipeCard";
+import RecipeCard from "./recipe-card/RecipeCard";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import RecipeSlider from "./RecipeSlider";
 import Pagination from "../all-pages/Pagination";
 import Select from "react-select";
-import './Recipe.css'
+import './RecipesPage.css'
 
 const taxonomyFilters = {
   recipe_type: "Type",
@@ -247,6 +247,7 @@ const RecipesPage = () => {
                     className={`dropdown-item d-flex align-items-center gap-2 ${cookingMethod.includes(opt.value) ? "active" : ""}`}
                     onClick={() => handleMethodSelect(opt.value)}
                   >
+                    <img src={opt.icon} alt={opt.label} width={20} height={20} />
                     {opt.label}
                   </button>
                 ))}

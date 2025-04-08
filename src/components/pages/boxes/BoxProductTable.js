@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import RecipeBoxSlider from "./RecipeBoxSlider";
+import { useNavigate } from "react-router-dom";
 
 const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryProducts, onShowProductModal, handleRemoveProduct, handleShowModal, categoryMapping, title, description, image
 }) => {
   // State za praćenje količina proizvoda u paketu
   const [productQuantities, setProductQuantities] = useState({});
+  const navigate = useNavigate(); 
 
   // Postavljamo početne količine na 1 kada se komponenta učita
   useEffect(() => {
@@ -116,6 +117,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
     // Spremimo ažuriranu košaricu u localStorage i obavijestimo komponente
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated")); // Ažurira prikaz košarice
+    navigate("/cart");
   };
 
 
@@ -195,11 +197,6 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
               </tr>
             </tbody>
           </table>
-        </div>
-        <div className="col-lg-3 d-block">
-        <RecipeBoxSlider categoryId={144} title="Breakfast" />
-        <RecipeBoxSlider categoryId={145} title="Lunch" />
-        <RecipeBoxSlider categoryId={146} title="Dinner" />
         </div>
       </div>
     </div>

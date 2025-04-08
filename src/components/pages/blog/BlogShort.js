@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import MediaImg from "../../media/MediaImg";
-import PostCategory from "../../data/PostCategory";
-import PostDate from "../../data/PostDate";
+import MediaImg from "../all-pages/media/MediaImg";
+import PostCategory from "../all-pages/data/PostCategory";
+import PostDate from "../all-pages/data/PostDate";
 import "./BlogShort.css";
 
 const BlogShort = ({ post, limit = 150 }) => {

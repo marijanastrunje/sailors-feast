@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import BlogShort from "./BlogShort";
+import BlogShort from "../../blog/BlogShort";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 

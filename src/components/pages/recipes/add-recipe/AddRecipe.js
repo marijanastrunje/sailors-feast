@@ -1,7 +1,7 @@
 import React, { useState, useEffect , useRef} from "react";
 import IngredientsField from "./IngredientsField";
 import StepsField from "./StepsField";
-import compressImage from "../all-pages/compressImage";
+import compressImage from "../../all-pages/compressImage";
 
 
 const RecipeForm = () => {

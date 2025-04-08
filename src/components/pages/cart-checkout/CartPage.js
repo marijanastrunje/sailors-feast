@@ -7,6 +7,7 @@ const CartPage = () => {
     const [cart, setCart] = useState([]);
     const [listName, setListName] = useState("");
     const [, setSavedLists] = useState({});
+    const [showSaveModal, setShowSaveModal] = useState(false);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
@@ -117,6 +118,7 @@ const CartPage = () => {
         } catch (err) {
             alert("Unable to save the list.");
         }
+        setShowSaveModal(false);
     };
 
     const boxProducts = cart.filter((item) => item.box);
@@ -245,16 +247,19 @@ const CartPage = () => {
                             <div className="text-center mt-3">
                                 <h4>Total: {totalPrice()} €</h4>
                                 <button onClick={clearCart} className="btn btn-danger me-2">Clear Cart</button>
-                                <input
-                                    type="text"
-                                    placeholder="Enter list name"
-                                    value={listName}
-                                    onChange={(e) => setListName(e.target.value)}
-                                    className="me-2"
-                                />
-                                <button onClick={saveToBackend} className="btn btn-secondary me-2">
+                                <button
+                                    className="btn btn-secondary me-2"
+                                    onClick={() => {
+                                        if (!token) {
+                                        navigate("/login?redirect=/cart");
+                                        } else {
+                                        setShowSaveModal(true);
+                                        }
+                                    }}
+                                    >
                                     Save as List
                                 </button>
+
                                 <Link to="/checkout" className="btn btn-primary">
                                     Proceed to Checkout
                                 </Link>
@@ -263,6 +268,33 @@ const CartPage = () => {
                     </div>
                 </div>
             </div>
+
+            {showSaveModal && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                        <h5 className="modal-title">Save Your List</h5>
+                        <button type="button" className="btn-close" onClick={() => setShowSaveModal(false)}></button>
+                        </div>
+                        <div className="modal-body">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter list name"
+                            value={listName}
+                            onChange={(e) => setListName(e.target.value)}
+                        />
+                        </div>
+                        <div className="modal-footer">
+                        <button className="btn btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                        <button className="btn btn-primary" onClick={saveToBackend}>Save List</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                )}
+
         </>
     );
 };

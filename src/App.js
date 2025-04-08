@@ -3,8 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
 
-import Header from './components/header/Header';
-import Footer from './components/footer/Footer';
+import Header from './components/pages/all-pages/header/Header';
+import Footer from './components/pages/all-pages/footer/Footer';
 import Home from './components/pages/home/Home';
 import Groceries from './components/pages/groceries/Groceries';
 import StandardBox from './components/pages/boxes/StandardBox';
@@ -26,22 +26,11 @@ import ScrollToTop from "./components/ScrollToTop";
 import Success from './components/pages/cart-checkout/Success';
 import Failure from './components/pages/cart-checkout/Failure';
 import TestOrder from './components/pages/groceries/TestOrder';
-import AddRecipe from './components/pages/recipe/AddRecipe';
+import AddRecipe from './components/pages/recipes/add-recipe/AddRecipe';
 import AddBlogPost from './components/pages/blog/AddBlogPost';
 import PrivacyPolicyPage from './components/pages/all-pages/PrivacyPolicy';
 import TermsAndConditions from './components/pages/all-pages/TermsAndConditions';
 import FaqPage from './components/pages/all-pages/FaqPage';
-
-import Home1 from './components/pages/izm/home1/Home1';
-import Blog1 from './components/pages/izm/blog1/Blog1';
-import BlogSingle1 from './components/pages/izm/blog1/BlogSingle1';
-import Countries from './components/pages/izm/countries/Countries';
-import SingleCountry from './components/pages/izm/countries/SingleCountry';
-import Cro from './components/pages/izm/countries/Cro';
-import Exchange from './components/pages/izm/zadatak/Exchange';
-import Pubertetlije from './components/pages/home/Gea';
-
-
 
 
 function App() {
@@ -56,7 +45,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/groceries" element={<Groceries />} />
         <Route path="/standard-box" element={<StandardBox />} />
-        <Route path="/friendsandfamily-box" element={<FFBox />} />
+        <Route path="/friends-family-box" element={<FFBox />} />
         <Route path="/feast-box" element={<FeastBox />} />
         <Route path="/healthy-box" element={<HealthyBox />} />
         <Route path="/all-boxes" element={<AllBoxes />} />
@@ -78,16 +67,6 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/faq" element={<FaqPage />} />
-        <Route path="/pubertetlije" element={<Pubertetlije />} />
-
-
-        <Route path="/home1" element={<Home1 />} />
-        <Route path="/blog1" element={<Blog1 />} />
-        <Route path="/blog1/:id" element={<BlogSingle1 />} />
-        <Route path="/countries" element={<Countries />} />
-        <Route path="/croatia" element={<SingleCountry />} />
-        <Route path="/countries" element={<Cro />} />
-        <Route path="/zadatak" element={<Exchange />} />
 
       </Routes>
       <Footer />

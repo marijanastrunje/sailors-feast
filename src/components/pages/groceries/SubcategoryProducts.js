@@ -80,7 +80,7 @@ const SubcategoryProducts = ({ subcategories, openCategory, subcategoryProducts,
               <h3
                 id={`subcategory-${subcategory.id}`}
                 className="subcategory-title"
-                onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); }}
+                onClick={() => { fetchProducts(subcategory.id, true); setActiveSubcategory(subcategory.id); window.scrollTo({ top: 0, behavior: 'smooth' });}}
                 role="button"
                 tabIndex="0"
                 aria-label={`View all products in ${subcategory.name}`}
