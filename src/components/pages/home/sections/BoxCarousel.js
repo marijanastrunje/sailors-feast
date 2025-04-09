@@ -88,24 +88,24 @@ const BoxCarousel = () => {
             </button>
           </div>
 
-          <div className="why-us d-none d-lg-inline col-lg-3 bg-white pt-5">
-            <h4 className="mb-3 text-center fw-bold">Zašto odabrati nas?</h4>
-            <ul className="ps-3">
+          <div className="why-us d-none d-lg-inline col-lg-3 bg-white pt-4">
+            <h4 className="mb-3 text-center fw-bold">Why choose Sailor's Feast?</h4>
+            <ul className="ps-2">
               <li className="d-flex align-items-center mb-3">
                 <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
-                <span>Svježe lokalne namirnice</span>
+                <span>We bring you fresh, local flavors</span>
               </li>
               <li className="d-flex align-items-center mb-3">
                 <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
-                <span>Prilagodljivi paketi po vašim željama</span>
+                <span>You choose what suits your crew</span>
               </li>
               <li className="d-flex align-items-center mb-3">
                 <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
-                <span>Praktična rješenja za obroke na brodu</span>
+                <span>We make cooking easy on board</span>
               </li>
               <li className="d-flex align-items-center">
                 <FontAwesomeIcon icon={faCircleCheck} className="text-success mx-2" />
-                <span>Ekološka ambalaža i održivost</span>
+                <span>And we pack it all with love</span>
               </li>
             </ul>
           </div>

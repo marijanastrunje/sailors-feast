@@ -67,7 +67,7 @@ const HeroVideo = () => {
         <div>
           <h1 className="m-0">Sailor's Feast</h1>
           <h2 className="text-start mb-1">Yacht Supply Croatia</h2>
-          <p>We provide fresh food and drinks delivered directly to your boat.</p>
+          <p>We bring fresh food and tasty drinks right to your boat, so you can enjoy more time on the water.</p>
           <Link to="/groceries" className="btn btn-prim" aria-label="Plan your meals and order food packages now">
             Shop now
           </Link>

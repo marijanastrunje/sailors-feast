@@ -109,7 +109,6 @@ const Header = () => {
                     <div className={`collapse navbar-collapse order-lg-1 ${menu ? 'show' : ''}`} id="navbarSupportedContent">
                         <ul className="navbar-nav mx-auto mb-lg-0">
                             <li className="nav-item me-2"><Link to="/" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faHouse} className="mx-2 d-md-none" />Home</Link></li>
-                            <li className="nav-item me-2"><Link to="/groceries" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-md-none" />Groceries</Link></li>
                             <li className="nav-item dropdown me-2">
                                 <Link className="nav-link dropdown-toggle" data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-md-none" />Food Box</Link>
                                 <ul className="dropdown-menu">
@@ -124,6 +123,7 @@ const Header = () => {
                                     <li><Link to="/healthy-box" className="dropdown-item" href="healthy-box.html">Healthy Box</Link></li>
                                 </ul>
                             </li>
+                            <li className="nav-item me-2"><Link to="/groceries" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-md-none" />Groceries</Link></li>
                             <li className="nav-item me-2"><Link to="/recipes" className="nav-link" ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-md-none" />Recipes</Link></li>
                             <li className="nav-item me-2"><Link to="/blog" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faBookOpen} className="mx-2 d-md-none" />Blog</Link></li>
                             <li className="nav-item"><Link to="/contact" onClick={toggleMenu} className="nav-link"><FontAwesomeIcon icon={faPhone} className="mx-2 d-md-none" />Contact</Link></li>

@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 import HeroVideo from "./sections/HeroVideo";
 import Advantages from "./sections/Advantages";
-import SpecialOffer from "./sections/SpecialOffer";
 import BoxCarousel from "./sections/BoxCarousel";
+import SpecialOffer from "./sections/SpecialOffer";
 import DeliveryMap from "./sections/delivery/DeliveryMap";
 import RecipeBlock from "./sections/RecipeBlock";
 import HomePageBlog from "./sections/HomePageBlog";
@@ -54,13 +54,13 @@ const Home = () => {
         <SpecialOffer />
       </section>
 
+      <section id="product-carousel">
+        <BoxCarousel />
+      </section>
+
       <section id="categories" className="py-md-5">
         <h2>Shop by category</h2>
         <HomePageCategories categories={categories} />
-      </section>
-
-      <section id="product-carousel">
-        <BoxCarousel />
       </section>
 
       <section id="your-box" className="bg-white py-3">

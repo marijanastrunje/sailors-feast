@@ -8,6 +8,7 @@ import ProductsGrid from "./ProductsGrid";
 import ModalProduct from "./ModalProduct";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Pagination from "../all-pages/Pagination";
 
 import './Groceries.css';
 
@@ -30,7 +31,7 @@ const Groceries = () => {
 
   const fetchProducts = useCallback((categoryId, isDirectClick = false) => {
     setIsLoadingProducts(true);
-    fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}`, {
+    fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}&per_page=100`, {
       headers: { Authorization: authHeader }
     })
       .then(res => res.json())
@@ -46,7 +47,7 @@ const Groceries = () => {
   }, []);
 
   const fetchSubcategories = useCallback((categoryId) => {
-    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}&per_page=100`, {
       headers: { Authorization: authHeader }
     })
       .then(res => res.json())
@@ -54,6 +55,8 @@ const Groceries = () => {
         const sorted = data.sort((a, b) => a.menu_order - b.menu_order);
         setSubcategories(prev => ({ ...prev, [categoryId]: sorted }));
         setOpenCategory(categoryId);
+        setCurrentPage(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
         if (sorted.length > 0) {
           const firstSub = sorted[0];
@@ -92,13 +95,33 @@ const Groceries = () => {
     setSelectedProduct(product);
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+const productsPerPage = 16;
+
+// izračun broja stranica
+const totalPages = Math.ceil(products.length / productsPerPage);
+
+// odabir proizvoda za trenutnu stranicu
+const paginatedProducts = products.slice(
+  (currentPage - 1) * productsPerPage,
+  currentPage * productsPerPage
+);
+
+const handlePageChange = (page) => {
+  if (page >= 1 && page <= totalPages) {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" }); 
+  }
+};
+
+
   return (
     <>
       <div className="groceries-hero p-2 text-center" aria-label="Groceries hero section">
         <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
         <div className="col-lg-6 mx-auto">
           <p className="lead mb-4 text-white position-relative z-2">
-            Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit.
+          Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We’ll deliver it all fresh to your boat.
           </p>
         </div>
         <link rel="preload" as="image" href="/images/groceries-hero.webp" type="image/webp" />
@@ -140,11 +163,21 @@ const Groceries = () => {
               <h2 className="mb-3">{activeSubcategoryName}</h2>
             )}
 
-            {isLoadingProducts ? (
-              <p className="text-muted text-center my-4" aria-live="polite">Loading products...</p>
-            ) : (
-              <ProductsGrid products={products} onShowModal={handleShowModal} />
-            )}
+          {isLoadingProducts ? (
+            <p className="text-muted text-center my-4" aria-live="polite">Loading products...</p>
+          ) : (
+            <>
+              <ProductsGrid products={paginatedProducts} onShowModal={handleShowModal} />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
+          )}
+
           </div>
         </div>
 
