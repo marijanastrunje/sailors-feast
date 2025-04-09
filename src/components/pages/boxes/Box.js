@@ -1,103 +1,107 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import BoxProductTable from "./BoxProductTable";
 import ModalProduct from "../groceries/ModalProduct";
 import BoxModal from "./BoxModal";
+import BoxHeader from "./BoxHeader";
 import "./Box.css";
 
-const BoxLayout = ({ categoryId, image, categoryMapping }) => {
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const wcKey = process.env.REACT_APP_WC_KEY;
+const wcSecret = process.env.REACT_APP_WC_SECRET;
+const authHeader = {
+  Authorization: "Basic " + btoa(`${wcKey}:${wcSecret}`),
+};
+
+const BoxLayout = ({ categoryId, categoryMapping }) => {
   const [subcategories, setSubcategories] = useState([]);
   const [subcategoryProducts, setSubcategoryProducts] = useState({});
   const [extraProducts, setExtraProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [categoryInfo, setCategoryInfo] = useState({ name: "", description: "", image: "" });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
-      headers: {
-        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-      },
+    // Fetch samo info o kategoriji – odmah za header
+    fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, {
+      headers: authHeader,
     })
-      .then(response => response.json())
-      .then(data => {
-        setSubcategories(data);
-        data.forEach(subcategory => fetchProducts(subcategory.id));
+      .then((res) => res.json())
+      .then((data) => {
+        setCategoryInfo({
+          name: data.name,
+          description: data.description,
+          image: data.image?.src || "",
+        });
+      })
+      .catch((err) => {
+        console.error("Greška u dohvaćanju kategorije:", err);
       });
   }, [categoryId]);
 
-  const [categoryInfo, setCategoryInfo] = useState({ name: "", description: "" });
+  useEffect(() => {
+    // Grupirani fetch proizvoda za sve subkategorije
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+          headers: authHeader,
+        });
+        const subcategoriesData = await res.json();
+        setSubcategories(subcategoriesData);
 
-useEffect(() => {
-  fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories/${categoryId}`, {
-    headers: {
-      Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-    },
-  })
-    .then(response => response.json())
-    .then(data => {
-      setCategoryInfo({
-        name: data.name,
-        description: data.description,
-        image: data.image?.src || "",
-      });
-    })
-    .catch(error => {
-      console.error("Greška pri dohvaćanju kategorije:", error);
-    });
-}, [categoryId]);
+        const allSubcategoryIds = subcategoriesData.map(sub => sub.id).join(",");
 
+        const productRes = await fetch(`${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100`, {
+          headers: authHeader,
+        });
+        const allProducts = await productRes.json();
 
-  const fetchProducts = (subcategoryId) => {
-    fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${subcategoryId}`, {
-      headers: {
-        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        setSubcategoryProducts(prev => ({ ...prev, [subcategoryId]: data }));
-      });
+        const grouped = {};
+        subcategoriesData.forEach(sub => {
+          grouped[sub.id] = allProducts.filter(prod =>
+            prod.categories.some(cat => cat.id === sub.id)
+          );
+        });
+
+        setSubcategoryProducts(grouped);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Greška u dohvaćanju proizvoda:", error);
+      }
+    };
+
+    fetchProducts();
+  }, [categoryId]);
+
+  const handleShowProductModal = (product) => {
+    setSelectedProduct(product);
   };
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  
-      const handleShowProductModal = (product) => {
-          setSelectedProduct(product);
-      };
 
   const handleRemoveProduct = (subcategoryId, productId) => {
     setSubcategoryProducts(prev => ({
       ...prev,
-      [subcategoryId]: prev[subcategoryId].filter(product => product.id !== productId),
+      [subcategoryId]: prev[subcategoryId].filter(p => p.id !== productId),
     }));
   };
 
-  const fetchExtraSubcategories = async (parentCategoryId) => {
-    const response = await fetch(
-      `https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`,
-      {
-        headers: {
-          Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-        },
-      }
-    );
-    const subcategories = await response.json();
+  const fetchExtraSubcategories = useCallback(async (parentCategoryId) => {
+    const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
+      headers: authHeader,
+    });
+    const subcats = await res.json();
 
-    const subcategoriesWithProducts = await Promise.all(
-      subcategories.map(async (subcategory) => {
-        const response = await fetch(
-          `https://backend.sailorsfeast.com/wp-json/wc/v3/products?category=${subcategory.id}`,
-          {
-            headers: {
-              Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-            },
-          }
-        );
-        const products = await response.json();
-        return { id: subcategory.id, name: subcategory.name, products };
+    const withProducts = await Promise.all(
+      subcats.map(async subcat => {
+        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}`, {
+          headers: authHeader,
+        });
+        const products = await res.json();
+        return { id: subcat.id, name: subcat.name, products };
       })
     );
 
-    setExtraProducts(subcategoriesWithProducts);
-  };
+    setExtraProducts(withProducts);
+  }, []);
 
   const handleShowModal = (categoryId) => {
     fetchExtraSubcategories(categoryId);
@@ -105,69 +109,109 @@ useEffect(() => {
   };
 
   const handleAddProduct = async (product, quantity) => {
-
-
     let targetSubcategoryId = null;
 
-    for (const [subcategoryId, categoryId] of Object.entries(categoryMapping)) {
-        // 1. Ako je proizvod već direktno u toj kategoriji
-        if (product.categories.some(cat => cat.id === subcategoryId || cat.id === categoryId)) {
-            targetSubcategoryId = parseInt(subcategoryId);
-            break;
+    for (const [subId, parentId] of Object.entries(categoryMapping)) {
+      const matches = product.categories.some(
+        (cat) => cat.id === parseInt(subId) || cat.id === parentId
+      );
+
+      if (matches) {
+        targetSubcategoryId = parseInt(subId);
+        break;
+      }
+
+      for (const cat of product.categories) {
+        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${cat.id}`, {
+          headers: authHeader,
+        });
+        const catData = await res.json();
+        if (catData.parent === parentId) {
+          targetSubcategoryId = parseInt(subId);
+          break;
         }
+      }
 
-        // 2. Ako proizvod ima samo podkategoriju, dohvati roditelja kategorije
-        for (const cat of product.categories) {
-            try {
-                const response = await fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/products/categories/${cat.id}`, {
-                    headers: {
-                        Authorization: "Basic " + btoa("ck_f980854fa88ca271d82caf36f6f97a787d5b02af:cs_2f0156b618001a4be0dbcf7037c99c036abbb0af"),
-                    },
-                });
-                const categoryData = await response.json();
-
-                console.log(` Kategorija ${cat.id} ima parent ID:`, categoryData.parent);
-
-                if (categoryData.parent === categoryId) {
-                    targetSubcategoryId = parseInt(subcategoryId);
-                    break;
-                }
-            } catch (error) {
-                console.error(" Greška pri dohvaćanju roditeljske kategorije:", error);
-            }
-        }
-
-        if (targetSubcategoryId) break;
+      if (targetSubcategoryId) break;
     }
 
-    if (!targetSubcategoryId) {
-        console.warn(" Nije pronađena odgovarajuća podkategorija za proizvod:", product.name);
-        return;
-    }
+    if (!targetSubcategoryId) return;
 
-    setSubcategoryProducts((prev) => {
-        const existingProducts = prev[targetSubcategoryId] || [];
-        
-        if (existingProducts.some(p => p.id === product.id)) {
-            console.warn(" Proizvod je već dodan u podkategoriju:", product.name);
-            return prev;
-        }
+    setSubcategoryProducts(prev => {
+      const existing = prev[targetSubcategoryId] || [];
+      if (existing.find(p => p.id === product.id)) return prev;
 
-        return {
-            ...prev,
-            [targetSubcategoryId]: [...existingProducts, { ...product, quantity }]
-        };
+      return {
+        ...prev,
+        [targetSubcategoryId]: [...existing, { ...product, quantity }],
+      };
     });
 
     setShowModal(false);
-};
+  };
+
+  const totalSum = useMemo(() => {
+    return subcategories.reduce((sum, sub) => {
+      return (
+        sum +
+        (subcategoryProducts[sub.id]?.reduce((s, p) => s + p.price * (p.quantity || 1), 0) || 0)
+      );
+    }, 0);
+  }, [subcategories, subcategoryProducts]);
+
+  const addToCart = () => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const currentBoxProductIds = new Set();
+    subcategories.forEach((subcategory) => {
+      subcategoryProducts[subcategory.id]?.forEach((product) => {
+        currentBoxProductIds.add(product.id);
+      });
+    });
+
+    cart = cart.filter((item) => !item.box || currentBoxProductIds.has(item.id));
+
+    subcategories.forEach((subcategory) => {
+      subcategoryProducts[subcategory.id]?.forEach((product) => {
+        const quantity = product.quantity || 1;
+        if (quantity > 0) {
+          const existingProduct = cart.find((item) => item.id === product.id);
+          if (existingProduct) {
+            existingProduct.quantity = quantity;
+          } else {
+            cart.push({
+              id: product.id,
+              image: product.images,
+              title: product.name,
+              price: product.price,
+              quantity: quantity,
+              box: true,
+            });
+          }
+        }
+      });
+    });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+    window.location.href = "/cart";
+  };
+
+  if (isLoading) {
+    return <p className="text-center my-5">Loading boxes...</p>;
+  }
 
   return (
     <>
-      <BoxProductTable
-        title={categoryInfo.name} 
-        description={categoryInfo.description} 
+      <BoxHeader
+        title={categoryInfo.name}
+        description={categoryInfo.description}
         image={categoryInfo.image}
+        totalSum={totalSum}
+        onAddToCart={addToCart}
+      />
+
+      <BoxProductTable
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
         setSubcategoryProducts={setSubcategoryProducts}
@@ -176,6 +220,7 @@ useEffect(() => {
         handleShowModal={handleShowModal}
         categoryMapping={categoryMapping}
       />
+
       {showModal && (
         <BoxModal
           extraProducts={extraProducts}
@@ -184,7 +229,10 @@ useEffect(() => {
           onShowProductModal={handleShowProductModal}
         />
       )}
-      {selectedProduct && (<ModalProduct  product={selectedProduct}  onClose={() => setSelectedProduct(null)} />)}
+
+      {selectedProduct && (
+        <ModalProduct product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      )}
     </>
   );
 };

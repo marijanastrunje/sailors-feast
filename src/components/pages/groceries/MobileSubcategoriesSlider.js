@@ -10,6 +10,7 @@ const MobileSubcategoriesSlider = ({
   fetchProducts,
   setActiveSubcategory,
   excludedSubcategories = [],
+  setActiveSubcategoryName
 }) => {
   if (!openCategory || !subcategories[openCategory]) {
     return null; // No category opened or no subcategories available
@@ -49,12 +50,14 @@ const MobileSubcategoriesSlider = ({
             onClick={() => {
               fetchProducts(subcategory.id, true);
               setActiveSubcategory(subcategory.id);
+              setActiveSubcategoryName(subcategory.name);
             }}
             onKeyDown={(e) =>
               (e.key === "Enter" || e.key === " ") &&
               (() => {
                 fetchProducts(subcategory.id, true);
                 setActiveSubcategory(subcategory.id);
+                setActiveSubcategoryName(subcategory.name);
               })()
             }
             className="subcategory-slide-item px-2"

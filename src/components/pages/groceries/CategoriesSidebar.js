@@ -9,7 +9,8 @@ const CategoriesSidebar = ({
   subcategories,
   setActiveSubcategory,
   fetchSubcategories,
-  fetchProducts
+  fetchProducts,
+  setActiveSubcategoryName
 }) => {
   return (
     <ul className="categories-list list-group" aria-label="Main categories list">
@@ -50,11 +51,15 @@ const CategoriesSidebar = ({
                   onClick={() => {
                     fetchProducts(subcategory.id, true);
                     setActiveSubcategory(subcategory.id);
+                    setActiveSubcategoryName(subcategory.name);
                   }}
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (
-                    fetchProducts(subcategory.id, true),
-                    setActiveSubcategory(subcategory.id)
-                  )}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      fetchProducts(subcategory.id, true);
+                      setActiveSubcategory(subcategory.id);
+                      setActiveSubcategoryName(subcategory.name); 
+                    }
+                  }}
                   role="button"
                   tabIndex="0"
                   aria-label={`Select subcategory ${subcategory.name}`}

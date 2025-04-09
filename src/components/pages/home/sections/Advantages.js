@@ -27,7 +27,7 @@ const Advantages = () => {
   }, []);
 
   return (
-    <section id="advantages">
+
       <div className="container mt-4 mt-sm-5">
         <div className="row">
           {advantages.map((item, index) => {
@@ -72,7 +72,7 @@ const Advantages = () => {
           })}
         </div>
       </div>
-    </section>
+
   );
 };
 

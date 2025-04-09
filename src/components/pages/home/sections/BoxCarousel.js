@@ -29,7 +29,7 @@ const BoxCarousel = () => {
   }, []);
 
   return (
-    <section id="product-carousel">
+
       <div className="container">
         <div className="row justify-content-center">
           <h2>Food box</h2>
@@ -111,7 +111,7 @@ const BoxCarousel = () => {
           </div>
         </div>
       </div>
-    </section>
+
   );
 };
 
