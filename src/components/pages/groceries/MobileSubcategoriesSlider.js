@@ -10,7 +10,8 @@ const MobileSubcategoriesSlider = ({
   fetchProducts,
   setActiveSubcategory,
   excludedSubcategories = [],
-  setActiveSubcategoryName
+  setActiveSubcategoryName,
+  activeSubcategory
 }) => {
   if (!openCategory || !subcategories[openCategory]) {
     return null; // No category opened or no subcategories available
@@ -66,7 +67,7 @@ const MobileSubcategoriesSlider = ({
             aria-label={`Select subcategory ${subcategory.name}`}
             title={`Select subcategory ${subcategory.name}`}
           >
-            <h4 className="subcategory-name">{subcategory.name}</h4>
+            <h4 className={`subcategory-name ${activeSubcategory === subcategory.id ? "active-mobile-subcategory" : ""}`}>{subcategory.name}</h4>
           </div>
         ))}
       </Slider>

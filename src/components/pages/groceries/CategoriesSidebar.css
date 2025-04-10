@@ -9,3 +9,17 @@
 .rotate-icon {
     transform: rotate(90deg);
 }
+
+.active-category {
+    background-color: #f9f5f2; /* nježno highlight bez oštrine */
+    font-weight: 500;
+    color: var(--primary-color); /* nježna primarna boja */
+  }
+  
+  .active-subcategory {
+    background-color: #f5f5f5; /* gotovo bijelo, ali dovoljno da se istakne */
+    font-weight: 500;
+    color: var(--primary-color);
+  }
+  
+  

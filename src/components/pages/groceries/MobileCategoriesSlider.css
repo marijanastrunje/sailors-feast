@@ -6,3 +6,10 @@
 h3.category-name {
     font-size: 15px;
 }
+
+.active-mobile-category { 
+    color: var(--primary-color);
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  

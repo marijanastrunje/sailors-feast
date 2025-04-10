@@ -1,13 +1,15 @@
 .weather-card {
     margin-top: 20px;
     padding: 1rem;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--footer-bg-color);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
     max-width: 230px;
     width: 100%;
+    border-radius: 4px;
   }
   
   .weather-card h5 {
+    font-family: "Lexend", sans-serif;
     margin-bottom: 0.3rem;
     color: var(--h-color);
   }

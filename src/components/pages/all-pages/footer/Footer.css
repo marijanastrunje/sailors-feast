@@ -1,5 +1,7 @@
 .footer{
-    background-color: var(--footer-bg-color);
+    background-color: var(--footer-color);
+    position: relative;
+    width: 100%;
   }
   
   .footer-bottom{

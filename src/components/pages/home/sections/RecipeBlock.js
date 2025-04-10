@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -6,13 +6,28 @@ import RecipeCard from "../../recipes/recipe-card/RecipeCard";
 import './RecipeBlock.css';
 
 const RecipeBlock = () => {
+
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     fetch(`https://backend.sailorsfeast.com/wp-json/wp/v2/recipe?_embed&per_page=10`)
       .then((response) => response.json())
-      .then((data) => setRecipes(data))
-      .catch((error) => console.error("Error fetching recipes:", error));
+      .then((data) => {
+        if (isMounted) {
+          setRecipes(data);
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          console.error("Error fetching recipes:", error)
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const settings = {
@@ -46,4 +61,4 @@ const RecipeBlock = () => {
   );
 };
 
-export default RecipeBlock;
+export default memo(RecipeBlock);

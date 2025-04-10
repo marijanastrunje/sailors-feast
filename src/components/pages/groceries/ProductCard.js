@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef, memo } from "react";
 import './ProductCard.css';
 
 const ProductCard = ({ product, onShowModal }) => {
     const [quantity, setQuantity] = useState('');
     const [addedToCart, setAddedToCart] = useState(false);
     const [showControls, setShowControls] = useState(false);
+    const updateCartTimeoutRef = useRef(null);
 
+    // Učitaj inicijalno stanje iz košarice
     useEffect(() => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const productInCart = cart.find((item) => item.id === product.id);
@@ -15,7 +17,8 @@ const ProductCard = ({ product, onShowModal }) => {
         }
     }, [product.id]);
 
-    const updateCart = (newQuantity) => {
+    // Optimizirana updateCart funkcija s debounce-om
+    const updateCart = useCallback((newQuantity) => {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         if (newQuantity === '' || newQuantity <= 0) {
@@ -36,8 +39,11 @@ const ProductCard = ({ product, onShowModal }) => {
             }
         }
 
-        localStorage.setItem('cart', JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated"));
+        clearTimeout(updateCartTimeoutRef.current);
+        updateCartTimeoutRef.current = setTimeout(() => {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            window.dispatchEvent(new Event("cartUpdated"));
+        }, 300);
 
         if (newQuantity > 0) {
             setAddedToCart(true);
@@ -45,22 +51,22 @@ const ProductCard = ({ product, onShowModal }) => {
                 setAddedToCart(false);
             }, 1000);
         }
-    };
+    }, [product.id, product.images, product.name, product.price]);
 
-    const handleIncrease = () => {
+    const handleIncrease = useCallback(() => {
         const newQuantity = (quantity || 0) + 1;
         setQuantity(newQuantity);
         setShowControls(true);
         updateCart(newQuantity);
-    };
+    }, [quantity, updateCart]);
 
-    const handleDecrease = () => {
+    const handleDecrease = useCallback(() => {
         const newQuantity = quantity > 1 ? quantity - 1 : '';
         setQuantity(newQuantity);
         updateCart(newQuantity);
-    };
+    }, [quantity, updateCart]);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = useCallback((e) => {
         let value = e.target.value;
         if (value === '') {
             setQuantity('');
@@ -72,58 +78,62 @@ const ProductCard = ({ product, onShowModal }) => {
                 updateCart(newQuantity);
             }
         }
-    };
+    }, [updateCart]);
 
+    // Sync localStorage i cartUpdated u jednom efektu
     useEffect(() => {
-        const handleCartUpdate = () => {
+        const updateFromStorage = () => {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const productInCart = cart.find((item) => item.id === product.id);
             setQuantity(productInCart ? productInCart.quantity : '');
+            setShowControls(productInCart?.quantity > 0);
         };
 
-        window.addEventListener("cartUpdated", handleCartUpdate);
+        window.addEventListener("cartUpdated", updateFromStorage, { passive: true });
+        window.addEventListener("storage", updateFromStorage, { passive: true });
+
         return () => {
-            window.removeEventListener("cartUpdated", handleCartUpdate);
+            window.removeEventListener("cartUpdated", updateFromStorage);
+            window.removeEventListener("storage", updateFromStorage);
         };
     }, [product.id]);
 
-    useEffect(() => {
-        const handleStorageChange = (event) => {
-            if (event.key === "cart") {
-                let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const productInCart = cart.find((item) => item.id === product.id);
-                setQuantity(productInCart ? productInCart.quantity : '');
-            }
-        };
+    const handleProductClick = useCallback(() => {
+        onShowModal(product);
+    }, [onShowModal, product]);
 
-        window.addEventListener("storage", handleStorageChange);
-        return () => {
-            window.removeEventListener("storage", handleStorageChange);
-        };
-    }, [product.id]);
+    const handleKeyDown = useCallback((e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            onShowModal(product);
+        }
+    }, [onShowModal, product]);
+
+    const imageSrc = product.images?.[0]?.src || "https://placehold.co/160";
 
     return (
-        <div className="products card flex-column justify-content-between p-2" key={product.id}>
+        <div className="products card flex-column justify-content-between p-2">
             <img
-                onClick={() => onShowModal(product)}
-                src={product.images.length > 0 ? product.images[0].src : "https://placehold.co/160"}
+                onClick={handleProductClick}
+                src={imageSrc}
                 width={70}
                 height={100}
                 className="card-img-top"
-                alt={product.name}
+                alt={product.name || "Product image"}
                 title={product.name}
                 role="button"
                 tabIndex="0"
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onShowModal(product)}
+                onKeyDown={handleKeyDown}
                 aria-label={`View details for ${product.name}`}
+                loading="lazy"
+                decoding="async"
             />
             <div className="product-footer px-2">
                 <div className="product-description-3">
                     <h6
-                        onClick={() => onShowModal(product)}
+                        onClick={handleProductClick}
                         role="button"
                         tabIndex="0"
-                        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onShowModal(product)}
+                        onKeyDown={handleKeyDown}
                         aria-label={`Open product details for ${product.name}`}
                         title={product.name}
                     >
@@ -181,4 +191,4 @@ const ProductCard = ({ product, onShowModal }) => {
     );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

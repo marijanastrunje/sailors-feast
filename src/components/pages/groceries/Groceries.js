@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import Breadcrumbs from "../all-pages/Breadcrumbs";
 import CategoriesSidebar from "./CategoriesSidebar";
@@ -9,6 +9,7 @@ import ModalProduct from "./ModalProduct";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 import Pagination from "../all-pages/Pagination";
+import ProductsGridSkeleton from './ProductsGridSkeleton';
 
 import './Groceries.css';
 
@@ -25,12 +26,25 @@ const Groceries = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [activeSubcategory, setActiveSubcategory] = useState(null);
 
   const location = useLocation();
   const preselectedCategoryId = location.state?.categoryId;
 
+  // Simple cache to prevent duplicate fetches
+  const fetchCache = useRef({});
+
   const fetchProducts = useCallback((categoryId, isDirectClick = false) => {
+    // Check if we already have this request in progress
+    const cacheKey = `products_${categoryId}`;
+    if (fetchCache.current[cacheKey]) {
+      console.log("Skipping duplicate fetch for products", categoryId);
+      return;
+    }
+
     setIsLoadingProducts(true);
+    fetchCache.current[cacheKey] = true;
+
     fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}&per_page=100`, {
       headers: { Authorization: authHeader }
     })
@@ -43,11 +57,29 @@ const Groceries = () => {
       .catch(error => {
         console.error(`Error fetching products for category ${categoryId}:`, error);
       })
-      .finally(() => setIsLoadingProducts(false));
+      .finally(() => {
+        setIsLoadingProducts(false);
+        // Clear cache entry after request is done
+        delete fetchCache.current[cacheKey];
+      });
   }, []);
 
   const fetchSubcategories = useCallback((categoryId) => {
-    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}&per_page=100`, {
+    // Check if we already have this request in progress
+    const cacheKey = `subcategories_${categoryId}`;
+    if (fetchCache.current[cacheKey]) {
+      console.log("Skipping duplicate fetch for subcategories", categoryId);
+      return;
+    }
+
+    // Skip if we're already showing this category
+    if (openCategory === categoryId) {
+      return;
+    }
+
+    fetchCache.current[cacheKey] = true;
+
+    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
       headers: { Authorization: authHeader }
     })
       .then(res => res.json())
@@ -66,11 +98,23 @@ const Groceries = () => {
           setActiveSubcategoryName("");
           fetchProducts(categoryId, true);
         }
+      })
+      .finally(() => {
+        // Clear cache entry after request is done
+        delete fetchCache.current[cacheKey];
       });
-  }, [fetchProducts]);
+  }, [fetchProducts, openCategory]);
 
   useEffect(() => {
     const excluded = [17, 108, 206, 198, 202];
+
+    // Check if we already have this request in progress
+    const cacheKey = 'categories';
+    if (fetchCache.current[cacheKey]) {
+      return;
+    }
+
+    fetchCache.current[cacheKey] = true;
 
     fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=0&per_page=100`, {
       headers: { Authorization: authHeader }
@@ -81,39 +125,67 @@ const Groceries = () => {
           .filter(cat => !excluded.includes(cat.id))
           .sort((a, b) => a.menu_order - b.menu_order);
         setCategories(filtered);
+      })
+      .finally(() => {
+        delete fetchCache.current[cacheKey];
       });
   }, []);
 
   useEffect(() => {
-    if (categories.length > 0) {
+    if (categories.length > 0 && !openCategory) {
       const initialId = preselectedCategoryId || categories[0].id;
       fetchSubcategories(initialId);
     }
-  }, [categories, preselectedCategoryId, fetchSubcategories]);
+  }, [categories, preselectedCategoryId, fetchSubcategories, openCategory]);
 
   const handleShowModal = (product) => {
     setSelectedProduct(product);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-const productsPerPage = 16;
+  const productsPerPage = 16;
 
-// izračun broja stranica
-const totalPages = Math.ceil(products.length / productsPerPage);
+  // izračun broja stranica
+  const totalPages = Math.ceil(products.length / productsPerPage);
 
-// odabir proizvoda za trenutnu stranicu
-const paginatedProducts = products.slice(
-  (currentPage - 1) * productsPerPage,
-  currentPage * productsPerPage
-);
+  // odabir proizvoda za trenutnu stranicu
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
 
-const handlePageChange = (page) => {
-  if (page >= 1 && page <= totalPages) {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" }); 
-  }
-};
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" }); 
+    }
+  };
 
+  // Dodajemo jednostavan lazy loading za komponente koje su dalje od prvog prikaza
+  const [isVisible, setIsVisible] = useState({
+    faq: false,
+  });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const faqSection = document.getElementById('Faq');
+      if (faqSection) {
+        const faqPosition = faqSection.getBoundingClientRect();
+        // Ako je element 300px od donjeg ruba ekrana
+        if (faqPosition.top < window.innerHeight + 300) {
+          setIsVisible(prev => ({ ...prev, faq: true }));
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Pokrenuti i odmah da provjerimo početno stanje
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <>
@@ -121,7 +193,7 @@ const handlePageChange = (page) => {
         <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
         <div className="col-lg-6 mx-auto">
           <p className="lead mb-4 text-white position-relative z-2">
-          Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We’ll deliver it all fresh to your boat.
+          Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
           </p>
         </div>
         <link rel="preload" as="image" href="/images/groceries-hero.webp" type="image/webp" />
@@ -132,6 +204,7 @@ const handlePageChange = (page) => {
       <MobileCategoriesSlider
         categories={categories}
         fetchSubcategories={fetchSubcategories}
+        activeCategory={openCategory}
       />
 
       <MobileSubcategoriesSlider
@@ -140,7 +213,8 @@ const handlePageChange = (page) => {
         fetchProducts={fetchProducts}
         excludedSubcategories={[671, 669, 670]}
         setActiveSubcategoryName={setActiveSubcategoryName}
-        setActiveSubcategory={() => {}}
+        setActiveSubcategory={setActiveSubcategory}
+        activeSubcategory={activeSubcategory}
       />
 
       <div className="container-fluid mx-auto" aria-label="Groceries product section">
@@ -154,7 +228,8 @@ const handlePageChange = (page) => {
               fetchSubcategories={fetchSubcategories}
               fetchProducts={(id) => fetchProducts(id, true)}
               setActiveSubcategoryName={setActiveSubcategoryName}
-              setActiveSubcategory={() => {}}
+              setActiveSubcategory={setActiveSubcategory}
+              activeSubcategory={activeSubcategory}
             />
           </div>
 
@@ -164,7 +239,7 @@ const handlePageChange = (page) => {
             )}
 
           {isLoadingProducts ? (
-            <p className="text-muted text-center my-4" aria-live="polite">Loading products...</p>
+            <ProductsGridSkeleton count={16} />
           ) : (
             <>
               <ProductsGrid products={paginatedProducts} onShowModal={handleShowModal} />
@@ -190,7 +265,7 @@ const handlePageChange = (page) => {
       </div>
 
       <div id="Faq" aria-label="FAQ section">
-        <Faq topicId={195} topic="Groceries" />
+        {isVisible.faq && <Faq topicId={195} topic="Groceries" />}
       </div>
 
       <ScrollToTopButton />

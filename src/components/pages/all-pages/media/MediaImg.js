@@ -18,7 +18,7 @@ const MediaImg = ({ mediaId, alt }) => {
         <img 
             src={imageUrl || "https://placehold.co/600x400?text=No+Image"} 
             alt={alt || "Image"} 
-            className="img-fluid"
+            className="img-fluid img-radius"
         />
     );
 };

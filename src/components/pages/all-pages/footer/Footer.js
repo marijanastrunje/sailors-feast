@@ -24,11 +24,13 @@ const Footer = () => {
                     <Link to={"/"}>
                     <img src="/img/logo/gray-color-logo-horizontal-sailors-feast.svg" width="250" height="50" alt="Sailor's Feast logo" title="Sailor's Feast logo" />
                     </Link>
-                    <p className="px-2">Ivana Meštrovića 35, Sesvete<br/>
-                    Phone: +385 95 539 9166 <br/>
-                    E-mail: info@sailorsfeast.com
-                    OIB:42509895972
-                    IBAN:HR9124020061101222221</p>
+                    <p className="px-2">
+                        Ivana Meštrovića 35, Sesvete<br />
+                        Phone: <a href="tel:+385955399166">+385 95 539 9166</a><br />
+                        E-mail: <a href="mailto:info@sailorsfeast.com">info@sailorsfeast.com</a><br />
+                        OIB: 42509895972<br />
+                        IBAN: HR9124020061101222221
+                    </p>
                 </div>
 
                 <div className="col-md-4 text-center pt-md-4">

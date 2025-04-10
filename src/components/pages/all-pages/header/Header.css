@@ -15,9 +15,10 @@ z-index: 1040;
 }
 
 .navbar a{
+    font-family: 'Lexend', sans-serif;
     color: var(--secondary-color);
     font-size: 21px;
-    font-weight: 380;
+    font-weight: 300;
 }
 
 .top-navbar a:hover, .navbar a:hover, .nav-link:focus{

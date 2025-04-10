@@ -15,4 +15,7 @@
     border-radius: 8px; 
 }
 
+.active-mobile-subcategory {
+    color: var(--primary-color);
+  }
 

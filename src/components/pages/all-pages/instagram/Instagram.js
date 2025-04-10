@@ -72,7 +72,7 @@ for (let i = 0; i < images.length; i += 3) {
     ? images.map((img, i) => (
         <div key={i} className="d-flex justify-content-center">
           <img
-            className="py-1"
+            className="py-1 instagram-img"
             src={img}
             alt={`Instagram ${i + 1}`}
             title={`Instagram ${i + 1}`}
@@ -89,7 +89,7 @@ for (let i = 0; i < images.length; i += 3) {
           {group.map((img, i) => (
             <img
               key={i}
-              className="my-1"
+              className="my-1 instagram-img"
               src={img}
               alt={`Instagram ${i + 1}`}
               title={`Instagram ${i + 1}`}

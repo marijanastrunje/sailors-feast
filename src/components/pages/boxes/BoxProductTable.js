@@ -126,7 +126,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
     <div className="container">
       <div className="row">
         <div className="col-md-8 col-lg-6 mx-auto mt-3">
-          <table className="table box-products">
+          <table className="table box-products rounded-table shadow-sm">
             <thead>
               <tr>
                 <th colSpan="4"><h2 className="text-center mb-0">Product List</h2></th>

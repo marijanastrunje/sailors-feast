@@ -31,3 +31,7 @@ input.quantity-input-box:focus-visible {
 .box-products img, .box-products p{
         cursor: pointer;
 }
+
+.rounded-table{
+        border-radius: 4px;
+}

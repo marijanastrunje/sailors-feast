@@ -76,15 +76,20 @@ const ContactForm = () => {
 
       <div className="container mb-5">
         <div className="row">
-          <div className="col-md-6 d-flex flex-column justify-content-center">
-            <h2 className="mb-3">Contact Info</h2>
-            <p>
-              Sailor's Feast<br />
-              +385 95 539 9166<br />
-              Street and number<br />
-              City
-            </p>
-          </div>
+        <div className="col-md-6 d-flex flex-column justify-content-start">
+          <h2 className="mb-3 text-start">Contact Info</h2>
+          <p>
+            If you have any questions about our grocery delivery service, custom orders for your yacht, or need help with your shopping list — we're just a message away.
+          </p>
+          <p>
+            <strong>Sailor's Feast</strong><br />
+            Ivana Meštrovića 35<br />
+            10360 Sesvete, Croatia<br />
+            <a href="tel:+385955399166">+385 95 539 9166</a><br />
+            <a href="mailto:info@sailorsfeast.com">info@sailorsfeast.com</a>
+          </p>
+        </div>
+
 
           <div className="col-md-6">
             <form onSubmit={handleSubmit} aria-labelledby="contact-form-title">

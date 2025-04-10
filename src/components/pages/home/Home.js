@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Link } from "react-router-dom";
+import "./Home.css";
 
-import HeroVideo from "./sections/HeroVideo";
-import Advantages from "./sections/Advantages";
-import BoxCarousel from "./sections/BoxCarousel";
-import SpecialOffer from "./sections/SpecialOffer";
-import DeliveryMap from "./sections/delivery/DeliveryMap";
-import RecipeBlock from "./sections/RecipeBlock";
-import HomePageBlog from "./sections/HomePageBlog";
-
-import HomePageCategories from "../groceries/HomePageCategories";
-import InstagramGallery from "../all-pages/instagram/Instagram";
-import Faq from "../all-pages/Faq";
+// Samo osnovne komponente učitane odmah
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
 
-import "./Home.css";
+// Lazy loading komponenti
+const HeroVideo = React.lazy(() => import("./sections/HeroVideo"));
+const Advantages = React.lazy(() => import("./sections/Advantages"));
+const BoxCarousel = React.lazy(() => import("./sections/BoxCarousel"));
+const SpecialOffer = React.lazy(() => import("./sections/SpecialOffer"));
+const DeliveryMap = React.lazy(() => import("./sections/delivery/DeliveryMap"));
+const RecipeBlock = React.lazy(() => import("./sections/RecipeBlock"));
+const HomePageBlog = React.lazy(() => import("./sections/HomePageBlog"));
+const HomePageCategories = React.lazy(() => import("../groceries/HomePageCategories"));
+const InstagramGallery = React.lazy(() => import("../all-pages/instagram/Instagram"));
+const Faq = React.lazy(() => import("../all-pages/Faq"));
 
 // API config
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -41,74 +42,68 @@ const Home = () => {
       });
   }, []);
 
+  // Fallback loader
+  const Loader = () => <div className="text-center p-3">Loading...</div>;
+
   return (
     <>
-      
+      <Suspense fallback={<Loader />}>
+
       <HeroVideo />
 
-      <section id="advantages">
-        <Advantages />
-      </section>
+        <section id="advantages">
+          <Advantages />
+        </section>
 
-      <section id="special-offer">
-        <SpecialOffer />
-      </section>
+        <section id="special-offer">
+          <SpecialOffer />
+        </section>
 
-      <section id="product-carousel">
-        <BoxCarousel />
-      </section>
+        <section id="product-carousel">
+          <BoxCarousel />
+        </section>
 
-      <section id="categories" className="py-md-5">
-        <h2>Shop by category</h2>
-        <HomePageCategories categories={categories} />
-      </section>
+        <section id="categories" className="py-md-5">
+          <h2>Shop by category</h2>
+          <HomePageCategories categories={categories} />
+        </section>
 
-      <section id="your-box" className="bg-white py-3">
-        <div className="container d-flex flex-column justify-content-center align-items-center">
-          <h2>Mix & Match</h2>
-          <img className="mb-3" src="https://placehold.co/300x50" alt="Divider" title="Divider" />
-          <p className="text-center">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae enim pharetra, venenatis nunc eget, finibus est.
-          </p>
-          <Link to="/groceries" className="btn btn-prim">Order CTA</Link>
-        </div>
-      </section>
+        <section id="delivery">
+          <DeliveryMap />
+        </section>
 
-      <section id="delivery">
-        <DeliveryMap />
-      </section>
-
-      <section id="recepies">
-        <div className="container">
-          <div className="row align-items-center mb-3">
-            <div className="col-6">
-              <Link to="/recipes"><h2 className="text-start">Recipes</h2></Link>
-            </div>
-            <div className="col-6 text-end">
-              <Link to="/recipes">View more</Link>
+        <section id="recepies">
+          <div className="container">
+            <div className="row align-items-center mb-3">
+              <div className="col-6">
+                <Link to="/recipes"><h2 className="text-start">Recipes</h2></Link>
+              </div>
+              <div className="col-6 text-end">
+                <Link to="/recipes">View more</Link>
+              </div>
             </div>
           </div>
-        </div>
-        <RecipeBlock />
-      </section>
+          <RecipeBlock />
+        </section>
 
-      <section id="recent-posts">
-        <div className="container py-5 me-md-4 me-lg-3">
-          <div className="row justify-content-center">
-            <div className="col-11 col-sm-12 col-md-9 col-lg-8">
-              <h3>Recent posts</h3>
-              <HomePageBlog />
-            </div>
-            <div className="col-md-3 col-lg-2 offset-lg-1">
-              <InstagramGallery />
+        <section id="recent-posts">
+          <div className="container py-5 me-md-4 me-lg-3">
+            <div className="row justify-content-center">
+              <div className="col-11 col-sm-12 col-md-9 col-lg-8">
+                <h3>Recent posts</h3>
+                <HomePageBlog />
+              </div>
+              <div className="col-md-3 col-lg-2 offset-lg-1">
+                <InstagramGallery />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="Faq">
-        <Faq topic="Home" topicId={194} />
-      </section>
+        <section id="Faq">
+          <Faq topic="Home" topicId={194} />
+        </section>
+      </Suspense>
 
       <ScrollToTopButton />
     </>

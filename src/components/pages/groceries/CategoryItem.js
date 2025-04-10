@@ -1,6 +1,6 @@
 import React from "react";
 
-const CategoryItem = ({ category, onClick }) => (
+const CategoryItem = ({ category, onClick, isActive }) => (
   <div
     className="d-flex flex-column align-items-center text-center"
     onClick={() => onClick(category.id)}
@@ -17,7 +17,7 @@ const CategoryItem = ({ category, onClick }) => (
       alt={`${category.name} icon`}
       title={category.name}
     />
-    <h3 className="category-name">{category.name}</h3>
+    <h3 className={`category-name ${isActive ? 'active-mobile-category' : ''}`}>{category.name}</h3>
   </div>
 );
 

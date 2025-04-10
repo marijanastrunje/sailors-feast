@@ -1,0 +1,96 @@
+.skeleton-title {
+    height: 32px;
+    width: 70%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-subtitle {
+    height: 24px;
+    width: 40%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-description {
+    height: 16px;
+    width: 90%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .skeleton-button {
+    height: 40px;
+    width: 150px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-image {
+    height: 300px;
+    width: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 8px;
+  }
+  
+  .skeleton-img-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+  }
+  
+  .skeleton-text {
+    height: 16px;
+    width: 90%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-price {
+    height: 16px;
+    width: 50px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-control {
+    height: 32px;
+    width: 100px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .skeleton-th {
+    height: 20px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shine 1.5s infinite;
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+  
+  @keyframes shine {
+    to {
+      background-position: -200% 0;
+    }
+  }

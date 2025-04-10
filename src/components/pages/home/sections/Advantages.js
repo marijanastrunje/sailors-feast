@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./Advantages.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 

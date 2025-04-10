@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
@@ -6,26 +6,44 @@ import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const BoxCarousel = () => {
+
   const [boxes, setBoxes] = useState([]);
 
   useEffect(() => {
+    // Dodati varijablu za praćenje mountanja
+    let isMounted = true;
+
     fetch(`${backendUrl}/wp-json/wp/v2/boxes?per_page=10&_embed`)
       .then(res => res.json())
       .then(data => {
-        setBoxes(data);
+        // Provjerite je li komponenta još uvijek mountana prije ažuriranja stanja
+        if (isMounted) {
+          setBoxes(data);
 
-        // Inicijaliziraj Bootstrap carousel ručno
-        setTimeout(() => {
-          const el = document.getElementById("carouselExample");
-          if (el && window.bootstrap?.Carousel) {
-            new window.bootstrap.Carousel(el, {
-              interval: 5000,
-              ride: "carousel",
-            });
-          }
-        }, 100);
+          // Inicijaliziraj Bootstrap carousel ručno
+          setTimeout(() => {
+            if (!isMounted) return; // Provjeri je li komponenta još uvijek mountana
+            
+            const el = document.getElementById("carouselExample");
+            if (el && window.bootstrap?.Carousel) {
+              new window.bootstrap.Carousel(el, {
+                interval: 5000,
+                ride: "carousel",
+              });
+            }
+          }, 100);
+        }
       })
-      .catch(err => console.error("Error fetching boxes:", err));
+      .catch(err => {
+        if (isMounted) {
+          console.error("Error fetching boxes:", err)
+        }
+      });
+
+    // Cleanup funkcija
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -115,4 +133,4 @@ const BoxCarousel = () => {
   );
 };
 
-export default BoxCarousel;
+export default memo(BoxCarousel);

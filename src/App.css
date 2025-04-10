@@ -1,4 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@font-face {
+  font-family: 'Inter';
+  src: url('./components/pages/all-pages/fonts/Inter-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lexend';
+  src: url('./components/pages/all-pages/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 
 
 :root {
@@ -6,13 +22,14 @@
     --secondary-color: #FFFFFF;
     --tertiary-color: #3E4147;
     --nav-color: rgba(0, 0, 0, 0.8);  
-    --footer-bg-color:#ebe8e8;
+    --footer-bg-color:#FDFBF7;
+    --footer-color:#ECE5DF;
     --text-muted-color:#495057;
     --h-color: #333333;
 }
 
 body{
-  background-color: #d2d2d2;
+  background-color: #F3F0E8 ;
 }
 
 section{
@@ -32,7 +49,7 @@ section{
 } 
 
 h1{
-  font-family: "Inter", serif;
+  font-family: "Lexend", sans-serif;
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 650; 
   color: var(--h-color);
@@ -41,7 +58,7 @@ h1{
 }
 
 h2{
-  font-family: "Inter", serif;
+  font-family: "Lexend", sans-serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 550;
   margin-bottom: 30px;
@@ -50,22 +67,21 @@ h2{
 }
 
 h3 {
-  font-family: "Inter", serif;
+  font-family: "Lexend", sans-serif;
   font-size: clamp(1rem, 5vw, 1.5rem);
   font-weight: 500; 
   color: var(--h-color);
 }
 
 h4 {
-  font-family: "Inter", serif;
+  font-family: "Lexend", sans-serif;
   font-size: clamp(0.875rem, 5vw, 1.25rem); 
   font-weight: 500;
   color: var(--h-color);
 }
 
-
 p {
-  font-family: "Roboto", serif;
+  font-family: "Inter", sans-serif;
   font-size: clamp(0.875rem, 5vw, 1rem);
   color: var(--text-muted-color);
 }
@@ -75,7 +91,8 @@ img{
 }
 
 .btn-prim{
-	background-color: var(--primary-color);
+  font-family: "Lexend", sans-serif;
+  background-color: var(--primary-color);
   color: var(--secondary-color);
   transition: background-color 0.3s ease;
 }
@@ -86,6 +103,7 @@ img{
 }
 
 .btn-secondary{
+  font-family: "Lexend", sans-serif;
   background-color: var(--text-muted-color);
   color: var(--secondary-color);
 }
@@ -131,5 +149,56 @@ a{
   pointer-events: auto;
 }
 
+.global-loader {
+  position: fixed;
+  inset: 0;
+  background-color: #fff;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
 
-  
+.global-loader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.spinner {
+  animation: rotate 1s linear infinite;
+  width: 50px;
+  height: 50px;
+}
+
+.spinner .path {
+  stroke: #cc4425;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+.img-radius{
+  border-radius: 4px;
+}

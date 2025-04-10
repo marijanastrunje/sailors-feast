@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import './MobileCategoriesSlider.css';
 
-const MobileCategoriesSlider = ({ categories, fetchSubcategories }) => {
+const MobileCategoriesSlider = ({ categories, fetchSubcategories, activeCategory }) => {
   const settings = {
     dots: false,
     infinite: false,
@@ -29,6 +29,7 @@ const MobileCategoriesSlider = ({ categories, fetchSubcategories }) => {
             key={category.id}
             category={category}
             onClick={fetchSubcategories}
+            isActive={category.id === activeCategory}
           />
         ))}
       </Slider>
