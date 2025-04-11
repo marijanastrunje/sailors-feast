@@ -1,14 +1,19 @@
 import React from "react";
 
-const CategoryItem = ({ category, onClick, isActive }) => (
+const CategoryItem = ({ category, onClick, isActive, isVisible = true }) => (
   <div
     className="d-flex flex-column align-items-center text-center"
-    onClick={() => onClick(category.id)}
-    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick(category.id)}
+    onClick={isVisible ? () => onClick(category.id) : undefined}
+    onKeyDown={isVisible ? (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        onClick(category.id);
+      }
+    } : undefined}
     role="button"
-    tabIndex="0"
-    aria-label={`Select category ${category.name}`}
-    title={`Select category ${category.name}`}
+    tabIndex={isVisible ? 0 : -1}
+    aria-label={isVisible ? `Select category ${category.name}` : undefined}
+    aria-hidden={!isVisible}
+    title={category.name}
   >
     <img
       src={category.image ? category.image.src : "https://placehold.co/20"}
@@ -17,7 +22,9 @@ const CategoryItem = ({ category, onClick, isActive }) => (
       alt={`${category.name} icon`}
       title={category.name}
     />
-    <h3 className={`category-name ${isActive ? 'active-mobile-category' : ''}`}>{category.name}</h3>
+    <h3 className={`category-name ${isActive ? 'active-mobile-category' : ''}`}>
+      {category.name}
+    </h3>
   </div>
 );
 

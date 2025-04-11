@@ -29,7 +29,13 @@
 }
 
 body{
-  background-color: #F3F0E8 ;
+  background-color: #FCFCF7 ;
+  margin-top: 99px;
+}
+
+body.login-page,
+body.register-page {
+  margin-top: 0px;
 }
 
 section{

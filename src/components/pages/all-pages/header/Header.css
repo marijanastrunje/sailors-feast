@@ -3,7 +3,7 @@
 }
 
 .top-navbar{
-height: 30px;
+height: 34px;
 border-bottom: 1px solid #495057;
 z-index: 1040;
 }
@@ -27,7 +27,7 @@ z-index: 1040;
 
 
 .navbar{
-margin-top: 30px;
+margin-top: 34px;
 }
 
 .navbar-toggler{
@@ -109,4 +109,13 @@ margin-top: 30px;
 .dropdown-item{
   font-size: 18px;
 }
+
+.close-btn {
+  position: absolute;
+  filter: invert(1);
+  top: 4.5rem;
+  right: 1rem;
+  z-index: 1050;
+}
+
 
