@@ -46,11 +46,12 @@ const Blog = () => {
 
   return (
     <section id="blog">
-      <div className="container py-5">
+      <div className="container-fluid py-5">
         <div className="row justify-content-center">
-          <h1 className="text-center text-md-start text-lg-center">Blog</h1>
+          
 
-          <div className="col-sm-12 col-md-10 col-lg-8 offset-lg-2">
+          <div className="col-sm-12 col-md-10 col-lg-8 offset-lg-1">
+            <h1 className="text-center">Blog</h1>
             <div className="filteri d-flex justify-content-center justify-content-md-start justify-content-lg-center pb-5 flex-wrap gap-2">
               {categories.map((cat) => (
                 <button

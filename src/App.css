@@ -124,6 +124,10 @@ button.slick-prev.slick-arrow::before, button.slick-next.slick-arrow::before{
   }
 }
 
+.text-prim{
+  color: var(--primary-color);
+}
+
 ul{
   list-style: none;
   padding: 0;

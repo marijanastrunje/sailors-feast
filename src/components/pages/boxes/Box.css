@@ -35,3 +35,11 @@ input.quantity-input-box:focus-visible {
 .rounded-table{
         border-radius: 4px;
 }
+
+@media (max-width: 480px) {
+        .box-products img,
+        .box-products .placeholder-img {
+                width: 200px !important;
+                height: auto;
+        }
+}

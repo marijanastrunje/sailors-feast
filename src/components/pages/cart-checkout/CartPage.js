@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import './CartPage.css'
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 

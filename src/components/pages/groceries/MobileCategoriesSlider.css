@@ -1,6 +1,7 @@
 .mobile-categories-slider{
-    height: 100px;
-    background-color: var(--footer-bg-color);
+    height: 107px;
+    background-color: var(--footer-background-color);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
   
 h3.category-name {
@@ -9,7 +10,6 @@ h3.category-name {
 
 .active-mobile-category { 
     color: var(--primary-color);
-    border-radius: 6px;
     font-weight: 600;
-  }
+}
   

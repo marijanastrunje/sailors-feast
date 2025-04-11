@@ -1,11 +1,8 @@
 .mobile-subcategories-slider{
     background-color: var(--footer-bg-color);
-}
-
-.mobile-subcategories-slider{
     padding-bottom: 4px;
+    margin-top: 5px;
 }
-
 
 .subcategory-name {
     font-size: 15px;

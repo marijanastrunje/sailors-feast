@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faEnvelope, faUser, faBars, faCartShopping,faMagnifyingGlass, faHouse, 
     faBasketShopping, faBoxOpen, faSpoon, faBookOpen } from '@fortawesome/free-solid-svg-icons';
@@ -11,14 +11,43 @@ const Header = () => {
     const [menu, setMenu] = useState(false);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+
     const location = useLocation();
+    const navigate = useNavigate();
     const currentPath = location.pathname;
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+
 
     const isFoodBoxActive = currentPath.startsWith('/standard-box') ||
                             currentPath.startsWith('/feast-box') ||
                             currentPath.startsWith('/friends-family-box') ||
                             currentPath.startsWith('/healthy-box') ||
                             currentPath === '/all-boxes';
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(async () => {
+            if (searchTerm.trim().length > 1) {
+            try {
+                const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/wp-json/wc/v3/products?search=${searchTerm}`, {
+                headers: {
+                    Authorization: 'Basic ' + btoa(`${process.env.REACT_APP_WC_KEY}:${process.env.REACT_APP_WC_SECRET}`)
+                }
+                });
+                const data = await res.json();
+                setSearchResults(data.slice(0, 5)); // prikazujemo max 5 prijedloga
+            } catch (err) {
+                console.error("Greška kod pretraživanja:", err);
+                setSearchResults([]);
+            }
+            } else {
+            setSearchResults([]);
+            }
+        }, 400); // debounce 400ms
+        
+        return () => clearTimeout(delayDebounce);
+        }, [searchTerm]);
 
 
     useEffect(() => {
@@ -62,6 +91,24 @@ const Header = () => {
         setMenu(false); // Svaka promjena rute zatvara meni
     }, [location.pathname]);
     
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            // Preload search results by fetching them first
+            navigate(`/groceries?search=${encodeURIComponent(searchTerm.trim())}`);
+            setSearchTerm('');
+            setSearchResults([]);
+            setIsSearchVisible(false);
+        }
+    };
+
+    const handleSearchItemClick = (productName) => {
+        setSearchTerm('');
+        setSearchResults([]);
+        setIsSearchVisible(false);
+        // For product names, go directly to groceries page with search
+        navigate(`/groceries?search=${encodeURIComponent(productName)}`);
+    };
 
     if (location.pathname === "/login" || location.pathname === "/register") return null;
 
@@ -113,10 +160,35 @@ const Header = () => {
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </button>
                         <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`}>
-                            <form className="d-flex p-2">
-                                <input type="text" className="form-control" placeholder="Upiši pojam za pretraživanje" />
-                                <button className="btn btn-outline-secondary ms-1" type="submit">Search</button>
+                        <form
+                            className="d-flex p-2"
+                            onSubmit={handleSearchSubmit}
+                            >
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search groceries"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <button className="btn btn-outline-secondary ms-1" type="submit">Search</button>
                             </form>
+
+                            {searchResults.length > 0 && (
+                                <div className="autocomplete-results position-absolute bg-white w-100 shadow mt-2 rounded">
+                                    {searchResults.map(product => (
+                                    <div
+                                        key={product.id}
+                                        className="p-2 border-bottom d-flex align-items-center search-suggestion"
+                                        onClick={() => handleSearchItemClick(product.name)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <img src={product.images[0]?.src} alt={product.name} width="40" className="me-2" />
+                                        <span>{product.name}</span>
+                                    </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <Link to="/cart" id="ikone" aria-label="Cart" className="me-2 me-md-4">
                             <FontAwesomeIcon icon={faCartShopping} />

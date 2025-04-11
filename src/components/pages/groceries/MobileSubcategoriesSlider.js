@@ -32,7 +32,6 @@ const MobileSubcategoriesSlider = ({
     speed: 300,
     slidesToShow: 2,
     swipeToSlide: true,
-    focusOnSelect: true,
     variableWidth: true,
     accessibility: true,
   };

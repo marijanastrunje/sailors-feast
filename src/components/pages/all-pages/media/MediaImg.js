@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const MediaImg = ({ mediaId, alt }) => {
+const MediaImg = ({ mediaId, alt, className = "" }) => {
     const [imageUrl, setImageUrl] = useState(null);
 
     useEffect(() => {
@@ -18,7 +18,7 @@ const MediaImg = ({ mediaId, alt }) => {
         <img 
             src={imageUrl || "https://placehold.co/600x400?text=No+Image"} 
             alt={alt || "Image"} 
-            className="img-fluid img-radius"
+            className={className}
         />
     );
 };

@@ -73,7 +73,7 @@ const Home = () => {
         </section>
 
         <section id="recepies">
-          <div className="container">
+          <div className="container col-md-9 px-5">
             <div className="row align-items-center mb-3">
               <div className="col-6">
                 <Link to="/recipes"><h2 className="text-start">Recipes</h2></Link>
@@ -87,13 +87,13 @@ const Home = () => {
         </section>
 
         <section id="recent-posts">
-          <div className="container py-5 me-md-4 me-lg-3">
+          <div className="container-fluid py-5">
             <div className="row justify-content-center">
-              <div className="col-11 col-sm-12 col-md-9 col-lg-8">
-                <h3>Recent posts</h3>
+              <div className="col-11 col-sm-12 col-md-9 col-lg-7">
+                <h2 className="text-start">Recent posts</h2>
                 <HomePageBlog />
               </div>
-              <div className="col-md-3 col-lg-2 offset-lg-1">
+              <div className="col-md-3 col-lg-2">
                 <InstagramGallery />
               </div>
             </div>

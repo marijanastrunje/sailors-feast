@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import BoxProductTable from "./BoxProductTable";
 import ModalProduct from "../groceries/ModalProduct";
 import BoxModal from "./BoxModal";
@@ -13,17 +13,25 @@ const authHeader = {
   Authorization: "Basic " + btoa(`${wcKey}:${wcSecret}`),
 };
 
-// Cache za API pozive
-const apiCache = {
-  categories: {},
-  products: {},
-  timestamp: Date.now()
-};
+const CACHE_EXPIRATION = 60 * 60 * 1000;
+let globalCache = {};
 
-// Cache istječe nakon 5 minuta
-const CACHE_EXPIRATION = 5 * 60 * 1000;
+try {
+  const savedCache = localStorage.getItem('box_api_cache');
+  if (savedCache) {
+    const parsedCache = JSON.parse(savedCache);
+    if (parsedCache && (Date.now() - parsedCache.timestamp < CACHE_EXPIRATION)) {
+      globalCache = parsedCache;
+    }
+  }
+} catch (e) {
+  console.error('Error loading cache from localStorage', e);
+}
 
 const BoxLayout = ({ categoryId, categoryMapping }) => {
+  const componentMounted = useRef(true);
+  const apiCache = useRef(globalCache);
+
   const [subcategories, setSubcategories] = useState([]);
   const [subcategoryProducts, setSubcategoryProducts] = useState({});
   const [extraProducts, setExtraProducts] = useState([]);
@@ -31,96 +39,113 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryInfo, setCategoryInfo] = useState({ name: "", description: "", image: "" });
   const [isLoading, setIsLoading] = useState(true);
-  // Uklonjena nekorištena varijabla headerLoaded
-  
-  // Fetch samo info o kategoriji – odmah za header
-  useEffect(() => {
-    const cacheKey = `category_${categoryId}`;
-    
-    // Prvo provjeri cache
-    if (apiCache.categories[cacheKey] && (Date.now() - apiCache.timestamp < CACHE_EXPIRATION)) {
-      setCategoryInfo(apiCache.categories[cacheKey]);
-      return; // Uklonjen setHeaderLoaded
-    }
-    
-    fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, {
-      headers: authHeader,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const info = {
-          name: data.name,
-          description: data.description,
-          image: data.image?.src || "",
-        };
-        
-        // Spremanje u cache
-        apiCache.categories[cacheKey] = info;
-        apiCache.timestamp = Date.now();
-        
-        setCategoryInfo(info);
-        // Uklonjen setHeaderLoaded
-      })
-      .catch((err) => {
-        console.error("Greška u dohvaćanju kategorije:", err);
-        // Uklonjen setHeaderLoaded
-      });
-  }, [categoryId]);
+  const [headerLoaded, setHeaderLoaded] = useState(false);
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  const [activeModalCategory, setActiveModalCategory] = useState(null);
 
-  // Grupirani fetch proizvoda za sve subkategorije
   useEffect(() => {
-    const fetchProducts = async () => {
-      const cacheKey = `subcategories_${categoryId}`;
-      
+    const fetchCategoryInfo = async () => {
+      const cacheKey = `category_${categoryId}`;
+      if (apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
+        setCategoryInfo(apiCache.current[cacheKey]);
+        setHeaderLoaded(true);
+        return;
+      }
+
       try {
-        // Prvo provjeri cache
-        if (apiCache.categories[cacheKey] && (Date.now() - apiCache.timestamp < CACHE_EXPIRATION)) {
-          setSubcategories(apiCache.categories[cacheKey].subcategoriesData);
-          setSubcategoryProducts(apiCache.categories[cacheKey].grouped);
-          setIsLoading(false);
-          return;
-        }
-        
-        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, {
           headers: authHeader,
         });
-        const subcategoriesData = await res.json();
-        setSubcategories(subcategoriesData);
+        const data = await res.json();
+        if (!componentMounted.current) return;
 
-        // Optimizirano učitavanje - dodali smo _fields parametar da smanjimo veličinu odgovora
-        const allSubcategoryIds = subcategoriesData.map(sub => sub.id).join(",");
-        const productRes = await fetch(
-          `${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories`, 
-          {
-            headers: authHeader,
-          }
-        );
-        const allProducts = await productRes.json();
-
-        const grouped = {};
-        subcategoriesData.forEach(sub => {
-          grouped[sub.id] = allProducts.filter(prod =>
-            prod.categories.some(cat => cat.id === sub.id)
-          );
-        });
-
-        // Spremanje u cache
-        apiCache.categories[cacheKey] = {
-          subcategoriesData,
-          grouped
+        const info = {
+          name: data.name || "",
+          description: data.description || "",
+          image: data.image?.src || "",
         };
-        apiCache.timestamp = Date.now();
 
-        setSubcategoryProducts(grouped);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Greška u dohvaćanju proizvoda:", error);
-        setIsLoading(false);
+        if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
+        apiCache.current[cacheKey] = info;
+        apiCache.current.timestamp = Date.now();
+
+        setCategoryInfo(info);
+        setHeaderLoaded(true);
+      } catch (err) {
+        console.error("Greška u dohvaćanju kategorije:", err);
+        setHeaderLoaded(true);
       }
     };
 
-    fetchProducts();
+    const fetchSubcategoriesAndProducts = async () => {
+      const cacheKey = `subcategories_${categoryId}`;
+      if (apiCache.current && apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
+        setSubcategories(apiCache.current[cacheKey].subcategoriesData);
+        setSubcategoryProducts(apiCache.current[cacheKey].grouped);
+        setProductsLoaded(true);
+        return;
+      }
+
+      try {
+        const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
+          headers: authHeader,
+        });
+        const subcategoriesData = await subcatRes.json();
+        if (!componentMounted.current) return;
+        setSubcategories(subcategoriesData);
+
+        if (subcategoriesData.length > 0) {
+          const allSubcategoryIds = subcategoriesData.map(sub => sub.id).join(",");
+          const productRes = await fetch(
+            `${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories`,
+            { headers: authHeader }
+          );
+          const allProducts = await productRes.json();
+          if (!componentMounted.current) return;
+
+          const grouped = {};
+          subcategoriesData.forEach(sub => {
+            grouped[sub.id] = allProducts.filter(prod =>
+              prod.categories.some(cat => cat.id === sub.id)
+            );
+          });
+
+          if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
+          apiCache.current[cacheKey] = {
+            subcategoriesData,
+            grouped
+          };
+          apiCache.current.timestamp = Date.now();
+
+          setSubcategoryProducts(grouped);
+        }
+
+        setProductsLoaded(true);
+      } catch (error) {
+        console.error("Greška u dohvaćanju proizvoda:", error);
+        setProductsLoaded(true);
+      }
+    };
+
+    fetchCategoryInfo();
+    fetchSubcategoriesAndProducts();
+
+    return () => {
+      componentMounted.current = false;
+      try {
+        localStorage.setItem('box_api_cache', JSON.stringify(apiCache.current));
+        globalCache = apiCache.current;
+      } catch (e) {
+        console.error('Error saving cache to localStorage', e);
+      }
+    };
   }, [categoryId]);
+
+  useEffect(() => {
+    if (headerLoaded && productsLoaded) {
+      setIsLoading(false);
+    }
+  }, [headerLoaded, productsLoaded]);
 
   const handleShowProductModal = (product) => {
     setSelectedProduct(product);
@@ -134,53 +159,93 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   };
 
   const fetchExtraSubcategories = useCallback(async (parentCategoryId) => {
+    setExtraProducts([]);
     const cacheKey = `extras_${parentCategoryId}`;
-    
-    // Prvo provjeri cache
-    if (apiCache.categories[cacheKey] && (Date.now() - apiCache.timestamp < CACHE_EXPIRATION)) {
-      setExtraProducts(apiCache.categories[cacheKey]);
+    if (apiCache.current && apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
+      setExtraProducts(apiCache.current[cacheKey]);
       return;
     }
-    
-    const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
-      headers: authHeader,
-    });
-    const subcats = await res.json();
 
-    const withProducts = await Promise.all(
-      subcats.map(async subcat => {
+    try {
+      const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
+        headers: authHeader,
+      });
+      const subcats = await res.json();
+      if (!componentMounted.current) return;
+
+      const productPromises = subcats.map(async subcat => {
         const res = await fetch(
-          `${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}&_fields=id,name,price,images,categories`, 
-          {
-            headers: authHeader,
-          }
+          `${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}&_fields=id,name,price,images,categories`,
+          { headers: authHeader }
         );
         const products = await res.json();
         return { id: subcat.id, name: subcat.name, products };
-      })
-    );
-    
-    // Spremanje u cache
-    apiCache.categories[cacheKey] = withProducts;
-    apiCache.timestamp = Date.now();
+      });
 
-    setExtraProducts(withProducts);
+      const withProducts = await Promise.all(productPromises);
+      if (!componentMounted.current) return;
+
+      if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
+      apiCache.current[cacheKey] = withProducts;
+      apiCache.current.timestamp = Date.now();
+
+      setExtraProducts(withProducts);
+    } catch (error) {
+      console.error("Greška u dohvaćanju dodatnih subkategorija:", error);
+      setExtraProducts([]);
+    }
   }, []);
 
-  const handleShowModal = (categoryId) => {
-    fetchExtraSubcategories(categoryId);
+  // ✅ AŽURIRANI handleShowModal
+  const handleShowModal = useCallback((subcategoryId) => {
+    setExtraProducts([]);
+    setActiveModalCategory(subcategoryId);
     setShowModal(true);
-  };
+    fetchExtraSubcategories(categoryMapping[subcategoryId]);
+  }, [fetchExtraSubcategories, categoryMapping]);
 
-  const handleAddProduct = async (product, quantity) => {
-    // Postojeći kod...
+  // ✅ AŽURIRANI handleAddProduct
+  const handleAddProduct = (product, quantity) => {
+    const productSubcategoryId = product.categories?.find(cat =>
+      subcategories.some(sub => sub.id === cat.id)
+    )?.id;
+
+    const subcategoryId = productSubcategoryId || activeModalCategory;
+
+    if (!subcategoryId) {
+      console.error("Nije poznata podkategorija za dodavanje proizvoda");
+      return;
+    }
+
+    setSubcategoryProducts(prev => {
+      const existing = prev[subcategoryId] || [];
+      const existingProduct = existing.find(p => p.id === product.id);
+
+      if (existingProduct) {
+        return {
+          ...prev,
+          [subcategoryId]: existing.map(p =>
+            p.id === product.id
+              ? { ...p, quantity: (p.quantity || 0) + quantity }
+              : p
+          )
+        };
+      } else {
+        return {
+          ...prev,
+          [subcategoryId]: [...existing, { ...product, quantity }]
+        };
+      }
+    });
+
+    setShowModal(false);
   };
 
   const totalSum = useMemo(() => {
     return subcategories.reduce((sum, sub) => {
       return (
         sum +
-        (subcategoryProducts[sub.id]?.reduce((s, p) => s + p.price * (p.quantity || 1), 0) || 0)
+        (subcategoryProducts[sub.id]?.reduce((s, p) => s + Number(p.price || 0) * (p.quantity || 1), 0) || 0)
       );
     }, 0);
   }, [subcategories, subcategoryProducts]);
@@ -189,9 +254,30 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     // Postojeći kod...
   };
 
-  // Koristimo skeleton loader dok se sadržaj učitava
+  const handleCloseModal = useCallback(() => {
+    setShowModal(false);
+    setTimeout(() => {
+      setExtraProducts([]);
+      setActiveModalCategory(null);
+    }, 300);
+  }, []);
+
   if (isLoading) {
-    return <BoxLayoutSkeleton />;
+    return (
+      <>
+        {headerLoaded && (
+          <BoxHeader
+            title={categoryInfo.name}
+            description={categoryInfo.description}
+            image={categoryInfo.image}
+            totalSum={0}
+            isLoading={true}
+            onAddToCart={addToCart}
+          />
+        )}
+        <BoxLayoutSkeleton />
+      </>
+    );
   }
 
   return (
@@ -218,8 +304,9 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
         <BoxModal
           extraProducts={extraProducts}
           handleAddProduct={handleAddProduct}
-          closeModal={() => setShowModal(false)}
+          closeModal={handleCloseModal}
           onShowProductModal={handleShowProductModal}
+          categoryMapping={categoryMapping}
         />
       )}
 
@@ -229,29 +316,5 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     </>
   );
 };
-
-// Spremanje cache u localStorage pri napuštanju stranice
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
-    try {
-      localStorage.setItem('box_api_cache', JSON.stringify(apiCache));
-    } catch (e) {
-      console.error('Error saving cache to localStorage', e);
-    }
-  });
-
-  // Učitavanje cache iz localStorage
-  try {
-    const savedCache = localStorage.getItem('box_api_cache');
-    if (savedCache) {
-      const parsedCache = JSON.parse(savedCache);
-      if (parsedCache && (Date.now() - parsedCache.timestamp < CACHE_EXPIRATION)) {
-        Object.assign(apiCache, parsedCache);
-      }
-    }
-  } catch (e) {
-    console.error('Error loading cache from localStorage', e);
-  }
-}
 
 export default BoxLayout;
