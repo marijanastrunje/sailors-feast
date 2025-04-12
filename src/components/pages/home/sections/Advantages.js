@@ -64,7 +64,7 @@ const Advantages = () => {
                     />
                   </div>
                   <div className={`col-6 col-md-12 ${textCol} ${textOrder} ${textAlign} p-0`}>
-                    <h4>{item.title}</h4>
+                    <h3 className="advantage-label">{item.title}</h3>
                     <p>{item.description}</p>
                   </div>
                 </div>

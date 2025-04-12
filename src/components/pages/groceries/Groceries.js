@@ -32,8 +32,9 @@ const Groceries = () => {
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(true);
-
+  const [initialLoad, setInitialLoad] = useState(false); // Changed to false to remove initial spinner
+  const searchInitiatedRef = useRef(false);
+  
   const location = useLocation();
   const navigate = useNavigate();
   const preselectedCategoryId = location.state?.categoryId;
@@ -51,6 +52,27 @@ const Groceries = () => {
   // Simple cache to prevent duplicate fetches
   const fetchCache = useRef({});
 
+  // Nova funkcija koja direktno pretražuje proizvode preko API-ja
+  const directSearchProducts = useCallback((term) => {
+    setIsLoadingProducts(true);
+    console.log(`Performing direct API search for: "${term}"`);
+
+    // Direktno pretražujemo proizvode preko WooCommerce API-ja
+    fetch(`${backendUrl}/wp-json/wc/v3/products?search=${encodeURIComponent(term)}&per_page=100`, {
+      headers: { Authorization: authHeader }
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(`Found ${data.length} products directly from API for search: "${term}"`);
+        setFilteredProducts(data);
+        setIsLoadingProducts(false);
+      })
+      .catch(error => {
+        console.error("Error during direct API search:", error);
+        setIsLoadingProducts(false);
+      });
+  }, []);
+
   // Get search term from URL query parameters
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -58,13 +80,16 @@ const Groceries = () => {
     if (search) {
       setSearchTerm(search);
       setIsSearchActive(true);
+      searchInitiatedRef.current = true; // označavamo da je search pokrenut preko URL-a
+
+      // Odmah pretražujemo ako imamo search parametar
+      directSearchProducts(search);
     } else {
       setSearchTerm("");
       setIsSearchActive(false);
-      // If search is cleared, make sure filtered products match current products
       setFilteredProducts(products);
     }
-  }, [location.search, products]);
+  }, [location.search, products, directSearchProducts]);
 
   // Fetch all products once for searching - this happens in the background
   const fetchAllProducts = useCallback(() => {
@@ -129,7 +154,10 @@ const Groceries = () => {
   // Optimized function to fetch category products
   const fetchProducts = useCallback((categoryId, isDirectClick = false) => {
     // Clear search if this is a direct category click
-    if (isDirectClick && isSearchActive) {
+    const searchParams = new URLSearchParams(location.search);
+    const hasSearchParam = searchParams.has('search');
+
+    if (isDirectClick && isSearchActive && !hasSearchParam) {
       navigate('/groceries', { replace: true });
       setIsSearchActive(false);
       setSearchTerm("");
@@ -179,7 +207,7 @@ const Groceries = () => {
         setIsLoadingProducts(false);
         delete fetchCache.current[cacheKey];
       });
-  }, [isSearchActive, navigate]);
+  }, [isSearchActive, navigate, location.search]);
 
   // Enhanced search function that searches through all products
   const searchAllProducts = useCallback((term) => {
@@ -229,26 +257,30 @@ const Groceries = () => {
     }
   }, [products, allProducts, fetchAllProducts]);
 
-  // Apply search filter when search term changes
+  // Apply search filter when search term changes (osim početnog učitavanja)
   useEffect(() => {
-    if (isSearchActive && searchTerm) {
+    // Samo za lokalne pretrage, ne za inicijalne (koje koriste direktno API pretraživanje)
+    if (isSearchActive && searchTerm && !searchInitiatedRef.current) {
       searchAllProducts(searchTerm);
-    } else {
+    } else if (!isSearchActive) {
       setFilteredProducts(products);
     }
   }, [searchTerm, isSearchActive, products, searchAllProducts]);
 
   // Start fetching all products in the background after initial load
   useEffect(() => {
-    if (!initialLoad && !allProductsCache.current) {
+    if (!initialLoad && !allProductsCache.current && !isSearchActive) {
       fetchAllProducts();
     }
-  }, [initialLoad, fetchAllProducts]);
+  }, [initialLoad, fetchAllProducts, isSearchActive]);
 
   // Optimized subcategories fetch
   const fetchSubcategories = useCallback((categoryId) => {
     // Clear search if active when changing categories
-    if (isSearchActive) {
+    const searchParams = new URLSearchParams(location.search);
+    const hasSearchParam = searchParams.has('search');
+
+    if (isSearchActive && !hasSearchParam) {
       navigate('/groceries', { replace: true });
       setIsSearchActive(false);
       setSearchTerm("");
@@ -323,7 +355,7 @@ const Groceries = () => {
       .finally(() => {
         delete fetchCache.current[cacheKey];
       });
-  }, [fetchProducts, openCategory, isSearchActive, navigate]);
+  }, [fetchProducts, openCategory, isSearchActive, navigate, location.search]);
 
   // Optimized main categories fetch - use a default empty array while loading
   useEffect(() => {
@@ -361,11 +393,11 @@ const Groceries = () => {
 
   // Load initial category
   useEffect(() => {
-    if (categories.length > 0 && !openCategory) {
+    if (categories.length > 0 && !openCategory && !isSearchActive) {
       const initialId = preselectedCategoryId || categories[0].id;
       fetchSubcategories(initialId);
     }
-  }, [categories, preselectedCategoryId, fetchSubcategories, openCategory]);
+  }, [categories, preselectedCategoryId, fetchSubcategories, openCategory, isSearchActive]);
 
   // Preload subcategories for faster navigation
   useEffect(() => {
@@ -403,29 +435,36 @@ const Groceries = () => {
   // Clear search when clicking in certain areas
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isSearchActive && 
-          containerRef.current && 
-          !event.target.closest('.search-box') && 
-          !event.target.closest('.autocomplete-results') &&
-          !event.target.closest('.modal') &&
-          !event.target.closest('.desktop-scroll') && 
-          !event.target.closest('.navbar') && 
-          (event.target.closest('.groceries-hero') || 
-           event.target.closest('.product-grid') || 
-           event.target.closest('#Faq'))) { 
-        
+      // klik izvan područja pretrage
+      const clickedOutsideSearch = containerRef.current &&
+        !event.target.closest('.search-box') &&
+        !event.target.closest('.autocomplete-results') &&
+        !event.target.closest('.modal') &&
+        !event.target.closest('.desktop-scroll') &&
+        !event.target.closest('.navbar') &&
+        (event.target.closest('.groceries-hero') ||
+          event.target.closest('.product-grid') ||
+          event.target.closest('#Faq'));
+  
+      if (
+        isSearchActive &&
+        clickedOutsideSearch &&
+        searchInitiatedRef.current // samo ako je search iniciran
+      ) {
+        // očisti search samo kad korisnik eksplicitno klikne izvan
         navigate('/groceries', { replace: true });
         setIsSearchActive(false);
         setSearchTerm("");
+        searchInitiatedRef.current = false;
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isSearchActive, navigate]);
-
+  
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const paginatedProducts = filteredProducts.slice(
@@ -477,39 +516,45 @@ const Groceries = () => {
 
       <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />
 
-      <MobileCategoriesSlider
-        categories={categories}
-        fetchSubcategories={fetchSubcategories}
-        activeCategory={openCategory}
-      />
+      {!isSearchActive && (
+        <>
+          <MobileCategoriesSlider
+            categories={categories}
+            fetchSubcategories={fetchSubcategories}
+            activeCategory={openCategory}
+          />
 
-      <MobileSubcategoriesSlider
-        subcategories={subcategories}
-        openCategory={openCategory}
-        fetchProducts={fetchProducts}
-        excludedSubcategories={[671, 669, 670]}
-        setActiveSubcategoryName={setActiveSubcategoryName}
-        setActiveSubcategory={setActiveSubcategory}
-        activeSubcategory={activeSubcategory}
-      />
+          <MobileSubcategoriesSlider
+            subcategories={subcategories}
+            openCategory={openCategory}
+            fetchProducts={fetchProducts}
+            excludedSubcategories={[671, 669, 670]}
+            setActiveSubcategoryName={setActiveSubcategoryName}
+            setActiveSubcategory={setActiveSubcategory}
+            activeSubcategory={activeSubcategory}
+          />
+        </>
+      )}
 
       <div className="container-fluid mx-auto" aria-label="Groceries product section">
         <div className="row">
-          <div className="col-sm-4 col-md-3 desktop-scroll d-none d-sm-block">
-            <h5 title="Category list heading">Categories</h5>
-            <CategoriesSidebar
-              categories={categories}
-              openCategory={openCategory}
-              subcategories={subcategories}
-              fetchSubcategories={fetchSubcategories}
-              fetchProducts={(id) => fetchProducts(id, true)}
-              setActiveSubcategoryName={setActiveSubcategoryName}
-              setActiveSubcategory={setActiveSubcategory}
-              activeSubcategory={activeSubcategory}
-            />
-          </div>
+          {!isSearchActive && (
+            <div className="col-sm-4 col-md-3 desktop-scroll d-none d-sm-block">
+              <h5 title="Category list heading">Categories</h5>
+              <CategoriesSidebar
+                categories={categories}
+                openCategory={openCategory}
+                subcategories={subcategories}
+                fetchSubcategories={fetchSubcategories}
+                fetchProducts={(id) => fetchProducts(id, true)}
+                setActiveSubcategoryName={setActiveSubcategoryName}
+                setActiveSubcategory={setActiveSubcategory}
+                activeSubcategory={activeSubcategory}
+              />
+            </div>
+          )}
 
-          <div className="col-sm-8 mx-auto px-3">
+          <div className={`${isSearchActive ? 'col-12' : 'col-sm-8'} mx-auto px-3`}>
             {isSearchActive ? (
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2>
@@ -522,6 +567,7 @@ const Groceries = () => {
                     navigate('/groceries', { replace: true });
                     setIsSearchActive(false);
                     setSearchTerm("");
+                    searchInitiatedRef.current = false;
                   }}
                 >
                   Clear search
@@ -533,14 +579,7 @@ const Groceries = () => {
               )
             )}
 
-            {initialLoad && isLoadingProducts ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-prim" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="mt-3">Loading products...</p>
-              </div>
-            ) : isLoadingProducts ? (
+            {isLoadingProducts ? (
               <ProductsGridSkeleton count={16} />
             ) : (
               <>
@@ -568,6 +607,7 @@ const Groceries = () => {
                             navigate('/groceries', { replace: true });
                             setIsSearchActive(false);
                             setSearchTerm("");
+                            searchInitiatedRef.current = false;
                           }}
                         >
                           Clear search

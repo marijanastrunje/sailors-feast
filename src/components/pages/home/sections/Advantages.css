@@ -20,3 +20,7 @@
       height: 110px;
       }
     }
+
+    .advantage-label{
+      font-size: clamp(0.875rem, 5vw, 1.25rem);
+    }

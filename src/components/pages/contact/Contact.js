@@ -64,8 +64,8 @@ const ContactForm = () => {
     <>
       <div className="my-5">
         <div className="p-2 text-center bg-body-tertiary">
-          <div className="container py-3">
-            <h1 className="text-body-emphasis">Contact Us</h1>
+          <div className="container pb-3">
+            <h1>Contact Us</h1>
             <p className="col-lg-8 mx-auto lead">
               Reach out with questions, suggestions, or for help with your order.
               We're happy to assist you!

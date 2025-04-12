@@ -127,19 +127,19 @@ const CartPage = () => {
 
     return (
         <>
-            <div className="py-5 text-center">
+            <div className="p-3 text-center">
+                <h1>Cart</h1>
                 <img
                     className="d-block mx-auto mb-4"
-                    src="/img/logo/browser.png"
-                    alt="Sailor's Feast logo"
-                    width="72"
-                    height="57"
+                    src="/img/groceries/shopping-cart.png"
+                    alt="Cart"
+                    width="100"
+                    height="100"
                 />
-                <h2>Cart</h2>
-                <p className="lead">Here is your order summary.</p>
+                <p className="lead m-0">Here is your order summary.</p>
             </div>
 
-            <div className="container mt-4">
+            <div className="container">
                 <div className="row">
                     <div className="col-md-10 col-lg-8 mx-auto">
                         {cart.length === 0 ? (
@@ -170,7 +170,7 @@ const CartPage = () => {
                                                                         : "https://placehold.co/70"
                                                                 }
                                                                 alt={item.title}
-                                                                width="50"
+                                                                width="80"
                                                             />
                                                         </td>
                                                         <td>
@@ -245,27 +245,37 @@ const CartPage = () => {
                         )}
 
                         {cart.length > 0 && (
-                            <div className="text-center mt-3">
-                                <h4>Total: {totalPrice()} €</h4>
-                                <button onClick={clearCart} className="btn btn-danger me-2">Clear Cart</button>
-                                <button
-                                    className="btn btn-secondary me-2"
-                                    onClick={() => {
-                                        if (!token) {
-                                        navigate("/login?redirect=/cart");
-                                        } else {
-                                        setShowSaveModal(true);
-                                        }
-                                    }}
-                                    >
-                                    Save as List
-                                </button>
+                        <div className="mt-3">
+                            <div className="d-flex justify-content-between align-items-center">
+                            <h4 className="mb-2 mb-md-0">Total: {totalPrice()} €</h4>
 
-                                <Link to="/checkout" className="btn btn-primary">
-                                    Proceed to Checkout
-                                </Link>
+                            <div>
+                                <button onClick={clearCart} className="btn btn-sm btn-danger me-2">
+                                Clear Cart
+                                </button>
+                                <button
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => {
+                                    if (!token) {
+                                    navigate("/login?redirect=/cart");
+                                    } else {
+                                    setShowSaveModal(true);
+                                    }
+                                }}
+                                >
+                                Save as List
+                                </button>
                             </div>
+                            </div>
+
+                            <div className="text-center">
+                            <Link to="/checkout" className="btn btn-prim w-100 my-3">
+                                Proceed to Checkout
+                            </Link>
+                            </div>
+                        </div>
                         )}
+
                     </div>
                 </div>
             </div>

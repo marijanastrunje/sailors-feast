@@ -95,7 +95,7 @@ const Header = () => {
         e.preventDefault();
         if (searchTerm.trim()) {
             // Preload search results by fetching them first
-            navigate(`/groceries?search=${encodeURIComponent(searchTerm.trim())}`);
+            navigate(`/groceries?search=${encodeURIComponent(searchTerm.trim())}`, { replace: true });
             setSearchTerm('');
             setSearchResults([]);
             setIsSearchVisible(false);

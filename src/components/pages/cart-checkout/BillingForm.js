@@ -146,7 +146,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                 </div>
 
                 <button
-                    className="w-100 btn btn-primary btn-lg mt-3"
+                    className="w-100 btn btn-prim btn-lg mt-3"
                     type="button"
                     onClick={handlePayment}
                 >

@@ -23,7 +23,7 @@ const CartSummary = ({ cart, setTotalPrice }) => {
     return (
         <>
             <h4 className="d-flex justify-content-center align-items-center mb-3">
-                <span className="text-primary">Your Cart</span>
+                <span className="text-prim">Your Cart</span>
                 <span className="badge bg-primary rounded-pill">{cart.length}</span>
                 <button className="btn btn-outline-primary d-md-none" onClick={() => setShowCart(!showCart)}>
                     {showCart ? "▲" : "▼"}
