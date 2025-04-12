@@ -123,14 +123,7 @@ const Checkout = () => {
 
     return (
         <div className="container pb-5">
-            <div className="py-5 text-center">
-                <img
-                    className="d-block mx-auto mb-4"
-                    src="/img/logo.png"
-                    alt="Sailor's Feast logo"
-                    width="72"
-                    height="57"
-                />
+            <div className="py-2 text-center">
                 <h2>Checkout</h2>
                 <p className="lead">
                     Please fill in your billing and shipping details to proceed with payment.

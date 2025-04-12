@@ -140,7 +140,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
                       <div className="d-flex justify-content-center align-items-center fw-bold">
                         <h3 className="mb-0 me-2">{subcategory.name}</h3>
                         <button className="add-products-button btn btn-secondary ms-auto ms-sm-0 me-0" onClick={() => handleShowModal(subcategory.id)}>
-                          Add more products
+                          Add more items
                         </button>
                       </div>
                     </td>
@@ -173,14 +173,15 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
                 </React.Fragment>
               ))}
               <tr>
-                <td colSpan="2">
-                  <h3>SUM: {totalSum.toFixed(2)}€</h3>
+                <td colSpan="4">
+                  <div className="d-flex justify-content-between">
+                    <h3>SUM: {totalSum.toFixed(2)}€</h3>
+                    <button className="btn btn-prim btn-sm" onClick={addToCart}>
+                      Add to cart
+                    </button>
+                  </div>
                 </td>
-                <td colSpan="2">
-                  <button className="btn btn-prim btn-sm" onClick={addToCart}>
-                    Add to cart
-                  </button>
-                </td>
+                  
               </tr>
             </tbody>
           </table>

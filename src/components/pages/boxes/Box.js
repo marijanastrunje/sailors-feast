@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import BoxProductTable from "./BoxProductTable";
 import ModalProduct from "../groceries/ModalProduct";
 import BoxModal from "./BoxModal";
@@ -31,6 +32,7 @@ try {
 const BoxLayout = ({ categoryId, categoryMapping }) => {
   const componentMounted = useRef(true);
   const apiCache = useRef(globalCache);
+  const navigate = useNavigate();
 
   const [subcategories, setSubcategories] = useState([]);
   const [subcategoryProducts, setSubcategoryProducts] = useState({});
@@ -251,8 +253,47 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   }, [subcategories, subcategoryProducts]);
 
   const addToCart = () => {
-    // Postojeći kod...
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+    // Pronađi ID-eve proizvoda iz boxa
+    const currentBoxProductIds = new Set();
+    subcategories.forEach((subcategory) => {
+      subcategoryProducts[subcategory.id]?.forEach((product) => {
+        currentBoxProductIds.add(product.id);
+      });
+    });
+  
+    // Filtriraj postojeće iz košarice
+    cart = cart.filter((item) => !item.box || currentBoxProductIds.has(item.id));
+  
+    // Dodaj/azuriraj proizvode iz boxa
+    subcategories.forEach((subcategory) => {
+      subcategoryProducts[subcategory.id]?.forEach((product) => {
+        const quantity = product.quantity || 1;
+        if (quantity > 0) {
+          const existingProduct = cart.find((item) => item.id === product.id);
+          if (existingProduct) {
+            existingProduct.quantity = quantity;
+          } else {
+            cart.push({
+              id: product.id,
+              image: product.images,
+              title: product.name,
+              price: product.price,
+              quantity: quantity,
+              box: true,
+            });
+          }
+        }
+      });
+    });
+  
+    // Spremi i ažuriraj
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+    navigate("/cart");
   };
+  
 
   const handleCloseModal = useCallback(() => {
     setShowModal(false);

@@ -1,3 +1,29 @@
 .i4ewOd-pzNkMb-haAclf{
     position: static !important;
 }
+
+.bg-contact {
+    background-image: url("C:\Users\Marijana\Desktop\www\izm\sailors-feast\public\img/login/contact-visual.jpg"); /* ili relativna putanja prema tvom folderu */
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Opcionalno: tamni overlay za bolju čitljivost teksta */
+  .bg-contact::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4); /* tamni sloj preko slike */
+    z-index: -1;
+  }
+  
+  /* Tekst iznad slike */
+  .bg-contact > .container {
+    position: relative;
+    z-index: 2;
+  }
+  

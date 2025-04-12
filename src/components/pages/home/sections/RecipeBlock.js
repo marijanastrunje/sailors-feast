@@ -3,25 +3,33 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RecipeCard from "../../recipes/recipe-card/RecipeCard";
+import RecipeCardSkeleton from "../../recipes/recipe-card/RecipeCardSkeleton"; // Import the skeleton component
 import './RecipeBlock.css';
 
 const RecipeBlock = () => {
   const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
   const [visibleIndexes, setVisibleIndexes] = useState({ start: 0, end: 4 });
   
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
+    setLoading(true); // Set loading to true when fetching starts
+
     fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://backend.sailorsfeast.com'}/wp-json/wp/v2/recipe?_embed&per_page=10`, { signal })
       .then(response => {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         return response.json();
       })
-      .then(data => setRecipes(data))
+      .then(data => {
+        setRecipes(data);
+        setLoading(false); // Set loading to false when data is received
+      })
       .catch(error => {
         if (error.name !== 'AbortError') {
           console.error("Error fetching recipes:", error);
+          setLoading(false); // Also set loading to false on error
         }
       });
 
@@ -63,21 +71,38 @@ const RecipeBlock = () => {
     index >= visibleIndexes.start && index < visibleIndexes.end, 
     [visibleIndexes]
   );
+  
+  // Renderiranje skeleton kartica tijekom učitavanja
+  const renderSkeletons = () => {
+    // Kreiraj array od 4 elementa za skeleton kartice
+    return [...Array(4)].map((_, index) => (
+      <div key={`skeleton-${index}`}>
+        <RecipeCardSkeleton />
+      </div>
+    ));
+  };
 
-  if (!recipes.length) return null;
+  // If there are no recipes and not loading, return null
+  if (!loading && !recipes.length) return null;
 
   return (
     <div className="container">
       <div className="row">
         <div className="recepti col-lg-10 mx-auto">
           <Slider {...settings}>
-            {recipes.map((recipe, index) => (
-              <RecipeCard
-                key={recipe.id}
-                recipe={recipe}
-                isVisible={isCardVisible(index)}
-              />
-            ))}
+            {loading ? (
+              // Prikaži skeleton kartice tijekom učitavanja
+              renderSkeletons()
+            ) : (
+              // Prikaži recepte kad su učitani
+              recipes.map((recipe, index) => (
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  isVisible={isCardVisible(index)}
+                />
+              ))
+            )}
           </Slider>
         </div>
       </div>

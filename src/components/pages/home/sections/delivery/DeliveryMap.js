@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import DeliveryMapSkeleton from "./DeliveryMapSkeleton"; // Import the skeleton component
 
 const DeliveryMap = () => {
   const iframeRef = useRef(null);
@@ -39,9 +40,7 @@ const DeliveryMap = () => {
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           ) : (
-            <div style={{ height: "400px", background: "#f3f3f3" }}>
-              <p className="text-center pt-5">Loading map...</p>
-            </div>
+            <DeliveryMapSkeleton />
           )}
         </div>
       </div>

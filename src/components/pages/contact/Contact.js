@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Faq from "../all-pages/Faq";
 
+import './Contact.css'
+
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const siteKey = process.env.REACT_APP_SITE_KEY;
 
@@ -63,20 +65,16 @@ const ContactForm = () => {
   return (
     <>
       <div className="my-5">
-        <div className="p-2 text-center bg-body-tertiary">
+        <div className="p-2 text-center bg-contact">
           <div className="container pb-3">
-            <h1>Contact Us</h1>
-            <p className="col-lg-8 mx-auto lead">
-              Reach out with questions, suggestions, or for help with your order.
-              We're happy to assist you!
-            </p>
+            <h1>Contact Us</h1> 
           </div>
         </div>
       </div>
 
       <div className="container mb-5">
         <div className="row">
-        <div className="col-md-6 d-flex flex-column justify-content-start">
+        <div className="col-md-5 d-flex flex-column justify-content-start">
           <h2 className="mb-3 text-start">Contact Info</h2>
           <p>
             If you have any questions about our grocery delivery service, custom orders for your yacht, or need help with your shopping list — we're just a message away.

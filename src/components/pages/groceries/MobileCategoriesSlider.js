@@ -3,9 +3,20 @@ import CategoryItem from "./CategoryItem";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import MobileCategoriesSliderSkeleton from "./MobileCategoriesSliderSkeleton"; // Import the skeleton component
 import './MobileCategoriesSlider.css';
 
-const MobileCategoriesSlider = ({ categories, fetchSubcategories, activeCategory }) => {
+const MobileCategoriesSlider = ({ 
+  categories, 
+  fetchSubcategories, 
+  activeCategory,
+  loading = false // Add loading prop with default value
+}) => {
+  // If categories are loading or empty, show the skeleton
+  if (loading || !categories || categories.length === 0) {
+    return <MobileCategoriesSliderSkeleton />;
+  }
+
   const settings = {
     dots: false,
     infinite: false,

@@ -5,41 +5,46 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
+    
+    <!-- SEO meta tagovi -->
+    <meta name="description" content="Sailor's Feast provides nautical delivering service" />
+    <meta name="keywords" content="nautical delivery, yacht provisioning, food delivery Croatia" />
+    <meta name="author" content="Marijana Strunje" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Canonical link za izbjegavanje dupliciranja sadržaja -->
+    <link rel="canonical" href="https://www.sailorsfeast.com" />
+    
+    <!-- Preload glavne hero slike za poboljšanje LCP performansi -->
+    <link
+      rel="preload"
+      href="https://backend.sailorsfeast.com/wp-content/uploads/2023/04/video-poster.jpg"
+      as="image"
+      type="image/jpeg"
+      fetchpriority="high"
     />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    
+    
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
-
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>Sailor's Feast</title>
+
+    <!-- Preconnect za brže učitavanje resursa s backend domene -->
+    <link rel="preconnect" href="https://backend.sailorsfeast.com">
+    <link rel="dns-prefetch" href="https://backend.sailorsfeast.com">
+
+    <!-- Karakterizacija jezika -->
+    <meta property="og:locale" content="en_US">
+
+    <!-- Osnovni Open Graph meta tagovi -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sailor's Feast">
+    <meta property="og:description" content="Sailor's Feast provides nautical delivering service">
+    <meta property="og:url" content="https://www.sailorsfeast.com">
+    <meta property="og:site_name" content="Sailor's Feast">
   </head>
   <body>
-    
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

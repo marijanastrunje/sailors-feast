@@ -5,12 +5,18 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import './HomePageCategories.css';
+import HomePageCategoriesSkeleton from "./HomePageCategoriesSkeleton";
 
-const HomePageCategories = ({ categories }) => {
+const HomePageCategories = ({ categories, loading = false }) => {
   const navigate = useNavigate();
 
   const [desktopSlide, setDesktopSlide] = useState(0);
   const [mobileSlide, setMobileSlide] = useState(0);
+
+  // If loading or no categories, show the skeleton
+  if (loading || !categories || categories.length === 0) {
+    return <HomePageCategoriesSkeleton />;
+  }
 
   const desktopSettings = {
     infinite: false,

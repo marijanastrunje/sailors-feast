@@ -33,15 +33,15 @@ const Footer = () => {
                     </p>
                 </div>
 
-                <div className="col-md-4 text-center pt-md-4">
-                    <Link to="/faq"><p>FAQ</p></Link>
-                    <Link to="/privacy-policy"><p>Privacy Policy</p></Link>
+                <div className="col-md-4 text-center pt-md-4 mb-2">
+                    <Link to="/faq"><p className="m-0">FAQ</p></Link>
+                    <Link to="/privacy-policy"><p className="m-0">Privacy Policy</p></Link>
                     <Link to="/terms-and-conditions"><p>Terms&Conditions</p></Link>
                 </div>
                 
                 <div className="col-md-4 text-center ms-auto px-5 pt-md-4">
                     <h4>Newsletter</h4>
-                    <p>Subscribe to our newsletter to get more free tip</p>
+                    <p>Subscribe to our newsletter</p>
                     <div><input type="text" placeholder="Write your email here" className="form-control"/></div>
                     <Link className="btn btn-prim my-3">Subscribe</Link>
                 </div>

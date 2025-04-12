@@ -3,7 +3,7 @@ import './ProductCardSkeleton.css';
 
 const ProductCardSkeleton = () => {
   return (
-    <div className="products card flex-column justify-content-between p-2 skeleton-card">
+    <div className="products card flex-column justify-content-between p-2 skeleton-card mt-3">
       <div className="skeleton-img"></div>
       <div className="product-footer px-2">
         <div className="product-description-3">

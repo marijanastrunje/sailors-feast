@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SplitWeatherCard from "./delivery/WeatherCard";
+import SpecialOfferSkeleton from "./SpecialOfferSkeleton"; // Import the skeleton component
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const SpecialOffer = () => {
   const [page, setPage] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
+    setLoading(true); // Set loading to true when fetching starts
     fetch(`${backendUrl}/wp-json/wp/v2/pages?slug=special-offer`)
       .then(res => res.json())
-      .then(data => setPage(data[0]));
+      .then(data => {
+        setPage(data[0]);
+        setLoading(false); // Set loading to false when data is received
+      })
+      .catch(err => {
+        console.error("Error fetching special offer page:", err);
+        setLoading(false); // Also set loading to false on error
+      });
   }, []);
 
+  // If loading, show the skeleton component
+  if (loading) return <SpecialOfferSkeleton />;
+  
+  // If not loading but no data, return null or some error state
   if (!page) return null;
 
   return (

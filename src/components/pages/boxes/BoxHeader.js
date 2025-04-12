@@ -6,7 +6,7 @@ const BoxHeader = ({ title, description, image, totalSum, onAddToCart }) => {
       <div className="row">
         <div className="col-md-6">
           {/* Kontejner s fiksnom visinom za sprečavanje layout shifta */}
-          <div style={{ minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ minHeight: '250px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img
               src={image}
               alt={title}
@@ -23,11 +23,11 @@ const BoxHeader = ({ title, description, image, totalSum, onAddToCart }) => {
           </div>
         </div>
         <div className="col-md-6 text-center text-md-start">
-          <h1 className="mb-2 mb-md-4 mt-2">{title}</h1>
+          <h1 className="mb-2 mb-md-4 mt-1">{title}</h1>
           <div 
             dangerouslySetInnerHTML={{ __html: description }} 
             className="box-description"
-            style={{ minHeight: '80px' }} 
+            style={{ minHeight: '50px' }} 
           />
           <h3 style={{ marginTop: '20px', minHeight: '38px' }}>
             SUM: {totalSum.toFixed(2)}€
