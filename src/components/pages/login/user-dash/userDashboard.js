@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useBillingData from "../../cart-checkout/useBillingData";
-
-import Sidebar from "./Sidebar";
 import ProfileData from "./ProfileData";
 import SavedLists from "./SavedLists";
 import SavedRecipes from "./SavedRecipes";
 import Orders from "./Orders";
+import "./UserDashboard.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -19,6 +18,14 @@ const UserDashboard = () => {
   const [savedRecipes, setSavedRecipes] = useState([]);
   const [savedRecipeData, setSavedRecipeData] = useState([]);
   const [activeTab, setActiveTab] = useState("profile");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -32,14 +39,8 @@ const UserDashboard = () => {
       .then((res) => res.json())
       .then((data) => {
         localStorage.setItem("user_id", data.id);
-
-        if (data.meta?.saved_lists) {
-          setSavedLists(JSON.parse(data.meta.saved_lists));
-        }
-
-        if (data.meta?.saved_recipes) {
-          setSavedRecipes(JSON.parse(data.meta.saved_recipes));
-        }
+        if (data.meta?.saved_lists) setSavedLists(JSON.parse(data.meta.saved_lists));
+        if (data.meta?.saved_recipes) setSavedRecipes(JSON.parse(data.meta.saved_recipes));
       })
       .catch((err) => console.error("Error fetching user data:", err));
 
@@ -48,25 +49,45 @@ const UserDashboard = () => {
 
   useEffect(() => {
     if (savedRecipes.length === 0) return;
-
     Promise.all(
       savedRecipes.map((id) =>
-        fetch(`${backendUrl}/wp-json/wp/v2/recipe/${id}?_embed`).then((res) =>
-          res.json()
-        )
+        fetch(`${backendUrl}/wp-json/wp/v2/recipe/${id}?_embed`).then((res) => res.json())
       )
     )
-      .then((recipes) => {
-        setSavedRecipeData(recipes);
-      })
+      .then(setSavedRecipeData)
       .catch((err) => console.error("Error fetching recipes:", err));
   }, [savedRecipes]);
 
+  useEffect(() => {
+    if (!isMobile) return;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    };
+
+    const handleTouchEnd = (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 70;
+
+      if (swipeDistance > minSwipeDistance && !isSidebarOpen) setIsSidebarOpen(true);
+      else if (swipeDistance < -minSwipeDistance && isSidebarOpen) setIsSidebarOpen(false);
+    };
+
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
+    document.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isMobile, isSidebarOpen]);
+
   const saveUserData = () => {
-    if (!token) {
-      alert("You are not logged in!");
-      return;
-    }
+    if (!token) return alert("You are not logged in!");
 
     fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
       method: "PUT",
@@ -100,13 +121,9 @@ const UserDashboard = () => {
       case "orders":
         return <Orders />;
       case "invoices":
-        return <div>Invoice display</div>; // Placeholder for <Invoices />
+        return <div>Invoice display</div>;
       case "saved-recipes":
         return <SavedRecipes savedRecipeData={savedRecipeData} setSavedRecipeData={setSavedRecipeData} />;
-      case "saved-posts":
-        return <div>Saved posts display</div>; // Placeholder for <SavedPosts />
-      case "delete-profile":
-        return <div>Delete profile</div>; // Placeholder for <DeleteProfile />
       case "logout":
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
@@ -117,10 +134,61 @@ const UserDashboard = () => {
     }
   };
 
+  const tabs = [
+    { id: "profile", label: "Moj profil" },
+    { id: "saved-lists", label: "Spremljene liste" },
+    { id: "orders", label: "Narudžbe" },
+    { id: "invoices", label: "Računi" },
+    { id: "saved-recipes", label: "Spremljeni recepti" },
+    { id: "logout", label: "Odjava" },
+  ];
+
   return (
-    <div className="d-flex flex-column flex-md-row">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-grow-1 p-3">{renderTabContent()}</div>
+    <div className="dashboard-wrapper">
+      {isMobile && (
+        <div
+          className={`dashboard-dragger ${isSidebarOpen ? "open" : ""}`}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={isSidebarOpen ? "arrow open" : "arrow"}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      )}
+
+      {isMobile && isSidebarOpen && (
+        <div className="dashboard-overlay" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
+      <div className="dashboard-layout">
+        <aside className={`dashboard-sidebar ${isMobile && !isSidebarOpen ? "hidden" : ""}`}>
+          <div className="sidebar-header">Korisnički račun</div>
+          <nav>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`sidebar-tab ${activeTab === tab.id ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setIsSidebarOpen(false);
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        <main className="dashboard-main">{renderTabContent()}</main>
+      </div>
     </div>
   );
 };

@@ -175,7 +175,7 @@ const CartPage = () => {
                 {groceriesProducts.length > 0 && (
                   <>
                     <h3 className="text-center text-primary mt-4 mb-3">From Groceries</h3>
-                    <table className="table table-bordered table-hover text-center">
+                    <table className="table table-bordered table-hover text-center align-middle-cart">
                       <thead className="table-secondary">
                         <tr>
                           <th style={{ width: "80px" }}>Image</th>

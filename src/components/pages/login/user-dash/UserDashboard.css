@@ -1,0 +1,118 @@
+.dashboard-wrapper {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding-top: 10px;
+    position: relative;
+  }
+  
+  .dashboard-layout {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .dashboard-sidebar {
+    width: 264px;
+    background-color: #fff;
+    border-right: 1px solid #dee2e6;
+    position: sticky;
+    top: 99px; 
+    height: calc(100vh - 99px);
+    z-index: 1045;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sidebar-header {
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .sidebar-tab {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .sidebar-tab:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .sidebar-tab.active {
+    background-color: #D2D2D2;
+    color: white;
+  }
+  
+  .dashboard-main {
+    flex-grow: 1;
+    padding: 24px;
+  }
+  
+  /* MOBILE */
+  @media (max-width: 767px) {
+    .dashboard-sidebar {
+      width: 256px;
+      position: fixed;
+      top: 99px;
+      left: 0;
+      height: calc(100vh - 99px);
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1045;
+    }
+  
+    .dashboard-sidebar.hidden {
+      transform: translateX(-100%);
+    }
+  
+    .dashboard-dragger {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: var(--primary-color);
+      padding: 10px 8px;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      cursor: pointer;
+      z-index: 1060;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-dragger.open {
+        left: 256px;
+      }      
+  
+    .dashboard-dragger .arrow {
+      width: 20px;
+      height: 20px;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+  
+    .dashboard-dragger .arrow.open {
+      transform: rotate(180deg);
+    }
+  
+    .dashboard-overlay {
+      position: fixed;
+      top: 99px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 99px);
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
+  
+    .dashboard-main {
+      margin-left: 0 !important;
+      padding: 16px;
+    }
+  }
+  

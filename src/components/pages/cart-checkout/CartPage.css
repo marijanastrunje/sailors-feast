@@ -6,3 +6,8 @@
 .btn-close{
     font-size: 15px;
 }
+
+.align-middle-cart td,
+.align-middle-cart th {
+  vertical-align: middle;
+}
