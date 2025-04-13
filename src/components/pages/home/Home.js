@@ -56,7 +56,7 @@ const Home = () => {
         <BoxCarousel />
       </section>
 
-      <section id="categories" className="mt-5 pt-3">
+      <section id="categories" className="mt-5 pt-4">
         <h2>Shop by category</h2>
         <HomePageCategories categories={categories} />
       </section>
@@ -67,11 +67,11 @@ const Home = () => {
 
       <section id="recepies">
         <div className="container col-md-9 px-2 px-lg-5">
-          <div className="row align-items-center mb-3">
+          <div className="row">
             <div className="col-6">
               <Link to="/recipes"><h2 className="text-start">Recipes</h2></Link>
             </div>
-            <div className="col-6 text-end">
+            <div className="col-6 text-end mt-md-1">
               <Link to="/recipes">View more</Link>
             </div>
           </div>
@@ -80,10 +80,13 @@ const Home = () => {
       </section>
 
       <section id="recent-posts">
-        <div className="container-fluid py-3">
+        <div className="container-fluid py-3 mt-5">
           <div className="row justify-content-center">
-            <div className="col-11 col-sm-12 col-md-9 col-lg-7">
-              <h2 className="text-start">Recent posts</h2>
+            <div className="col-12 col-md-9 col-lg-7">
+              <div className="d-flex justify-content-between">
+                <h2 className="text-start">Recent posts</h2>
+                <Link to="/blog">View more</Link>
+              </div>
               <HomePageBlog />
             </div>
             <div className="col-md-3 col-lg-2">

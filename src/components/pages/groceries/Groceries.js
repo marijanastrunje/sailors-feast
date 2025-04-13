@@ -432,6 +432,12 @@ const Groceries = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
 
+  // Resetiraj na prvu stranicu kad se promijeni aktivna podkategorija
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeSubcategory]);
+
+
   // Clear search when clicking in certain areas
   useEffect(() => {
     const handleClickOutside = (event) => {

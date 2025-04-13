@@ -298,8 +298,8 @@ const RecipesPage = () => {
     }
 
     return (
-      <div className="col-8 mx-auto mb-4">
-        <div className="d-flex align-items-center p-3">
+      <div className="col-10 col-md-8 mx-auto mb-4">
+        <div className="d-flex align-items-center justify-content-between p-3">
           <h6>Active Filters:</h6>
           {(Object.values(filters).some((val) => val?.length > 0) || cookingTime.length > 0 || cookingMethod.length > 0) && (
             <button className="btn btn-secondary btn-sm ms-3" onClick={resetFilters}>
@@ -373,11 +373,11 @@ const RecipesPage = () => {
         <div ref={timeRef} className="position-relative">
           <div className="position-relative">
             <button
-              className={`btn btn-outline-secondary rounded-pill d-flex align-items-center gap-2 ${cookingTime.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
+              className={`btn btn-lg btn-outline-secondary me-2 rounded-pill d-flex align-items-center gap-2 ${cookingTime.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
               onClick={toggleTimeDropdown}
             >
               <FontAwesomeIcon icon={faClock} />
-              <span className="d-none d-sm-block">Vrijeme</span>
+              <span className="d-none d-sm-block">Time</span>
               <FontAwesomeIcon
                 icon={faChevronDown}
                 className={`transition-icon ${showTimeDropdown ? "rotate" : ""}`}
@@ -404,7 +404,7 @@ const RecipesPage = () => {
         <div ref={methodRef} className="position-relative">
           <div className="position-relative">
             <button
-              className={`btn rounded-pill d-flex align-items-center gap-2 ${cookingMethod.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
+              className={`btn btn-lg rounded-pill me-2 d-flex align-items-center gap-2 ${cookingMethod.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
               onClick={toggleMethodDropdown}
             >
               <FontAwesomeIcon icon={faSpoon} />
@@ -436,11 +436,11 @@ const RecipesPage = () => {
         <div ref={detailsRef} className="position-relative">
           <div className="position-relative">
             <button
-              className={`btn rounded-pill d-flex align-items-center gap-2 ${Object.values(selectedOptions).some(opts => opts?.length > 0) ? "btn-prim text-white" : "btn-outline-secondary"}`}
+              className={`btn btn-lg rounded-pill d-flex align-items-center gap-2 ${Object.values(selectedOptions).some(opts => opts?.length > 0) ? "btn-prim text-white" : "btn-outline-secondary"}`}
               onClick={toggleDetailsDropdown}
             >
               <FontAwesomeIcon icon={faSlidersH} />
-              <span className="d-none d-sm-block">Detaljno</span>
+              <span className="d-none d-sm-block">Detail</span>
               <FontAwesomeIcon
                 icon={faChevronDown}
                 className={`transition-icon ${showDetailsDropdown ? "rotate" : ""}`}
@@ -510,7 +510,7 @@ const RecipesPage = () => {
             </div>
           ) : (
             <>
-              <h2 className="text-center my-3">Popular by Category</h2>
+              <h2 className="text-center pt-3 my-3">Popular by Category</h2>
               {categories.map((category) => (
                 <div key={category.id} className="mb-5 col-lg-10 mx-auto">
                   <h3 className="text-center p-3">{category.name}</h3>

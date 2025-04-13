@@ -22,7 +22,7 @@ const BlogBlock = () => {
   return (
     <>
       {posts.map((post) => (
-        <BlogShort key={post.id} post={post} limit={150} />
+        <BlogShort key={post.id} post={post} limit={190} />
       ))}
     </>
   );

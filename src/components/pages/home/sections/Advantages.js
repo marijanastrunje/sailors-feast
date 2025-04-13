@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Advantages.css";
-import AdvantagesSkeleton from "./AdvantagesSkeleton"; // Import the skeleton component
-
+import AdvantagesSkeleton from "./AdvantagesSkeleton"; 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const Advantages = () => {
@@ -63,7 +62,7 @@ const Advantages = () => {
           }
           
           return (
-            <div key={index} className="col-md-4 advantage-item mb-4 mb-md-0">
+            <div key={index} className="col-md-4 advantage-item mb-0">
               <div className="row px-2 align-items-center justify-content-center">
                 <div className={`advantage-image col-6 col-md-12 ${imageCol} ${imageOrder} text-center`}>
                   <img

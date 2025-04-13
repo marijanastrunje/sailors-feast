@@ -232,7 +232,7 @@ const RecipeForm = () => {
             {/* Title */}
             <div className="mb-3">
               <label>Recipe Title</label>
-              <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required />
+              <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required /> 
             </div>
   
             {/* Type */}
@@ -352,8 +352,8 @@ const RecipeForm = () => {
             {/* Description */}
             <div className="mb-3">
               <label>Description</label>
-              <textarea className="form-control" value={description} onChange={(e) => setDescription(e.target.value)} required maxLength={70} />
-              <small className="text-muted">{70 - description.length} znakova preostalo</small>
+              <textarea className="form-control" value={description} onChange={(e) => setDescription(e.target.value)} required maxLength={68} />
+              <small className="text-muted">{68 - description.length} znakova preostalo</small>
             </div>
           
             <IngredientsField ingredients={ingredients} setIngredients={setIngredients} />

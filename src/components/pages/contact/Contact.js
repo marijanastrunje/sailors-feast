@@ -67,15 +67,14 @@ const ContactForm = () => {
       <div className="my-5">
         <div className="p-2 text-center bg-contact">
           <div className="container pb-3">
-            <h1>Contact Us</h1> 
           </div>
         </div>
       </div>
 
       <div className="container mb-5">
         <div className="row">
-        <div className="col-md-5 d-flex flex-column justify-content-start">
-          <h2 className="mb-3 text-start">Contact Info</h2>
+        <div className="col-md-5 d-flex flex-column justify-content-start text-center text-md-start mb-3">
+          <h2 className="mb-3 text-center text-md-start">Contact Info</h2>
           <p>
             If you have any questions about our grocery delivery service, custom orders for your yacht, or need help with your shopping list — we're just a message away.
           </p>
@@ -91,7 +90,7 @@ const ContactForm = () => {
 
           <div className="col-md-6">
             <form onSubmit={handleSubmit} aria-labelledby="contact-form-title">
-              <h3 id="contact-form-title" className="mb-4">Send us a message</h3>
+              <h3 id="contact-form-title" className="mb-4 text-center text-md-start">Send us a message</h3>
 
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">Your Name</label>
@@ -155,7 +154,7 @@ const ContactForm = () => {
               </div>
 
               <button
-                className="btn btn-secondary"
+                className="btn btn-secondary w-100"
                 type="submit"
                 aria-label="Submit contact form"
               >

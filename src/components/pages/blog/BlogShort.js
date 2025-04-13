@@ -5,7 +5,17 @@ import PostCategory from "../all-pages/data/PostCategory";
 import PostDate from "../all-pages/data/PostDate";
 import "./BlogShort.css";
 
-const BlogShort = ({ post, limit = 150 }) => {
+const BlogShort = ({ post, limit = 200 }) => {
+
+  const truncateAtWord = (html, limit) => {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    const text = tempDiv.textContent || tempDiv.innerText || "";
+    if (text.length <= limit) return text;
+    const trimmed = text.slice(0, limit);
+    return trimmed.slice(0, trimmed.lastIndexOf(" ")) + "...";
+  };
+  
   if (!post) return null;
 
   return (
@@ -39,11 +49,7 @@ const BlogShort = ({ post, limit = 150 }) => {
               <PostCategory key={catID} categoryID={catID} />
             ))}
           </div>
-          <p
-            dangerouslySetInnerHTML={{
-              __html: (post.excerpt && post.excerpt.rendered ? post.excerpt.rendered.slice(0, limit) : "No excerpt available.")
-            }}
-          />
+          <p dangerouslySetInnerHTML={{ __html: truncateAtWord(post.excerpt?.rendered || "", limit) }} />
         </div>
       </div>
     </div>

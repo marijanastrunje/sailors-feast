@@ -25,6 +25,7 @@
     transition: opacity 0.3s ease;
     z-index: 2;
     position: relative;
+    border-radius: 4px;
   }
   
   .media-img.loaded {

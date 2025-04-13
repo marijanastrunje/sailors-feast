@@ -140,7 +140,7 @@ const BoxProductTable = ({ subcategories, subcategoryProducts, setSubcategoryPro
                       <div className="d-flex justify-content-center align-items-center fw-bold">
                         <h3 className="mb-0 me-2">{subcategory.name}</h3>
                         <button className="add-products-button btn btn-secondary ms-auto ms-sm-0 me-0" onClick={() => handleShowModal(subcategory.id)}>
-                          Add more items
+                          Add more
                         </button>
                       </div>
                     </td>

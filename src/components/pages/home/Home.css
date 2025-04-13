@@ -118,9 +118,11 @@
   display: none !important;
 }
 
-.instagram-img{
-  border-radius: 4px;
+
+.instagram-img img {
+ border-radius: 4px;
 }
+
 
 .blog-home .year, .article .year {
   background-color: var(--primary-color);

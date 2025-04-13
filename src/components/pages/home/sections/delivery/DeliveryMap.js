@@ -24,7 +24,7 @@ const DeliveryMap = () => {
   }, []);
 
   return (
-    <div className="container my-5" ref={iframeRef}>
+    <div className="container mb-4 mt-4" ref={iframeRef}>
       <div className="row justify-content-center">
         <h2 className="text-center mb-4">Marina Delivery Points</h2>
         <div className="col-md-10">

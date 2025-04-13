@@ -68,42 +68,45 @@ for (let i = 0; i < images.length; i += 3) {
       </Link>
       <div className="instagram">
       <Slider {...settings}>
-  {isMobile
-    ? images.map((img, i) => (
-        <div key={i} className="d-flex justify-content-center">
-          <img
-            className="py-1 instagram-img"
-            src={img}
-            alt={`Instagram ${i + 1}`}
-            title={`Instagram ${i + 1}`}
-            style={{
-              width: "150px",
-              height: "150px",
-              objectFit: "cover",
-            }}
-          />
-        </div>
-      ))
-    : groupedImages.map((group, index) => (
-        <div key={index} style={{ width: "160px", margin: "0 auto" }}>
-          {group.map((img, i) => (
-            <img
-              key={i}
-              className="my-1 instagram-img"
-              src={img}
-              alt={`Instagram ${i + 1}`}
-              title={`Instagram ${i + 1}`}
-              style={{
-                width: "150px",
-                height: "150px",
-                objectFit: "cover",
-                display: "block",
-              }}
-            />
-          ))}
-        </div>
-      ))}
-</Slider>
+        {isMobile
+          ? images.map((img, i) => (
+              <div key={i} className="d-flex justify-content-center instagram-img">
+                <img
+                  className="py-1"
+                  src={img}
+                  alt={`Instagram ${i + 1}`}
+                  title={`Instagram ${i + 1}`}
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              </div>
+            ))
+          : groupedImages.map((group, index) => (
+              <div key={index} style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+                {group.map((img, i) => (
+                  <div key={i} className="instagram-img">
+                    <img
+                      className="my-1"
+                      src={img}
+                      alt={`Instagram ${i + 1}`}
+                      title={`Instagram ${i + 1}`}
+                      style={{
+                        width: "150px",
+                        height: "150px",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+      </Slider>
+
 
 
 
