@@ -5,9 +5,11 @@ import ProfileData from "./ProfileData";
 import SavedLists from "./SavedLists";
 import SavedRecipes from "./SavedRecipes";
 import Orders from "./Orders";
+import ReCAPTCHA from "react-google-recaptcha";
 import "./UserDashboard.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const siteKey = process.env.REACT_APP_SITE_KEY;
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -20,6 +22,8 @@ const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
+  const [captchaValue, setCaptchaValue] = useState(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -112,6 +116,51 @@ const UserDashboard = () => {
       });
   };
 
+  const handleContactChange = (e) => {
+    setContactForm({ ...contactForm, [e.target.name]: e.target.value });
+  };
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+
+    if (!captchaValue) {
+      alert("Please confirm you're not a robot.");
+      return;
+    }
+
+    fetch(`${backendUrl}/wp-json/custom/v1/verify-recaptcha`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: captchaValue }),
+    })
+      .then((res) => res.json())
+      .then((captchaResult) => {
+        if (!captchaResult.success) {
+          throw new Error("reCAPTCHA failed.");
+        }
+
+        return fetch(`${backendUrl}/wp-json/custom/v1/contact`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(contactForm),
+        });
+      })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (ok) {
+          alert(data.message);
+          setContactForm({ name: "", email: "", message: "" });
+          setCaptchaValue(null);
+        } else {
+          alert(data.message || "An error occurred.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        alert(err.message || "Sending failed.");
+      });
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "profile":
@@ -120,13 +169,88 @@ const UserDashboard = () => {
         return <SavedLists savedLists={savedLists} setSavedLists={setSavedLists} />;
       case "orders":
         return <Orders />;
-      case "invoices":
-        return <div>Invoice display</div>;
+      case "contact":
+        return (
+          <div className="contact-form-container col-11 col-md-8 mt-5 mx-auto">
+            <h2 className="mb-4">Contact Us</h2>
+            <form onSubmit={handleContactSubmit} aria-labelledby="contact-form-title">
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">Your Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Your name"
+                  className="form-control"
+                  value={contactForm.name}
+                  onChange={handleContactChange}
+                  aria-label="Your name"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Your email"
+                  className="form-control"
+                  value={contactForm.email}
+                  onChange={handleContactChange}
+                  aria-label="Your email"
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="message" className="form-label">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  placeholder="Your message"
+                  className="form-control"
+                  value={contactForm.message}
+                  onChange={handleContactChange}
+                  aria-label="Your message"
+                  required
+                ></textarea>
+              </div>
+
+              <div className="form-check mb-3">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="privacyConsent"
+                  aria-required="true"
+                  required
+                />
+                <label className="form-check-label" htmlFor="privacyConsent">
+                  I agree to the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>.
+                </label>
+              </div>
+
+              <div className="mb-3">
+                <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
+              </div>
+
+              <button
+                className="btn btn-secondary w-100"
+                type="submit"
+                aria-label="Submit contact form"
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        );
       case "saved-recipes":
         return <SavedRecipes savedRecipeData={savedRecipeData} setSavedRecipeData={setSavedRecipeData} />;
       case "logout":
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        window.dispatchEvent(new Event('userLogout'));
         navigate("/");
         return null;
       default:
@@ -135,12 +259,12 @@ const UserDashboard = () => {
   };
 
   const tabs = [
-    { id: "profile", label: "Moj profil" },
-    { id: "saved-lists", label: "Spremljene liste" },
-    { id: "orders", label: "Narudžbe" },
-    { id: "invoices", label: "Računi" },
-    { id: "saved-recipes", label: "Spremljeni recepti" },
-    { id: "logout", label: "Odjava" },
+    { id: "profile", label: "My Profile" },
+    { id: "saved-lists", label: "Saved Lists" },
+    { id: "saved-recipes", label: "Saved Recipes" },
+    { id: "orders", label: "Orders" },
+    { id: "contact", label: "Contact Us" },
+    { id: "logout", label: "Logout" },
   ];
 
   return (
@@ -170,7 +294,7 @@ const UserDashboard = () => {
 
       <div className="dashboard-layout">
         <aside className={`dashboard-sidebar ${isMobile && !isSidebarOpen ? "hidden" : ""}`}>
-          <div className="sidebar-header">Korisnički račun</div>
+          <div className="sidebar-header">User Account</div>
           <nav>
             {tabs.map((tab) => (
               <button
@@ -181,7 +305,9 @@ const UserDashboard = () => {
                   setIsSidebarOpen(false);
                 }}
               >
-                {tab.label}
+                <p className="m-0">
+                  {tab.label}
+                </p>
               </button>
             ))}
           </nav>

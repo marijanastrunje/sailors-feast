@@ -1,0 +1,19 @@
+.bookmark-toggle-details{
+    position: absolute;
+    top: 10px;
+    left: 25px;
+    transition: transform 0.2s ease;
+    font-size: 50px;
+    color: white;
+    z-index: 100;
+  }
+
+  .servings-button{
+    background: none;
+    border: none;
+    font-size: 20px;
+  }
+
+  .recipe-details-image img{
+    max-height: 300px;
+  }

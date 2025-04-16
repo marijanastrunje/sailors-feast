@@ -2,7 +2,7 @@
     font-size: 14px;
     font-weight: 500;
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 3px 4px;
     text-shadow: 0px 0px 0.7px black, 
                  0px 0px 0.7px black, 
                  0px 0px 0.7px black,
@@ -25,20 +25,20 @@
 
 
 .type{  
-    background-color: rgba(239, 126, 73, 0.8); 
+    background-color: rgb(239, 126, 73); 
 }
 
 .diet{
-    background-color: rgba(65, 151, 111, 0.8);
+    background-color: rgb(65, 151, 111);
 
 }
 
 .ingredient{
-    background-color: rgba(218, 77, 77, 0.8);
+    background-color: rgb(218, 77, 77);
 }
 
 .difficulty{
-    background-color: rgba(230, 186, 33, 0.8);
+    background-color: rgb(230, 186, 33);
 }
 
 

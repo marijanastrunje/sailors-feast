@@ -1,18 +1,13 @@
 import React from "react";
 
-// Skeleton styles (same as previous components)
+// Skeleton styles
 const skeletonStyles = `
-  .skeleton-img,
-  .skeleton-title,
-  .skeleton-text,
-  .skeleton-price,
-  .skeleton-button,
-  .skeleton-icon,
   .skeleton-map {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: shine 1.5s infinite;
     border-radius: 4px;
+    height: 400px;
   }
   
   @keyframes shine {
@@ -30,6 +25,12 @@ const skeletonStyles = `
     background-size: 200% 100%;
     animation: shine 1.5s infinite;
   }
+  
+  @media (max-width: 767px) {
+    .skeleton-map {
+      height: 250px !important;
+    }
+  }
 `;
 
 const DeliveryMapSkeleton = () => {
@@ -43,64 +44,29 @@ const DeliveryMapSkeleton = () => {
   ];
 
   return (
-    <div className="container my-5">
+    <div style={{ position: "relative", width: "100%" }}>
       {/* Include custom styles */}
       <style>{skeletonStyles}</style>
       
-      <div className="row justify-content-center">
-        {/* Skeleton title */}
-        <div 
-          className="skeleton-title mx-auto mb-4"
-          style={{ height: "32px", width: "300px" }}
-        />
-        
-        <div className="col-md-10">
-          {/* Skeleton map with pins */}
-          <div 
-            className="skeleton-map position-relative"
-            style={{ 
-              height: "400px", 
-              width: "100%", 
-              borderRadius: "8px" 
+      {/* Skeleton map with pins */}
+      <div
+        className="skeleton-map position-relative"
+        style={{
+          width: "100%",
+          borderRadius: "8px"
+        }}
+      >
+        {/* Map location pins */}
+        {pins.map((pin, index) => (
+          <div
+            key={index}
+            className="map-pin"
+            style={{
+              top: pin.top,
+              left: pin.left
             }}
-          >
-            {/* Map location pins */}
-            {pins.map((pin, index) => (
-              <div 
-                key={index}
-                className="map-pin"
-                style={{ 
-                  top: pin.top, 
-                  left: pin.left 
-                }}
-              />
-            ))}
-            
-            {/* Skeleton zoom controls */}
-            <div 
-              className="position-absolute d-flex flex-column"
-              style={{ 
-                right: "20px", 
-                top: "20px" 
-              }}
-            >
-              <div 
-                className="skeleton-button mb-1"
-                style={{ 
-                  height: "28px", 
-                  width: "28px" 
-                }}
-              />
-              <div 
-                className="skeleton-button"
-                style={{ 
-                  height: "28px", 
-                  width: "28px" 
-                }}
-              />
-            </div>
-          </div>
-        </div>
+          />
+        ))}
       </div>
     </div>
   );

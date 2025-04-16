@@ -6,28 +6,9 @@ const Hero = () => {
   const [heroData, setHeroData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Predefinirani URL glavne slike za preload
-  const knownFeaturedImageUrl = "https://backend.sailorsfeast.com/wp-content/uploads/2023/04/video-poster.jpg";
-  
   useEffect(() => {
     setLoading(true);
     
-    // Dodajemo preload i za sliku (kao dinamični fallback)
-    const preloadMainImage = () => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = knownFeaturedImageUrl;
-      link.as = 'image';
-      link.type = 'image/jpeg';
-      link.setAttribute('fetchpriority', 'high');
-      document.head.appendChild(link);
-    };
-    
-    // Preloada sliku samo ako već ne postoji preload tag
-    if (!document.querySelector(`link[rel="preload"][href="${knownFeaturedImageUrl}"]`)) {
-      preloadMainImage();
-    }
-
     fetch("https://backend.sailorsfeast.com/wp-json/wp/v2/pages?slug=sailors-feast&_embed")
       .then((res) => res.json())
       .then((data) => {
@@ -57,7 +38,7 @@ const Hero = () => {
           className="position-absolute w-100 h-100 object-fit-cover"
           width={1440}
           height={600}
-          fetchpriority="high"
+          fetchPriority="high"
           decoding="async"
         />
       )}

@@ -10,7 +10,7 @@ const SavedRecipes = ({ savedRecipeData, setSavedRecipeData }) => {
     <div className="col-md-10 mx-auto">
       <div className="row" role="list">
         {savedRecipeData.map((recipe) => (
-          <div key={recipe.id} className="col-12 col-md-6 col-lg-3 mb-3" role="listitem">
+          <div key={recipe.id} className="col-6 col-md-4 col-lg-3 mb-4 p-0" role="listitem">
             <RecipeCard
               recipe={recipe}
               onUnsave={(id) =>

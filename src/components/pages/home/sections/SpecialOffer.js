@@ -30,7 +30,7 @@ const SpecialOffer = () => {
   if (!page) return null;
 
   return (
-    <div className="container me-md-3 mb-5 mb-md-0">
+    <div className="container mb-5 mb-md-0">
       <div className="row justify-content-center justify-content-lg-end">
         <div className="col-md-6 text-center pb-2">
           <div className="d-flex align-items-center justify-content-center mb-2">

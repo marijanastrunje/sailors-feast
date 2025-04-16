@@ -56,4 +56,5 @@ const BlogShort = ({ post, limit = 200 }) => {
   );
 };
 
-export default BlogShort;
+export default React.memo(BlogShort);
+

@@ -3,8 +3,8 @@ import "./ProfileData.css";
 
 const ProfileData = ({ billing, setBilling, saveUserData }) => {
   return (
-    <div className="col-12 col-md-6 offset-md-1 p-3">
-      <h4 className="mb-3">Personal Information</h4>
+    <div className="col-12 col-md-8 mx-auto mt-5 p-3">
+      <h2 className="mb-3">Personal Information</h2>
       <div className="row g-1">
         <div className="col-6">
           <label htmlFor="first_name" className="form-label">First Name</label>

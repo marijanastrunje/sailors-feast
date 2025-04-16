@@ -489,7 +489,7 @@ const RecipesPage = () => {
                 {currentRecipes.length > 0 ? (
                   <>
                     {currentRecipes.map((recipe) => (
-                      <div key={recipe.id} className="col-6 col-sm-6 col-md-4 col-lg-3 mb-4 p-0">
+                      <div key={recipe.id} className="col-6 col-md-4 col-lg-3 mb-4 p-0">
                         <RecipeCard recipe={recipe} />
                       </div>
                     ))}

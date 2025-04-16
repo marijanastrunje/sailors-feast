@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const BillingForm = ({ billing, setBilling, handlePayment }) => {
+const BillingForm = ({ billing, setBilling, handlePayment, isSubmitting = false }) => {
     return (
         <>
             <h4 className="mb-3">Billing Details</h4>
@@ -15,6 +15,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.first_name}
                             onChange={e => setBilling({ ...billing, first_name: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -26,6 +27,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.last_name}
                             onChange={e => setBilling({ ...billing, last_name: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -37,6 +39,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.email}
                             onChange={e => setBilling({ ...billing, email: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -48,6 +51,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.phone}
                             onChange={e => setBilling({ ...billing, phone: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -59,6 +63,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.marina}
                             onChange={e => setBilling({ ...billing, marina: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -70,6 +75,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.charter}
                             onChange={e => setBilling({ ...billing, charter: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -81,6 +87,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.boat}
                             onChange={e => setBilling({ ...billing, boat: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -92,6 +99,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.gate}
                             onChange={e => setBilling({ ...billing, gate: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -103,6 +111,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.delivery_date}
                             onChange={e => setBilling({ ...billing, delivery_date: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -114,6 +123,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             value={billing.delivery_time}
                             onChange={e => setBilling({ ...billing, delivery_time: e.target.value })}
                             required
+                            disabled={isSubmitting}
                         />
                     </div>
 
@@ -123,6 +133,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                             className="form-control"
                             value={billing.order_notes}
                             onChange={e => setBilling({ ...billing, order_notes: e.target.value })}
+                            disabled={isSubmitting}
                         ></textarea>
                     </div>
                 </div>
@@ -139,6 +150,7 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                         onChange={(e) =>
                             setBilling((prev) => ({ ...prev, privacyConsent: e.target.checked }))
                         }
+                        disabled={isSubmitting}
                     />
                     <label className="form-check-label" htmlFor="privacyPolicyConsent">
                         I agree with the <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</Link>.
@@ -149,8 +161,14 @@ const BillingForm = ({ billing, setBilling, handlePayment }) => {
                     className="w-100 btn btn-prim btn-lg mt-3"
                     type="button"
                     onClick={handlePayment}
+                    disabled={isSubmitting}
                 >
-                    Pay with Viva Wallet
+                    {isSubmitting ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Processing Payment...
+                        </>
+                    ) : "Pay with Viva Wallet"}
                 </button>
             </form>
         </>

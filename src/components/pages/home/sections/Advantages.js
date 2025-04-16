@@ -63,7 +63,7 @@ const Advantages = () => {
           
           return (
             <div key={index} className="col-md-4 advantage-item mb-0">
-              <div className="row px-2 align-items-center justify-content-center">
+              <div className="row align-items-center justify-content-center">
                 <div className={`advantage-image col-6 col-md-12 ${imageCol} ${imageOrder} text-center`}>
                   <img
                     src={item.image}

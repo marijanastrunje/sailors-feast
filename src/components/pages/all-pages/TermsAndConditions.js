@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./PrivacyPolicy.css";
 
 const TermsAndConditions = () => {
   const [content, setContent] = useState("");
@@ -17,9 +18,9 @@ const TermsAndConditions = () => {
   if (!content) return <p className="text-center py-5">Učitavanje...</p>;
 
   return (
-    <section className="container col-md-8 py-5">
+    <section className="container col-md-8 pt-3 pb-5">
       <h1 className="text-center mb-4">Terms & Conditions</h1>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div className="privacy-policy-content" dangerouslySetInnerHTML={{ __html: content }} />
     </section>
   );
 };

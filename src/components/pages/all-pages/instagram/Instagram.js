@@ -86,7 +86,7 @@ for (let i = 0; i < images.length; i += 3) {
               </div>
             ))
           : groupedImages.map((group, index) => (
-              <div key={index} style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+              <div key={index} style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
                 {group.map((img, i) => (
                   <div key={i} className="instagram-img">
                     <img

@@ -12,6 +12,7 @@ const Checkout = () => {
     const [userId, setUserId] = useState(null);
     const location = useLocation();
     const [paymentFailed, setPaymentFailed] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!token) navigate("/login?redirect=/checkout");
@@ -91,6 +92,7 @@ const Checkout = () => {
     };
 
     const handlePayment = async () => {
+        setIsSubmitting(true);
         const orderId = await handleOrder();
         if (!orderId) return;
 
@@ -118,6 +120,7 @@ const Checkout = () => {
         } catch (error) {
             console.error("Payment processing error:", error.message);
             alert("There was an error while processing the payment.");
+            setIsSubmitting(false);
         }
     };
 
@@ -146,6 +149,7 @@ const Checkout = () => {
                         billing={billing}
                         setBilling={setBilling}
                         handlePayment={handlePayment}
+                        isSubmitting={isSubmitting}
                     />
                 </div>
             </div>

@@ -517,7 +517,6 @@ const Groceries = () => {
           Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
           </p>
         </div>
-        <link rel="preload" as="image" href="/images/groceries-hero.webp" type="image/webp" />
       </div>
 
       <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />

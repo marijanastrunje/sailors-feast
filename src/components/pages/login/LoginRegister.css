@@ -1,75 +1,96 @@
-#login, #register{
-    margin-bottom: 0;
+#login, #register {
+  margin-bottom: 0;
 }
 
-.login-form div{
+.login-form-container {
   margin: 0 auto;
   max-width: 420px;
   width: 100%;
 }
 
-@media (min-width: 992px) {
-
-.login-form{
-    max-width: 420px;
-    min-height: 400px;
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
+@media (min-width: 992px) {
+  .login-form {
+      max-width: 420px;
+      min-height: 400px;
+  }
 }
 
 @media (max-width: 991px) {
-    .login-form{ 
-        position: relative;
-        background-image: url('C:\Users\Marijana\Desktop\www\izm\sailors-feast\public\img\login/login.jpg');
-        background-size: cover;
-        z-index: 1;
-
-    }
-
-    .login-form::before{
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        z-index: -1;
-    }
+  .login-form { 
+      position: relative;
+      background-image: url('C:\Users\Marijana\Desktop\www\izm\sailors-feast\public\img\login\login.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
   }
 
-  .login-logo{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-top: 100px;
-    z-index: 2;
+  .login-form::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(3px);
+      z-index: -1;
   }
+  
+  .login-form-container {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+}
 
-  .login-visual::before{
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1;
-  }
+.login-logo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  z-index: 2;
+}
 
-  form.loading{
-    position: relative;
+@media (min-width: 992px) {
+  .login-logo {
+      margin-top: 100px;
   }
+}
 
-  form.loading::after{
-    content: "";
-    width: 100%;
-    height: 100%;
-    display: block;
-    position: absolute;
-    top: 0px;
-    left: 0;
-    background-color: #FFFFFF;
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif);
-    background-size: 160px auto;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.8;
-  }
+.login-visual::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+form.loading {
+  position: relative;
+}
+
+form.loading::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  background-color: #FFFFFF;
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif);
+  background-size: 160px auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.8;
+  border-radius: 10px;
+}

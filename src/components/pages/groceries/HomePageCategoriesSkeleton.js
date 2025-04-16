@@ -1,7 +1,10 @@
 import React from "react";
 import './HomePageCategories.css';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
-// Skeleton styles (same as previous components)
+// Skeleton styles
 const skeletonStyles = `
   .skeleton-img,
   .skeleton-title,
@@ -22,17 +25,10 @@ const skeletonStyles = `
     }
   }
   
-  .skeleton-slider {
-    height: 150px;
-    display: flex;
-    align-items: center;
-  }
-  
   .skeleton-category-item {
     display: inline-block;
     width: 100%;
-    max-width: 100px;
-    margin: 0 10px;
+    padding: 0 8px;
     text-align: center;
   }
 `;
@@ -42,17 +38,17 @@ const CategoryItemSkeleton = () => (
   <div className="skeleton-category-item">
     <div 
       className="skeleton-category mx-auto mb-2"
-      style={{ 
-        width: "60px", 
-        height: "60px", 
-        borderRadius: "50%" 
+      style={{
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%"
       }}
     />
     <div 
       className="skeleton-title mx-auto"
-      style={{ 
-        width: "80%", 
-        height: "14px" 
+      style={{
+        width: "80%",
+        height: "14px"
       }}
     />
   </div>
@@ -63,6 +59,27 @@ const HomePageCategoriesSkeleton = () => {
   const desktopItems = Array(6).fill(0);
   const mobileItems = Array(4).fill(0);
 
+  // Settings to match the original component
+  const desktopSettings = {
+    infinite: false,
+    speed: 200,
+    slidesToShow: 6,
+    swipeToSlide: true,
+    accessibility: true,
+    arrows: false,
+    dots: false
+  };
+
+  const mobileSettings = {
+    infinite: false,
+    speed: 300,
+    slidesToShow: 3.5,
+    swipeToSlide: true,
+    accessibility: true,
+    arrows: false,
+    dots: false
+  };
+
   return (
     <>
       {/* Include custom styles */}
@@ -70,30 +87,28 @@ const HomePageCategoriesSkeleton = () => {
       
       {/* Desktop slider skeleton */}
       <div
-        className="skeleton-slider d-none d-sm-block col-sm-9 col-md-8 col-lg-7 mx-auto"
-        style={{ 
-          display: "flex", 
-          justifyContent: "space-between",
-          maxHeight: "150px"
-        }}
+        className="d-none d-sm-block col-sm-9 col-md-8 col-lg-7 mx-auto"
+        role="region"
+        aria-label="Homepage category skeleton for desktop"
       >
-        {desktopItems.map((_, index) => (
-          <CategoryItemSkeleton key={index} />
-        ))}
+        <Slider {...desktopSettings}>
+          {desktopItems.map((_, index) => (
+            <CategoryItemSkeleton key={index} />
+          ))}
+        </Slider>
       </div>
 
       {/* Mobile slider skeleton */}
       <div
-        className="skeleton-slider mobileHomePageCategories d-block d-sm-none mx-auto p-2"
-        style={{ 
-          display: "flex", 
-          justifyContent: "flex-start",
-          maxHeight: "150px"
-        }}
+        className="mobileHomePageCategories d-block d-sm-none mx-auto p-2"
+        role="region"
+        aria-label="Homepage category skeleton for mobile"
       >
-        {mobileItems.map((_, index) => (
-          <CategoryItemSkeleton key={index} />
-        ))}
+        <Slider {...mobileSettings}>
+          {mobileItems.map((_, index) => (
+            <CategoryItemSkeleton key={index} />
+          ))}
+        </Slider>
       </div>
     </>
   );

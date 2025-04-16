@@ -13,6 +13,7 @@ const AddBlogPost = () => {
   const [image, setImage] = useState(null);
   const imageInputRef = useRef(null);
   const [message, setMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     fetch(`${backendUrl}/wp-json/wp/v2/categories?per_page=100`)
@@ -25,6 +26,18 @@ const AddBlogPost = () => {
       })
       .catch(err => console.error("Greška pri dohvaćanju kategorija:", err));
   }, [selectedCategoryId]);
+
+  // Efekt za prikazivanje i skrivanje toast-a
+  useEffect(() => {
+    if (message) {
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+        setTimeout(() => setMessage(""), 300); // Čistimo poruku nakon što se toast sakrije
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleImageSelect = async (e) => {
     const file = e.target.files[0];
@@ -105,6 +118,28 @@ const AddBlogPost = () => {
       <div className="row">
         <div className="col-md-6 mx-auto">
           <h1 className="text-center mb-4">Create New Blog Post</h1>
+          
+          {/* Toast poruka */}
+          {showToast && message && (
+            <div 
+              className={`alert alert-success alert-dismissible fade ${showToast ? 'show' : ''}`} 
+              role="alert"
+              style={{
+                position: "relative",
+                marginBottom: "20px",
+                transition: "opacity 0.3s ease-in-out"
+              }}
+            >
+              {message}
+              <button 
+                type="button" 
+                className="btn-close" 
+                aria-label="Close"
+                onClick={() => setShowToast(false)}
+              ></button>
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} aria-label="Form for submitting a new blog post">
             {/* Category */}
             <div className="mb-3">
@@ -164,12 +199,9 @@ const AddBlogPost = () => {
             </div>
 
             {/* Submit */}
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-prim w-100">
               Submit Blog Post
             </button>
-
-            {/* Message */}
-            {message && <p className="mt-3 text-center">{message}</p>}
           </form>
         </div>
       </div>

@@ -47,6 +47,10 @@ const CartPage = () => {
     localStorage.removeItem("cart");
     setCart([]);
     window.dispatchEvent(new Event("cartUpdated"));
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   useEffect(() => {
@@ -134,7 +138,7 @@ const CartPage = () => {
                 {boxProducts.length > 0 && (
                   <>
                     <h3 className="text-center text-success mb-3">From Box</h3>
-                    <table className="table table-bordered table-hover text-center">
+                    <table className="table table-bordered table-hover align-middle-cart text-center">
                       <thead className="table-secondary">
                         <tr>
                           <th style={{ width: "80px" }}>Image</th>

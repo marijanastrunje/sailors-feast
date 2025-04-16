@@ -12,7 +12,7 @@ const Register = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const redirect = queryParams.get("redirect") || "/";
+    const redirect = queryParams.get("redirect") || "/user";
 
     const [form, setForm] = useState({
         first_name: "",
@@ -109,125 +109,141 @@ const Register = () => {
 
     return (
         <section id="register" aria-labelledby="register-heading">
-            <div className="row vh-100">
-                <div className="col-lg-6 login-visual d-none d-lg-inline position-relative">
-                    <img
-                        className="object-fit-cover w-100 h-100 position-absolute"
-                        src="/img/login/login-visual.jpg"
-                        alt="Registration background"
-                        title="Registration background"
-                    />
-                    <div className="login-logo">
-                        <Link to="/" title="Go to homepage">
-                            <img
-                                src="/img/logo/white-color-logo-horizontal-sailors-feast.svg"
-                                width={450}
-                                height={90}
-                                alt="Sailor's Feast logo"
-                                title="Sailor's Feast logo"
-                            />
-                        </Link>
+            <div className="container-fluid p-0">
+                <div className="row">
+                    <div className="col-lg-6 login-visual d-none d-lg-inline position-relative">
+                        <img
+                            className="object-fit-cover w-100 h-100 position-absolute"
+                            src="/img/login/login-visual.jpg"
+                            alt="Registration background"
+                            title="Registration background"
+                        />
+                        <div className="login-logo">
+                            <Link to="/" title="Go to homepage">
+                                <img
+                                    src="/img/logo/white-color-logo-horizontal-sailors-feast.svg"
+                                    width={450}
+                                    height={90}
+                                    alt="Sailor's Feast logo"
+                                    title="Sailor's Feast logo"
+                                />
+                            </Link>
+                        </div>
                     </div>
-                </div>
 
-                <div className="col-lg-6 login-form text-center p-5 p-lg-3 mx-auto">
-                    <h3 className="mb-0 mt-lg-4" id="register-heading">Create Account</h3>
-                    <p>Sign up to get started</p>
+                    <div className="col-lg-6 login-form text-center p-4 p-lg-3 mx-auto">
+                        <div className="login-form-container">
+                            <div className="d-lg-none login-logo">
+                                <Link to="/" title="Go to homepage">
+                                    <img
+                                        src="/img/logo/gray-color-logo-horizontal-sailors-feast.svg"
+                                        width={280}
+                                        height={56}
+                                        alt="Sailor's Feast logo"
+                                        title="Sailor's Feast logo"
+                                    />
+                                </Link>
+                            </div>
 
-                    <form
-                        className={isLoading ? "loading" : ""}
-                        onSubmit={handleRegister}
-                        aria-labelledby="register-heading"
-                    >
-                        <div className="input-group">
-                            <label className="text-start w-100" htmlFor="first_name">First Name</label>
-                            <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
-                            <input
-                                type="text"
-                                id="first_name"
-                                name="first_name"
-                                value={form.first_name}
-                                onChange={handleChange}
-                                className="form-control"
-                                placeholder="Enter your first name"
-                                aria-label="First name"
-                                required
-                            />
+                            <h3 className="mb-0 mt-lg-4" id="register-heading">Create Account</h3>
+                            <p>Sign up to get started</p>
+
+                            <form
+                                className={isLoading ? "loading" : ""}
+                                onSubmit={handleRegister}
+                                aria-labelledby="register-heading"
+                            >
+                                <div className="input-group">
+                                    <label className="text-start w-100" htmlFor="first_name">First Name</label>
+                                    <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
+                                    <input
+                                        type="text"
+                                        id="first_name"
+                                        name="first_name"
+                                        value={form.first_name}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Enter your first name"
+                                        aria-label="First name"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="input-group mt-3">
+                                    <label className="text-start w-100" htmlFor="last_name">Last Name</label>
+                                    <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
+                                    <input
+                                        type="text"
+                                        id="last_name"
+                                        name="last_name"
+                                        value={form.last_name}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Enter your last name"
+                                        aria-label="Last name"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="input-group mt-3">
+                                    <label className="text-start w-100" htmlFor="email">Email address</label>
+                                    <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faEnvelope} /></span>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Enter your email"
+                                        aria-label="Email"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="input-group mt-3">
+                                    <label className="text-start w-100" htmlFor="password">Password</label>
+                                    <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        value={form.password}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        placeholder="Create a password"
+                                        aria-label="Password"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mt-3">
+                                    <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
+                                </div>
+
+                                {error && (
+                                    <p className="alert alert-danger p-1 p-sm-2 text-center mt-3" role="alert">
+                                        {error}
+                                    </p>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-prim w-100 mt-3"
+                                    disabled={isLoading}
+                                    aria-label="Submit registration form"
+                                >
+                                    {isLoading ? "Signing up..." : "Sign Up"}
+                                </button>
+                            </form>
+
+                            <div className="text-center mt-3">
+                                <p>
+                                    Already have an account?{" "}
+                                    <Link to="/login" title="Go to login page">Log in</Link>
+                                </p>
+                            </div>
                         </div>
-
-                        <div className="input-group">
-                            <label className="text-start w-100" htmlFor="last_name">Last Name</label>
-                            <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
-                            <input
-                                type="text"
-                                id="last_name"
-                                name="last_name"
-                                value={form.last_name}
-                                onChange={handleChange}
-                                className="form-control"
-                                placeholder="Enter your last name"
-                                aria-label="Last name"
-                                required
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label className="text-start w-100" htmlFor="email">Email address</label>
-                            <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faEnvelope} /></span>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                className="form-control"
-                                placeholder="Enter your email"
-                                aria-label="Email"
-                                required
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label className="text-start w-100" htmlFor="password">Password</label>
-                            <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={form.password}
-                                onChange={handleChange}
-                                className="form-control"
-                                placeholder="Create a password"
-                                aria-label="Password"
-                                required
-                            />
-                        </div>
-
-                        <div className="mt-3">
-                            <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
-                        </div>
-
-                        {error && (
-                            <p className="alert alert-danger p-1 p-sm-2 text-center mt-3" role="alert">
-                                {error}
-                            </p>
-                        )}
-
-                        <button
-                            type="submit"
-                            className="btn btn-prim w-100 mt-3"
-                            disabled={isLoading}
-                            aria-label="Submit registration form"
-                        >
-                            {isLoading ? "Signing up..." : "Sign Up"}
-                        </button>
-                    </form>
-
-                    <div className="text-center mt-3">
-                        <p>
-                            Already have an account?{" "}
-                            <Link to="/login" title="Go to login page">Log in</Link>
-                        </p>
                     </div>
                 </div>
             </div>

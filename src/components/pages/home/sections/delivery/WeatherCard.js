@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import './WeatherCard.css'
+import './WeatherCard.css';
 
 const SplitWeatherCard = () => {
-
   const [weatherToday, setWeatherToday] = useState(null);
   const [error, setError] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Datum i vrijeme – osvježava se svake sekunde
+  // Datum i vrijeme – osvježava se svake minute umjesto svake sekunde
   useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 1000);
+    const interval = setInterval(() => setCurrentTime(new Date()), 60000); // 60000ms = 1 minuta
     return () => clearInterval(interval);
   }, []);
+
+  // Formatiraj vrijeme bez sekundi
+  const formatTimeWithoutSeconds = (date) => {
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  };
 
   const fetchWeather = async () => {
     try {
@@ -63,23 +67,24 @@ const SplitWeatherCard = () => {
     <div className="weather-card">
       <h5>🌍 Split, Croatia</h5>
       <p>
-        {currentTime.toLocaleDateString("en-GB")}   {currentTime.toLocaleTimeString("en-GB")}
+        {currentTime.toLocaleDateString("en-GB")} {formatTimeWithoutSeconds(currentTime)}
       </p>
 
       {error && <p className="text-red-500">{error}</p>}
 
       {weatherToday ? (
         <div style={{ marginTop: "0.5rem" }}>
-          <img
-            src={`https://api.met.no/images/weathericons/png/${weatherToday.symbol}.png`}
-            alt={weatherToday.symbol}
-            style={{ width: "48px", height: "48px" }}
-            className="mx-auto"
-          />
-          <p>🌡️ {weatherToday.temperature}°C</p>
+          <div className="weather-icon-temp">
+            <img
+              src={`https://api.met.no/images/weathericons/png/${weatherToday.symbol}.png`}
+              alt={weatherToday.symbol}
+              className="weather-icon-desktop"
+            />
+            <span className="temperature-display">{weatherToday.temperature}°C</span>
+          </div>
           <p>💨 Wind: {weatherToday.wind} m/s</p>
           <p>💧 Humidity: {weatherToday.humidity}%</p>
-          <p>🌊 Sea Temp: ~19°C</p>
+          <p>🌊 Sea Temp: ~15°C</p>
         </div>
       ) : (
         <p>Loading...</p>

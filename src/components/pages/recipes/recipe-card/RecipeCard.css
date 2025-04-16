@@ -102,8 +102,9 @@
 
 .bookmark-toggle-card{
   position: absolute;
-  margin-top: 110px;
+  margin-top: 95px;
   margin-left: 110px;
-  font-size: 25px;
+  font-size: 30px;
   color: white;
+  padding: 40px;
 }

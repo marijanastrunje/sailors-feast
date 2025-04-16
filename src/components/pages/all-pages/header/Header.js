@@ -84,8 +84,21 @@ const Header = () => {
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
-        window.location.reload();
+        window.dispatchEvent(new Event('userLogout'));
+        navigate("/");
     };
+
+    useEffect(() => {
+        const user = localStorage.getItem('username');
+        if (user) setUsername(user);
+        
+    const handleLogout = () => {
+        setUsername(null);
+    };
+    
+    window.addEventListener('userLogout', handleLogout);
+    return () => window.removeEventListener('userLogout', handleLogout);
+    }, []);
 
     useEffect(() => {
         setMenu(false); // Svaka promjena rute zatvara meni

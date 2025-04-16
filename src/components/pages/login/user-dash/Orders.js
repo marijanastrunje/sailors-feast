@@ -5,7 +5,6 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -31,10 +30,6 @@ const Orders = () => {
     if (token) fetchOrders();
   }, [token]);
 
-  const toggleOrder = (orderId) => {
-    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
-  };
-
   const labelMap = {
     billing_marina: "Marina",
     billing_charter: "Charter",
@@ -50,25 +45,48 @@ const Orders = () => {
   if (!orders.length) return <p>You have no orders.</p>;
 
   return (
-    <div className="col-md-4">
-      <h4>Your Orders</h4>
-      <ul className="list-group mt-3">
-        {orders.map(({ id, date_created, total, status, meta_data, line_items }) => (
-          <li
-            key={id}
-            className="list-group-item"
-            onClick={() => toggleOrder(id)}
-            style={{ cursor: "pointer" }}
-            aria-controls={`order-details-${id}`}
-          >
-            <div className="d-flex justify-content-between">
-              <div><strong>#</strong>{id}</div>
-              <div>{new Date(date_created).toLocaleDateString()}</div>
-              <div><strong>{total} €</strong></div>
-            </div>
+    <div className="container col-md-8 my-5">
+      <h2 className="mb-4 text-center">My Orders</h2>
 
-            {expandedOrderId === id && (
-              <div id={`order-details-${id}`} className="mt-3">
+      <style>
+        {`
+          .accordion-button:not(.collapsed) {
+            color: rgb(0, 0, 0);
+            background-color: #f2f2f2;
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+          }
+          .accordion-button:focus {
+            border-color: #ced4da;
+            box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+          }
+          .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23495057'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+          }
+        `}
+      </style>
+
+      <div className="accordion accordion-flush shadow rounded border" id="orders-accordion">
+        {orders.map(({ id, date_created, total, status, meta_data, line_items }, index) => (
+          <div className="accordion-item" key={id}>
+            <h2 className="accordion-header" id={`heading-${id}`}>
+              <button
+                className="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target={`#collapse-${id}`}
+                aria-expanded="false"
+                aria-controls={`collapse-${id}`}
+              >
+                Order #{id} – {new Date(date_created).toLocaleDateString()} – {total} €
+              </button>
+            </h2>
+            <div
+              id={`collapse-${id}`}
+              className="accordion-collapse collapse"
+              aria-labelledby={`heading-${id}`}
+              data-bs-parent="#orders-accordion"
+            >
+              <div className="accordion-body bg-light">
                 <p><strong>Status:</strong> {status}</p>
 
                 {meta_data?.length > 0 && (
@@ -96,10 +114,10 @@ const Orders = () => {
                   ))}
                 </ul>
               </div>
-            )}
-          </li>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

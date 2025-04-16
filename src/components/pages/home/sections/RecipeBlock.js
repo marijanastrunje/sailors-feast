@@ -1,21 +1,22 @@
 import React, { useEffect, useState, memo, useCallback } from "react";
 import Slider from "react-slick";
+import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RecipeCard from "../../recipes/recipe-card/RecipeCard";
-import RecipeCardSkeleton from "../../recipes/recipe-card/RecipeCardSkeleton"; // Import the skeleton component
+import RecipeCardSkeleton from "../../recipes/recipe-card/RecipeCardSkeleton";
 import './RecipeBlock.css';
 
 const RecipeBlock = () => {
   const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const [visibleIndexes, setVisibleIndexes] = useState({ start: 0, end: 4 });
-  
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
 
     fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://backend.sailorsfeast.com'}/wp-json/wp/v2/recipe?_embed&per_page=10`, { signal })
       .then(response => {
@@ -24,12 +25,12 @@ const RecipeBlock = () => {
       })
       .then(data => {
         setRecipes(data);
-        setLoading(false); // Set loading to false when data is received
+        setLoading(false);
       })
       .catch(error => {
         if (error.name !== 'AbortError') {
           console.error("Error fetching recipes:", error);
-          setLoading(false); // Also set loading to false on error
+          setLoading(false);
         }
       });
 
@@ -37,15 +38,14 @@ const RecipeBlock = () => {
   }, []);
 
   const handleBeforeChange = useCallback((oldIndex, newIndex) => {
-    // Izračunaj vidljivi raspon baziran na trenutnom slidesToShow
     const width = window.innerWidth;
     let slidesToShow = 4;
-    
+
     if (width <= 480) slidesToShow = 1.5;
     else if (width <= 768) slidesToShow = 2.3;
     else if (width <= 992) slidesToShow = 3;
     else if (width <= 1200) slidesToShow = 3.5;
-    
+
     setVisibleIndexes({
       start: newIndex,
       end: newIndex + Math.ceil(slidesToShow)
@@ -67,14 +67,12 @@ const RecipeBlock = () => {
     ],
   };
 
-  const isCardVisible = useCallback((index) => 
-    index >= visibleIndexes.start && index < visibleIndexes.end, 
+  const isCardVisible = useCallback(
+    (index) => index >= visibleIndexes.start && index < visibleIndexes.end,
     [visibleIndexes]
   );
-  
-  // Renderiranje skeleton kartica tijekom učitavanja
+
   const renderSkeletons = () => {
-    // Kreiraj array od 4 elementa za skeleton kartice
     return [...Array(4)].map((_, index) => (
       <div key={`skeleton-${index}`}>
         <RecipeCardSkeleton />
@@ -82,27 +80,28 @@ const RecipeBlock = () => {
     ));
   };
 
-  // If there are no recipes and not loading, return null
   if (!loading && !recipes.length) return null;
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="recepti col-lg-10 mx-auto">
+    <div className="recipe-slider-wrapper container">
+      <div className="row justify-content-center">
+        <div className="col-12 col-lg-10">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Link to="/recipes">
+              <h2 className="mb-0 text-start">Recipes</h2>
+            </Link>
+            <Link to="/recipes" className="mt-md-1">View more</Link>
+          </div>
           <Slider {...settings}>
-            {loading ? (
-              // Prikaži skeleton kartice tijekom učitavanja
-              renderSkeletons()
-            ) : (
-              // Prikaži recepte kad su učitani
-              recipes.map((recipe, index) => (
-                <RecipeCard
-                  key={recipe.id}
-                  recipe={recipe}
-                  isVisible={isCardVisible(index)}
-                />
-              ))
-            )}
+            {loading
+              ? renderSkeletons()
+              : recipes.map((recipe, index) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    isVisible={isCardVisible(index)}
+                  />
+                ))}
           </Slider>
         </div>
       </div>

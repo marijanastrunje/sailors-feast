@@ -5,6 +5,8 @@ const ProductCard = ({ product, onShowModal }) => {
     const [quantity, setQuantity] = useState('');
     const [addedToCart, setAddedToCart] = useState(false);
     const [showControls, setShowControls] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [toastMessage, setToastMessage] = useState('✅ Added to cart!');
     const updateCartTimeoutRef = useRef(null);
 
     // Učitaj inicijalno stanje iz košarice
@@ -23,7 +25,9 @@ const ProductCard = ({ product, onShowModal }) => {
 
         if (newQuantity === '' || newQuantity <= 0) {
             cart = cart.filter(item => item.id !== product.id);
-            setShowControls(false);
+            if (!isEditing) {
+                setShowControls(false);
+            }
         } else {
             const productInCart = cart.find(item => item.id === product.id);
             if (productInCart) {
@@ -44,33 +48,54 @@ const ProductCard = ({ product, onShowModal }) => {
             localStorage.setItem('cart', JSON.stringify(cart));
             window.dispatchEvent(new Event("cartUpdated"));
         }, 300);
-
-        if (newQuantity > 0) {
-            setAddedToCart(true);
-            setTimeout(() => {
-                setAddedToCart(false);
-            }, 1000);
-        }
-    }, [product.id, product.images, product.name, product.price]);
+    }, [product.id, product.images, product.name, product.price, isEditing]);
 
     const handleIncrease = useCallback(() => {
         const newQuantity = (quantity || 0) + 1;
         setQuantity(newQuantity);
         setShowControls(true);
         updateCart(newQuantity);
+        setToastMessage('✅ Added to cart!');
+        setAddedToCart(true);
+        setTimeout(() => {
+            setAddedToCart(false);
+        }, 1000);
     }, [quantity, updateCart]);
 
     const handleDecrease = useCallback(() => {
         const newQuantity = quantity > 1 ? quantity - 1 : '';
         setQuantity(newQuantity);
         updateCart(newQuantity);
+        
+        setToastMessage('Removed from cart');
+        setAddedToCart(true);
+        setTimeout(() => {
+            setAddedToCart(false);
+        }, 1000);
+    }, [quantity, updateCart]);
+
+    const handleInputFocus = useCallback(() => {
+        setIsEditing(true);
+    }, []);
+
+    const handleInputBlur = useCallback(() => {
+        if (quantity === '' || quantity <= 0) {
+            setShowControls(false);
+            setQuantity('');
+            updateCart('');
+        }
+        setIsEditing(false);
     }, [quantity, updateCart]);
 
     const handleInputChange = useCallback((e) => {
         let value = e.target.value;
         if (value === '') {
             setQuantity('');
-            updateCart('');
+            // Ne sakrivamo kontrole odmah, samo ažuriramo vrijednost
+            // Kontrole će se sakriti tek kad korisnik završi uređivanje (izgubi fokus)
+            if (!isEditing) {
+                updateCart('');
+            }
         } else {
             let newQuantity = parseInt(value, 10);
             if (!isNaN(newQuantity) && newQuantity >= 0) {
@@ -78,7 +103,7 @@ const ProductCard = ({ product, onShowModal }) => {
                 updateCart(newQuantity);
             }
         }
-    }, [updateCart]);
+    }, [updateCart, isEditing]);
 
     // Sync localStorage i cartUpdated u jednom efektu
     useEffect(() => {
@@ -157,6 +182,8 @@ const ProductCard = ({ product, onShowModal }) => {
                                 className="quantity-input mx-1"
                                 value={quantity}
                                 onChange={handleInputChange}
+                                onFocus={handleInputFocus}
+                                onBlur={handleInputBlur}
                                 min="0"
                                 aria-label="Quantity"
                             />
@@ -178,13 +205,13 @@ const ProductCard = ({ product, onShowModal }) => {
 
             {/* Added to cart toast */}
             <div
-                className={`toast align-items-center text-white bg-success p-0 ${addedToCart ? "show" : "hide"}`}
+                className={`toast align-items-center text-white ${toastMessage.includes('Added') ? 'bg-success' : 'bg-warning'} p-0 ${addedToCart ? "show" : "hide"}`}
                 role="status"
                 aria-live="polite"
                 aria-atomic="true"
             >
                 <div className="d-flex">
-                    <div className="toast-body p-2">✅ Added to cart!</div>
+                    <div className="toast-body p-2">{toastMessage}</div>
                 </div>
             </div>
         </div>
