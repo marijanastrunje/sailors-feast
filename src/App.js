@@ -35,6 +35,8 @@ const PrivacyPolicyPage = lazy(() => import('./components/pages/all-pages/Privac
 const TermsAndConditions = lazy(() => import('./components/pages/all-pages/TermsAndConditions'));
 const FaqPage = lazy(() => import('./components/pages/all-pages/FaqPage'));
 
+const CharterLandingPage = lazy(() => import('./components/pages/charter/CharterLandingPage'));
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -99,6 +101,8 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="/faq" element={<FaqPage />} />
+
+              <Route path="/charter" element={<CharterLandingPage />} />
             </Routes>
             <Footer />
           </>

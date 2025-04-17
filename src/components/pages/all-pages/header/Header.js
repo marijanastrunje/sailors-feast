@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faEnvelope, faUser, faBars, faCartShopping,faMagnifyingGlass, faHouse, 
-    faBasketShopping, faBoxOpen, faSpoon, faBookOpen } from '@fortawesome/free-solid-svg-icons';
+    faBasketShopping, faBoxOpen, faSpoon, faBookOpen, faShip } from '@fortawesome/free-solid-svg-icons';
 import './Header.css';
 
 const Header = () => {
@@ -11,6 +11,10 @@ const Header = () => {
     const [menu, setMenu] = useState(false);
     const [isSearchVisible, setIsSearchVisible] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+    
+    // Dodaj ref za praćenje elementa menija
+    const menuRef = useRef(null);
+    const menuButtonRef = useRef(null);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -49,6 +53,29 @@ const Header = () => {
         return () => clearTimeout(delayDebounce);
         }, [searchTerm]);
 
+    // Dodaj event listener za klik izvan menija
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Provjeri je li meni otvoren i je li klik bio izvan menija i izvan gumba za meni
+            if (
+                menu && 
+                menuRef.current && 
+                !menuRef.current.contains(event.target) && 
+                menuButtonRef.current &&
+                !menuButtonRef.current.contains(event.target)
+            ) {
+                setMenu(false);
+            }
+        };
+
+        // Dodaj event listener na dokument
+        document.addEventListener('mousedown', handleClickOutside);
+        
+        // Očisti event listener pri unmountanju komponente
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [menu]); // Ovisi o stanju menija
 
     useEffect(() => {
         const handleCartUpdate = () => {
@@ -162,10 +189,15 @@ const Header = () => {
             {/* Main Navbar */}
             <nav className="navbar navbar-expand-lg fixed-top">
                 <div className="container-fluid">
-                    <button onClick={toggleMenu} className="navbar-toggler p-2" aria-label="Open menu">
+                    <button 
+                        onClick={toggleMenu} 
+                        className="navbar-toggler p-2" 
+                        aria-label="Open menu"
+                        ref={menuButtonRef} // Dodaj ref na gumb menija
+                    >
                         <FontAwesomeIcon icon={faBars} />
                     </button>
-                    <Link to="/" className="navbar-brand mx-auto ms-md-4">
+                    <Link to="/" className="navbar-brand mx-auto ms-lg-4">
                         <img src="/img/logo/white-color-logo-horizontal-sailors-feast.svg" width={230} height={40} alt="Sailor's Feast logo" />
                     </Link>
                     <div className="d-flex align-items-center order-lg-2">
@@ -208,14 +240,18 @@ const Header = () => {
                             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                         </Link>
                     </div>
-                    <div className={`collapse navbar-collapse order-lg-1 ${menu ? 'show' : ''}`} id="navbarSupportedContent">
+                    <div 
+                        className={`collapse navbar-collapse order-lg-1 ${menu ? 'show' : ''}`} 
+                        id="navbarSupportedContent"
+                        ref={menuRef} // Dodaj ref na meni element
+                    >
                         {menu && (
                             <button onClick={toggleMenu} className="btn btn-close d-lg-none close-btn" aria-label="Close menu"></button>
                         )}
                         <ul className="navbar-nav mx-auto mb-lg-0">
-                            <li className="nav-item me-2"><Link to="/" className={`nav-link ${currentPath === '/' ? 'active' : ''}`}><FontAwesomeIcon icon={faHouse} className="mx-2 d-md-none" />Home</Link></li>
+                            <li className="nav-item me-2"><Link to="/" className={`nav-link ${currentPath === '/' ? 'active' : ''}`}><FontAwesomeIcon icon={faHouse} className="mx-2 d-lg-none" />Home</Link></li>
                             <li className="nav-item dropdown me-2">
-                                <Link className={`nav-link dropdown-toggle ${isFoodBoxActive ? 'active' : ''}`} data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-md-none" />Food Box</Link>
+                                <Link className={`nav-link dropdown-toggle ${isFoodBoxActive ? 'active' : ''}`} data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-lg-none" />Food Box</Link>
                                 <ul className="dropdown-menu">
                                     <li><Link to="/all-boxes" className={`dropdown-item ${currentPath === '/all-boxes' ? 'active' : ''}`}>Compare boxes</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
@@ -228,10 +264,11 @@ const Header = () => {
                                     <li><Link to="/healthy-box" className={`dropdown-item ${currentPath === '/healthy-box' ? 'active' : ''}`} href="healthy-box.html">Healthy Box</Link></li>
                                 </ul>
                             </li>
-                            <li className="nav-item me-2"><Link to="/groceries" className={`nav-link ${currentPath === '/groceries' ? 'active' : ''}`}><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-md-none" />Groceries</Link></li>
-                            <li className="nav-item me-2"><Link to="/recipes" className={`nav-link ${currentPath === '/recipes' ? 'active' : ''}`} ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-md-none" />Recipes</Link></li>
-                            <li className="nav-item me-2"><Link to="/blog" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faBookOpen} className="mx-2 d-md-none" />Blog</Link></li>
-                            <li className="nav-item"><Link to="/contact" className={`nav-link ${currentPath === '/contact' ? 'active' : ''}`}><FontAwesomeIcon icon={faPhone} className="mx-2 d-md-none" />Contact</Link></li>
+                            <li className="nav-item me-2"><Link to="/groceries" className={`nav-link ${currentPath === '/groceries' ? 'active' : ''}`}><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-lg-none" />Groceries</Link></li>
+                            <li className="nav-item me-2"><Link to="/recipes" className={`nav-link ${currentPath === '/recipes' ? 'active' : ''}`} ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-lg-none" />Recipes</Link></li>
+                            <li className="nav-item me-2"><Link to="/blog" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faBookOpen} className="mx-2 d-lg-none" />Blog</Link></li>
+                            <li className="nav-item me-2"><Link to="/charter" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faShip} className="mx-2 d-lg-none" />Charter</Link></li>
+                            <li className="nav-item"><Link to="/contact" className={`nav-link ${currentPath === '/contact' ? 'active' : ''}`}><FontAwesomeIcon icon={faPhone} className="mx-2 d-lg-none" />Contact</Link></li>
                         </ul>
                     </div>
                 </div>

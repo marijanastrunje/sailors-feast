@@ -156,7 +156,7 @@ const DeliveryMap = () => {
   return (
     <div className="container mb-4 mt-4">
       <div className="row justify-content-center">
-        <h2 className="text-center mb-4">Marina Delivery Points</h2>
+        <h2 className="mb-4">Marina delivery points</h2>
         
         {/* Weather info - samo na mobilnim uređajima */}
         <div className="d-md-none">

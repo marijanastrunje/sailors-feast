@@ -115,4 +115,5 @@ const RecipeCard = ({ recipe, onUnsave }) => {
   );
 };
 
-export default RecipeCard;
+export default React.memo(RecipeCard);
+

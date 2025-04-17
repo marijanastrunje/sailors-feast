@@ -14,6 +14,7 @@ import HomePageCategories from "../groceries/HomePageCategories";
 import InstagramGallery from "../all-pages/instagram/Instagram";
 import Faq from "../all-pages/Faq";
 import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import CharterPromoSection from "./sections/Charter";
 
 // API config
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -50,6 +51,10 @@ const Home = () => {
 
       <section id="special-offer">
         <SpecialOffer />
+      </section>
+
+      <section id="charter">
+        <CharterPromoSection />
       </section>
 
       <section id="product-carousel">

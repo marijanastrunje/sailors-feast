@@ -94,3 +94,18 @@ form.loading::after {
   opacity: 0.8;
   border-radius: 10px;
 }
+
+.recaptcha-wrapper {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 380px) {
+  .recaptcha-wrapper {
+    justify-content: start;
+  }
+}
+
+

@@ -109,8 +109,8 @@ const Register = () => {
 
     return (
         <section id="register" aria-labelledby="register-heading">
-            <div className="container-fluid p-0">
-                <div className="row">
+            <div className="container-fluid p-0 overflow-hidden">
+                <div className="row vh-100">
                     <div className="col-lg-6 login-visual d-none d-lg-inline position-relative">
                         <img
                             className="object-fit-cover w-100 h-100 position-absolute"
@@ -217,7 +217,7 @@ const Register = () => {
                                     />
                                 </div>
 
-                                <div className="mt-3">
+                                <div className="recaptcha-wrapper mt-3">
                                     <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
                                 </div>
 
@@ -229,7 +229,7 @@ const Register = () => {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-prim w-100 mt-3"
+                                    className="btn btn-prim w-100 mt-2"
                                     disabled={isLoading}
                                     aria-label="Submit registration form"
                                 >

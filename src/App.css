@@ -217,3 +217,11 @@ a{
 .img-radius{
   border-radius: 4px;
 }
+
+button, input, textarea, select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+

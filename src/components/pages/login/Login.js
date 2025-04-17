@@ -86,8 +86,8 @@ const Login = () => {
 
     return (
         <section id="login" aria-labelledby="login-heading">
-            <div className="container-fluid p-0">
-                <div className="row">
+            <div className="container-fluid p-0 overflow-hidden">
+                <div className="row vh-100">
                     <div className="col-lg-6 login-visual d-none d-lg-inline position-relative">
                         <img
                             className="object-fit-cover w-100 h-100 position-absolute"
@@ -174,7 +174,7 @@ const Login = () => {
                                     </div>
                                 </div>
 
-                                <div className="mt-3">
+                                <div className="recaptcha-wrapper mt-3">
                                     <ReCAPTCHA sitekey={siteKey} onChange={handleCaptchaChange} />
                                 </div>
 
@@ -184,7 +184,7 @@ const Login = () => {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-prim w-100"
+                                    className="btn btn-prim w-100 mt-2"
                                     disabled={isLoading}
                                     aria-label="Submit login form"
                                 >

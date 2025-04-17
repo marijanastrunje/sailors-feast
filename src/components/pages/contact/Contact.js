@@ -91,7 +91,6 @@ const ContactForm = () => {
           <div className="col-md-6">
             <form onSubmit={handleSubmit} aria-labelledby="contact-form-title">
               <h3 id="contact-form-title" className="mb-4 text-center text-md-start">Send us a message</h3>
-
               <div className="mb-3">
                 <label htmlFor="name" className="form-label">Your Name</label>
                 <input
