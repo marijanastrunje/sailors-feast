@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MediaImg from "../all-pages/media/MediaImg";
+import MediaImg from "../../components/common/media/MediaImg";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import Loader from "../../components/common/Loader"
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -26,18 +27,8 @@ const BlogSingle = () => {
       });
   }, [slug]);
 
-  if (isLoading) return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="col-md-8 text-center py-5">
-          <div className="spinner-border text-prim" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-3">Loading content...</p>
-        </div>
-      </div>
-    </div>
-  );
+  if (isLoading) return <Loader />;
+
 
   if (!post) return (
     <div className="container">

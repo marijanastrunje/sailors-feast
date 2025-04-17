@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import BlogShort from "./BlogShort";
-import BlogShortSkeleton from "./BlogShortSkeleton";
-import InstagramGallery from "../all-pages/instagram/Instagram";
+import BlogShort from "../../components/blog/BlogShort";
+import BlogShortSkeleton from "../../components/blog/BlogShortSkeleton";
+import InstagramGallery from "../../components/common/instagram/Instagram";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import Pagination from "../../components/ui/Pagination";
 import "./Blog.css";

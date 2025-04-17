@@ -4,8 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
 
-import Header from './pages/all-pages/header/Header';
-import Footer from './pages/all-pages/footer/Footer';
+import Header from './components/layout/header/Header';
+import Footer from './components/layout/footer/Footer';
 import ScrollToTop from "./components/common/ScrollToTop";
 
 
@@ -28,7 +28,6 @@ const Checkout = lazy(() => import('./pages/cart-checkout/Checkout'));
 const UserDashboard = lazy(() => import('./pages/login/user-dash/userDashboard'));
 const Success = lazy(() => import('./pages/cart-checkout/Success'));
 const Failure = lazy(() => import('./pages/cart-checkout/Failure'));
-const TestOrder = lazy(() => import('./pages/groceries/TestOrder'));
 const AddRecipe = lazy(() => import('./pages/recipes/add-recipe/AddRecipe'));
 const AddBlogPost = lazy(() => import('./pages/blog/AddBlogPost'));
 const PrivacyPolicyPage = lazy(() => import('./pages/pp-tc/PrivacyPolicy'));
@@ -95,7 +94,6 @@ function App() {
               <Route path="/success" element={<Success />} />
               <Route path="/failure" element={<Failure />} />
               <Route path="/user" element={<UserDashboard />} />
-              <Route path="/testorder" element={<TestOrder />} />
               <Route path="/addrecipe" element={<AddRecipe />} />
               <Route path="/addblog" element={<AddBlogPost />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

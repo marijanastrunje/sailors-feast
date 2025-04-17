@@ -11,7 +11,7 @@ import DeliveryMap from "./sections/delivery/DeliveryMap";
 import RecipeBlock from "./sections/RecipeBlock";
 import HomePageBlog from "./sections/HomePageBlog";
 import HomePageCategories from "../groceries/HomePageCategories";
-import InstagramGallery from "../all-pages/instagram/Instagram";
+import InstagramGallery from "../../components/common/instagram/Instagram";
 import Faq from "../../components/common/Faq";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import CharterPromoSection from "./sections/Charter";

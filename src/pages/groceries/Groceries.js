@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Breadcrumbs from "../all-pages/Breadcrumbs";
+import Breadcrumbs from "../../components/ui/Breadcrumbs";
 import CategoriesSidebar from "./CategoriesSidebar";
 import MobileCategoriesSlider from "./MobileCategoriesSlider";
 import MobileSubcategoriesSlider from "./MobileSubcategoriesSlider";
