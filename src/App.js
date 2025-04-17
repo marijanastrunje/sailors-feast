@@ -4,38 +4,38 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
 
-import Header from './components/pages/all-pages/header/Header';
-import Footer from './components/pages/all-pages/footer/Footer';
+import Header from './pages/all-pages/header/Header';
+import Footer from './pages/all-pages/footer/Footer';
 import ScrollToTop from "./components/ScrollToTop";
 
 
-const Home = lazy(() => import('./components/pages/home/Home'));
-const Groceries = lazy(() => import('./components/pages/groceries/Groceries'));
-const StandardBox = lazy(() => import('./components/pages/boxes/StandardBox'));
-const FFBox = lazy(() => import('./components/pages/boxes/FFBox'));
-const FeastBox = lazy(() => import('./components/pages/boxes/FeastBox'));
-const HealthyBox = lazy(() => import('./components/pages/boxes/HealthyBox'));
-const AllBoxes = lazy(() => import('./components/pages/boxes/AllBoxes'));
-const Blog = lazy(() => import('./components/pages/blog/Blog'));
-const BlogSingle = lazy(() => import('./components/pages/blog/BlogSingle'));
-const Contact = lazy(() => import('./components/pages/contact/Contact'));
-const Login = lazy(() => import('./components/pages/login/Login'));
-const Register = lazy(() => import('./components/pages/login/Register'));
-const RecipesPage = lazy(() => import('./components/pages/recipes/RecipesPage'));
-const RecipeDetails = lazy(() => import('./components/pages/recipes/RecipeDetails'));
-const CartPage = lazy(() => import('./components/pages/cart-checkout/CartPage'));
-const Checkout = lazy(() => import('./components/pages/cart-checkout/Checkout'));
-const UserDashboard = lazy(() => import('./components/pages/login/user-dash/userDashboard'));
-const Success = lazy(() => import('./components/pages/cart-checkout/Success'));
-const Failure = lazy(() => import('./components/pages/cart-checkout/Failure'));
-const TestOrder = lazy(() => import('./components/pages/groceries/TestOrder'));
-const AddRecipe = lazy(() => import('./components/pages/recipes/add-recipe/AddRecipe'));
-const AddBlogPost = lazy(() => import('./components/pages/blog/AddBlogPost'));
-const PrivacyPolicyPage = lazy(() => import('./components/pages/all-pages/PrivacyPolicy'));
-const TermsAndConditions = lazy(() => import('./components/pages/all-pages/TermsAndConditions'));
-const FaqPage = lazy(() => import('./components/pages/all-pages/FaqPage'));
+const Home = lazy(() => import('./pages/home/Home'));
+const Groceries = lazy(() => import('./pages/groceries/Groceries'));
+const StandardBox = lazy(() => import('./pages/boxes/StandardBox'));
+const FFBox = lazy(() => import('./pages/boxes/FFBox'));
+const FeastBox = lazy(() => import('./pages/boxes/FeastBox'));
+const HealthyBox = lazy(() => import('./pages/boxes/HealthyBox'));
+const AllBoxes = lazy(() => import('./pages/boxes/AllBoxes'));
+const Blog = lazy(() => import('./pages/blog/Blog'));
+const BlogSingle = lazy(() => import('./pages/blog/BlogSingle'));
+const Contact = lazy(() => import('./pages/contact/Contact'));
+const Login = lazy(() => import('./pages/login/Login'));
+const Register = lazy(() => import('./pages/login/Register'));
+const RecipesPage = lazy(() => import('./pages/recipes/RecipesPage'));
+const RecipeDetails = lazy(() => import('./pages/recipes/RecipeDetails'));
+const CartPage = lazy(() => import('./pages/cart-checkout/CartPage'));
+const Checkout = lazy(() => import('./pages/cart-checkout/Checkout'));
+const UserDashboard = lazy(() => import('./pages/login/user-dash/userDashboard'));
+const Success = lazy(() => import('./pages/cart-checkout/Success'));
+const Failure = lazy(() => import('./pages/cart-checkout/Failure'));
+const TestOrder = lazy(() => import('./pages/groceries/TestOrder'));
+const AddRecipe = lazy(() => import('./pages/recipes/add-recipe/AddRecipe'));
+const AddBlogPost = lazy(() => import('./pages/blog/AddBlogPost'));
+const PrivacyPolicyPage = lazy(() => import('./pages/all-pages/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./pages/all-pages/TermsAndConditions'));
+const FaqPage = lazy(() => import('./pages/all-pages/FaqPage'));
 
-const CharterLandingPage = lazy(() => import('./components/pages/charter/CharterLandingPage'));
+const CharterLandingPage = lazy(() => import('./pages/charter/CharterLandingPage'));
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);

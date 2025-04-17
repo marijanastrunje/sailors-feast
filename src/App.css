@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Inter';
-  src: url('./components/pages/all-pages/fonts/Inter-Variable.ttf') format('truetype');
+  src: url('./pages/all-pages/fonts/Inter-Variable.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'Lexend';
-  src: url('./components/pages/all-pages/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
+  src: url('./pages/all-pages/fonts/Lexend-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
