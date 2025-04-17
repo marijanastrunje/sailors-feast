@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import SplitWeatherCard from "./delivery/WeatherCard";
 import SpecialOfferSkeleton from "./SpecialOfferSkeleton"; // Import the skeleton component
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -31,7 +30,7 @@ const SpecialOffer = () => {
 
   return (
     <div className="container mb-5 mb-md-0">
-      <div className="row justify-content-center justify-content-lg-end">
+      <div className="row justify-content-center">
         <div className="col-md-6 text-center pb-2">
           <div className="d-flex align-items-center justify-content-center mb-2">
             <img
@@ -46,9 +45,6 @@ const SpecialOffer = () => {
           <Link to="/groceries" className="btn btn-prim me-2">
             Place Your Order
           </Link>
-        </div>
-        <div className="d-none d-md-block col-md-4 col-lg-3 offset-lg-1">
-          <SplitWeatherCard />
         </div>
       </div>
     </div>

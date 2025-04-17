@@ -159,7 +159,7 @@ const DeliveryMap = () => {
         <h2 className="mb-4">Marina delivery points</h2>
         
         {/* Weather info - samo na mobilnim uređajima */}
-        <div className="d-md-none">
+        <div className="col-md-10">
           {error && <p className="text-danger">{error}</p>}
           
           {weatherToday ? (
