@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import RecipeTags from "../recipes/recipe-card/RecipeTags";
 import MediaImg from "../all-pages/media/MediaImg";
-import BookmarkToggle from "../all-pages/Bookmark";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import BookmarkToggle from "../../components/common/Bookmark";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 
 import './RecipeDetails.css'
 

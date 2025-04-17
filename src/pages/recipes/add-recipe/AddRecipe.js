@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import compressImage from "../../all-pages/compressImage";
+import compressImage from "../../../utils/compressImage";
 
 // Component for displaying loading indicator
 const LoadingSpinner = ({ text = "Loading..." }) => (

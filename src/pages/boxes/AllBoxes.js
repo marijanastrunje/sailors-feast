@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Faq from "../all-pages/Faq";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Faq from "../../components/common/Faq";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import "./AllBoxes.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;

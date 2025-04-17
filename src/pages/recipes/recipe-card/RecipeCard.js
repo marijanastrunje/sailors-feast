@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
-import BookmarkToggle from "../../all-pages/Bookmark";
+import BookmarkToggle from "../../../components/common/Bookmark";
 import RecipeTags from "./RecipeTags";
 import './RecipeCard.css';
 

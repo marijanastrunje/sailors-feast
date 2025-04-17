@@ -12,8 +12,8 @@ import RecipeBlock from "./sections/RecipeBlock";
 import HomePageBlog from "./sections/HomePageBlog";
 import HomePageCategories from "../groceries/HomePageCategories";
 import InstagramGallery from "../all-pages/instagram/Instagram";
-import Faq from "../all-pages/Faq";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Faq from "../../components/common/Faq";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import CharterPromoSection from "./sections/Charter";
 
 // API config

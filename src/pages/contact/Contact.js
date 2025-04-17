@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import Faq from "../all-pages/Faq";
+import Faq from "../../components/common/Faq";
 
 import './Contact.css'
 

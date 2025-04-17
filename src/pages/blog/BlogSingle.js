@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MediaImg from "../all-pages/media/MediaImg";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 

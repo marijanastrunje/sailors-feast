@@ -10,7 +10,7 @@ import {
   faShoppingBasket, 
   faUsers 
 } from "@fortawesome/free-solid-svg-icons";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import DeliveryMap from "../home/sections/delivery/DeliveryMap";
 import "./CharterLandingPage.css";
 

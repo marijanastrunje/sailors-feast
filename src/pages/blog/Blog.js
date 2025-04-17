@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import BlogShort from "./BlogShort";
 import BlogShortSkeleton from "./BlogShortSkeleton";
 import InstagramGallery from "../all-pages/instagram/Instagram";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
-import Pagination from "../all-pages/Pagination";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import Pagination from "../../components/ui/Pagination";
 import "./Blog.css";
 
 const STORAGE_KEY = 'blog_page_state';

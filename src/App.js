@@ -6,7 +6,7 @@ import './App.css';
 
 import Header from './pages/all-pages/header/Header';
 import Footer from './pages/all-pages/footer/Footer';
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 
 const Home = lazy(() => import('./pages/home/Home'));
@@ -31,9 +31,9 @@ const Failure = lazy(() => import('./pages/cart-checkout/Failure'));
 const TestOrder = lazy(() => import('./pages/groceries/TestOrder'));
 const AddRecipe = lazy(() => import('./pages/recipes/add-recipe/AddRecipe'));
 const AddBlogPost = lazy(() => import('./pages/blog/AddBlogPost'));
-const PrivacyPolicyPage = lazy(() => import('./pages/all-pages/PrivacyPolicy'));
-const TermsAndConditions = lazy(() => import('./pages/all-pages/TermsAndConditions'));
-const FaqPage = lazy(() => import('./pages/all-pages/FaqPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/pp-tc/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./pages/pp-tc/TermsAndConditions'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
 
 const CharterLandingPage = lazy(() => import('./pages/charter/CharterLandingPage'));
 

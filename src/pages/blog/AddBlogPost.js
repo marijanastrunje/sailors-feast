@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import compressImage from "../all-pages/compressImage";
+import compressImage from "../../utils/compressImage";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 

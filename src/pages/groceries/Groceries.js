@@ -6,10 +6,10 @@ import MobileCategoriesSlider from "./MobileCategoriesSlider";
 import MobileSubcategoriesSlider from "./MobileSubcategoriesSlider";
 import ProductsGrid from "./ProductsGrid";
 import ModalProduct from "./ModalProduct";
-import Pagination from "../all-pages/Pagination";
+import Pagination from "../../components/ui/Pagination";
 import ProductsGridSkeleton from './ProductsGridSkeleton';
-import Faq from "../all-pages/Faq";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Faq from "../../components/common/Faq";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 
 import './Groceries.css';
 

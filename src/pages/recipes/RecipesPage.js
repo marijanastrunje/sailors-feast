@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faSpoon, faSlidersH, faClock } from "@fortawesome/free-solid-svg-icons";
 import RecipeCard from "./recipe-card/RecipeCard";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import RecipeSlider from "./RecipeSlider";
-import Pagination from "../all-pages/Pagination";
+import Pagination from "../../components/ui/Pagination";
 import Select from "react-select";
 import './RecipesPage.css'
 

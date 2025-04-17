@@ -1,7 +1,7 @@
 import React from "react";
 import BoxLayout from "./Box";
-import Faq from "../all-pages/Faq";
-import ScrollToTopButton from "../all-pages/ScrollToTopButton";
+import Faq from "../../components/common/Faq";
+import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 
 const HealthyBox = () => {
 

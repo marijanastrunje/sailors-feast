@@ -1,5 +1,5 @@
 import React from "react";
-import Faq from "./Faq";
+import Faq from "../components/common/Faq";
 
 const FaqPage = () => {
   const sections = [
