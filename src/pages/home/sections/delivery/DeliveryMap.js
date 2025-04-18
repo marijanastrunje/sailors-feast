@@ -163,7 +163,7 @@ const DeliveryMap = () => {
             <div className="weather-horizontal-container">
               <div className="weather-item location-item">
                 <span className="weather-label city-label">Split, HR</span>
-                <span className="weather-value">{currentTime.toLocaleDateString("en-GB")}</span>
+                <span className="weather-value me-lg-1">{currentTime.toLocaleDateString("en-GB")}</span>
                 <span className="weather-value">
                   {currentTime.getHours().toString().padStart(2, '0')}:
                   {currentTime.getMinutes().toString().padStart(2, '0')}
