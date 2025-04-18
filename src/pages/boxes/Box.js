@@ -198,7 +198,6 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     }
   }, []);
 
-  // ✅ AŽURIRANI handleShowModal
   const handleShowModal = useCallback((subcategoryId) => {
     setExtraProducts([]);
     setActiveModalCategory(subcategoryId);
@@ -206,7 +205,6 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     fetchExtraSubcategories(categoryMapping[subcategoryId]);
   }, [fetchExtraSubcategories, categoryMapping]);
 
-  // ✅ AŽURIRANI handleAddProduct
   const handleAddProduct = (product, quantity) => {
     const productSubcategoryId = product.categories?.find(cat =>
       subcategories.some(sub => sub.id === cat.id)

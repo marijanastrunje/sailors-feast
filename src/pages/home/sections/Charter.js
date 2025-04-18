@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 
 const CharterPromoSection = () => {
   return (
-    <section className="charter-promo-section py-3 bg-light">
-      <div className="container col-md-8">
+    <section className="charter-promo-section py-3">
+      <div className="container col-md-9">
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-lg-0">
             <img
               src="/img/charter/charter-bg.jpg"
               alt="Charter cooperation"
-              className="img-fluid rounded"
+              className="img-fluid img-charter shadow"
             />
           </div>
           <div className="col-md-6 text-center text-md-start">

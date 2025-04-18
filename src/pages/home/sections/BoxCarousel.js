@@ -11,24 +11,21 @@ const BoxCarousel = () => {
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    // Dodati varijablu za praćenje mountanja
     let isMounted = true;
-
-    // Set loading to true when fetching starts
+    let timeoutId = null; // <- dodano
+  
     setLoading(true);
-
+  
     fetch(`${backendUrl}/wp-json/wp/v2/boxes?per_page=10&_embed`)
       .then(res => res.json())
       .then(data => {
-        // Provjerite je li komponenta još uvijek mountana prije ažuriranja stanja
         if (isMounted) {
           setBoxes(data);
-          setLoading(false); // Set loading to false when data is received
-
-          // Inicijaliziraj Bootstrap carousel ručno
-          setTimeout(() => {
-            if (!isMounted) return; // Provjeri je li komponenta još uvijek mountana
-            
+          setLoading(false);
+  
+          timeoutId = setTimeout(() => { // <- spremamo ID
+            if (!isMounted) return;
+  
             const el = document.getElementById("carouselExample");
             if (el && window.bootstrap?.Carousel) {
               new window.bootstrap.Carousel(el, {
@@ -42,15 +39,16 @@ const BoxCarousel = () => {
       .catch(err => {
         if (isMounted) {
           console.error("Error fetching boxes:", err);
-          setLoading(false); // Also set loading to false on error
+          setLoading(false);
         }
       });
-
-    // Cleanup funkcija
+  
     return () => {
       isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId); // <- čišćenje!
     };
   }, []);
+  
 
   // If loading, show the skeleton component
   if (loading) return <BoxCarouselSkeleton />;

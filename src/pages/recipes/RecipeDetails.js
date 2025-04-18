@@ -290,7 +290,7 @@ const RecipeDetails = () => {
           <RecipeTags recipe={recipe} />
         </div>
         <p>
-          By <b>{recipe._embedded?.author?.[0]?.name || "Sailor's Feast"}</b> | {" "}
+          By <b>{recipe._embedded?.author?.[0]?.name || "Sailor's Feast"}</b> <span className="mx-2">•</span> {" "}
           {new Date(recipe.date).toLocaleDateString()}
         </p>
       </div>
@@ -425,7 +425,7 @@ const RecipeDetails = () => {
                   {/* Lista sastojaka u sekciji */}
                   <ul className="list-group list-group-flush">
                     {ingredients.map((ing, idx) => (
-                      <li key={idx} className="list-group-item border-0 px-0 py-2">
+                      <li key={idx} className="list-group-item border-0 mx-3 p-0">
                         <div>
                           {ing.name} {ing.quantity} {ing.unit}
                         </div>

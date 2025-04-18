@@ -154,10 +154,7 @@ const DeliveryMap = () => {
   );
 
   return (
-    <div className="container mb-4 mt-4">
-      <div className="row justify-content-center">
-        <h2 className="mb-4">Marina delivery points</h2>
-        
+      <>
         {/* Weather info - samo na mobilnim uređajima */}
         <div className="col-md-10">
           {error && <p className="text-danger">{error}</p>}
@@ -229,8 +226,7 @@ const DeliveryMap = () => {
             ></iframe>
           </div>
         </div>
-      </div>
-    </div>
+      </>
   );
 };
 

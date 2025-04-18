@@ -8,6 +8,9 @@ const BoxLayoutSkeleton = () => {
       <div className="box-header-skeleton">
         <div className="container">
           <div className="row align-items-center">
+            <div className="col-md-6 text-center">
+              <div className="skeleton-image"></div>
+            </div>
             <div className="col-md-6">
               <div className="skeleton-title mb-3"></div>
               <div className="skeleton-description"></div>
@@ -15,15 +18,12 @@ const BoxLayoutSkeleton = () => {
               <div className="skeleton-description mb-4" style={{width: '70%'}}></div>
               <div className="skeleton-button"></div>
             </div>
-            <div className="col-md-6 text-center">
-              <div className="skeleton-image"></div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Table Skeleton */}
-      <div className="container mt-4">
+      <div className="col-md-8 col-lg-6 mx-auto mt-3">
         {[...Array(3)].map((_, subcategoryIndex) => (
           <div key={subcategoryIndex} className="mb-4">
             <div className="skeleton-subtitle mb-3"></div>

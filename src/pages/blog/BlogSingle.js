@@ -53,13 +53,13 @@ const BlogSingle = () => {
               </h1>
               
               <div className="blog-meta d-flex align-items-center mb-4">
-                <span className="blog-author">
+                <p className="blog-author mb-0">
                   By <b>{post.yoast_head_json?.author || "Sailor's Feast"}</b>
-                </span>
-                <span className="mx-2">•</span>
-                <span className="blog-date">
+                </p>
+                <p className="mx-2 mb-0">•</p>
+                <p className="blog-date mb-0">
                   {new Date(post.date).toLocaleDateString()}
-                </span>
+                </p>
               </div>
             </header>
 

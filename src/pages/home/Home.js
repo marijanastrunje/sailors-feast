@@ -67,7 +67,12 @@ const Home = () => {
       </section>
 
       <section id="delivery">
-        <DeliveryMap />
+        <div className="container mb-4 mt-4">
+          <div className="row justify-content-center">
+            <h2 className="mb-4">Marina delivery points</h2>
+            <DeliveryMap />
+          </div>
+        </div>
       </section>
 
       <section id="recepies">

@@ -5,11 +5,11 @@
   justify-content: space-between;
   overflow-x: auto;
   padding: 8px 4px;
-  background-color: rgba(240, 248, 255, 0.8);
+  background-color: var(--footer-bg-color);
   border-radius: 8px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  -webkit-overflow-scrolling: touch; /* bolje iskustvo na iOS uređajima */
+  box-shadow: 0 0 4px 3px rgba(0, 0, 0, 0.1);
+  -webkit-overflow-scrolling: touch; 
 }
 
 .weather-item {
@@ -72,7 +72,7 @@
 
 @media (max-width: 576px) {
   .weather-horizontal-container {
-    padding: 6px 2px;
+    padding: 6px 6px;
   }
   
   .weather-item {
@@ -102,4 +102,23 @@
 .weather-horizontal-container {
   -ms-overflow-style: none;  /* IE i Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+@media (min-width: 991px) {
+  .weather-horizontal-container {
+    padding: 8px 65px;
+  }
+
+  .weather-item {
+    flex-direction: row;
+  }
+
+  .weather-icon {
+    margin-right: 10px;
+  }  
+
+  .city-label {
+    font-size: 18px;
+    margin-right: 10px;
+  }
 }
