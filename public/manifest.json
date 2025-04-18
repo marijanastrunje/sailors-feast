@@ -1,8 +1,25 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Sailor's Feast",
+  "name": "Sailor's Feast - Fresh food delivery service",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "img/logo/white-color-logo-horizontal-sailors-feast.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/logo/white-color-logo-horizontal-sailors-feast.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#CC4425",
+  "background_color": "#FDFBF7"
 }

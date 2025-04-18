@@ -157,14 +157,14 @@ const Header = () => {
             {/* Top Navbar */}
             <nav className="top-navbar navbar-expand-md fixed-top">
                 <div className="container-fluid d-flex align-items-center">
-                    <Link to="tel:+385955399166" title="Call us for more details" className="d-flex align-items-center mt-1">
+                    <a href="tel:+385955399166" title="Call us for more details" className="d-flex align-items-center mt-1">
                         <FontAwesomeIcon icon={faPhone} className="me-3 me-md-1" />
                         <span className="d-none d-sm-inline me-3">+385 95 539 9166</span>
-                    </Link>
-                    <Link to="mailto:info@sailorsfeast.com" title="Send us email" className="d-flex align-items-center mt-1">
+                    </a>
+                    <a href="mailto:info@sailorsfeast.com" title="Send us email" className="d-flex align-items-center mt-1">
                         <FontAwesomeIcon icon={faEnvelope} className="me-1" />
                         <span className="d-none d-sm-inline">info@sailorsfeast.com</span>
-                    </Link>
+                    </a>
                     {username ? (
                         <div className="dropdown ms-auto me-0 mt-1 d-flex align-items-center">
                             <button className="btn-user dropdown-toggle p-0" id="userDropdown" data-bs-toggle="dropdown">

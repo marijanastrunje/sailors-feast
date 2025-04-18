@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
 
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import Header from './components/layout/header/Header';
 import Footer from './components/layout/footer/Footer';
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -57,56 +58,58 @@ function App() {
   
 
   return (
-    <Router>
-      <div className="App">
-        {/* Global loader dok se sve ne pripremi */}
-        {isLoading && (
-          <div className="global-loader">
-            <div className="loader-content">
-              <svg className="spinner" viewBox="0 0 50 50">
-                <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5" />
-              </svg>
+    <ErrorBoundary>
+      <Router>
+        <div className="App">
+          {/* Global loader dok se sve ne pripremi */}
+          {isLoading && (
+            <div className="global-loader">
+              <div className="loader-content">
+                <svg className="spinner" viewBox="0 0 50 50">
+                  <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5" />
+                </svg>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {!isLoading && (
-          <>
-            <Header />
-            <ScrollToTop />
-            <Routes>
-              <Route index element={<Home />} />
-              <Route path="/groceries" element={<Groceries />} />
-              <Route path="/standard-box" element={<StandardBox />} />
-              <Route path="/friends-family-box" element={<FFBox />} />
-              <Route path="/feast-box" element={<FeastBox />} />
-              <Route path="/healthy-box" element={<HealthyBox />} />
-              <Route path="/all-boxes" element={<AllBoxes />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogSingle />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/recipes" element={<RecipesPage />} />
-              <Route path="/recipes/:slug" element={<RecipeDetails />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/failure" element={<Failure />} />
-              <Route path="/user" element={<UserDashboard />} />
-              <Route path="/addrecipe" element={<AddRecipe />} />
-              <Route path="/addblog" element={<AddBlogPost />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-              <Route path="/faq" element={<FaqPage />} />
+          {!isLoading && (
+            <>
+              <Header />
+              <ScrollToTop />
+              <Routes>
+                <Route index element={<Home />} />
+                <Route path="/groceries" element={<Groceries />} />
+                <Route path="/standard-box" element={<StandardBox />} />
+                <Route path="/friends-family-box" element={<FFBox />} />
+                <Route path="/feast-box" element={<FeastBox />} />
+                <Route path="/healthy-box" element={<HealthyBox />} />
+                <Route path="/all-boxes" element={<AllBoxes />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogSingle />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/recipes" element={<RecipesPage />} />
+                <Route path="/recipes/:slug" element={<RecipeDetails />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/success" element={<Success />} />
+                <Route path="/failure" element={<Failure />} />
+                <Route path="/user" element={<UserDashboard />} />
+                <Route path="/addrecipe" element={<AddRecipe />} />
+                <Route path="/addblog" element={<AddBlogPost />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                <Route path="/faq" element={<FaqPage />} />
 
-              <Route path="/charter" element={<CharterLandingPage />} />
-            </Routes>
-            <Footer />
-          </>
-        )}
-      </div>
-    </Router>
+                <Route path="/charter" element={<CharterLandingPage />} />
+              </Routes>
+              <Footer />
+            </>
+          )}
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
