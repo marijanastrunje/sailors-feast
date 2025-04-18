@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import SEO from "../../components/common/SEO";
 import "./Home.css";
 
 // Komponente
@@ -43,6 +44,12 @@ const Home = () => {
 
   return (
     <>
+      <SEO 
+        title="Home" 
+        description="Discover fresh food delivery service for sailors. Order groceries and pre-made food boxes delivered directly to your boat in Croatian marinas."
+        keywords={['food delivery', 'sailing', 'Croatia', 'marina delivery', 'fresh groceries']}
+      />
+      
       <Hero />
 
       <section id="advantages">
