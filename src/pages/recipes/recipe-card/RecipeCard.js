@@ -55,7 +55,7 @@ const RecipeCard = ({ recipe, onUnsave }) => {
       <div className="recipe-img">
         <Link to={"/recipes/" + recipe.slug}>
           <img 
-            src={recipe._embedded["wp:featuredmedia"]?.[0]?.source_url || "https://placehold.co/600x400?text=No+Image"} 
+            src={recipe._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "https://placehold.co/600x400?text=No+Image"}
             alt={recipe.title?.rendered || "Recipe Image"} 
           />
         </Link>

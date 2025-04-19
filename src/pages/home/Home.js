@@ -42,6 +42,15 @@ const Home = () => {
       });
   }, []);
 
+  fetch('https://backend.sailorsfeast.com/wp-json/wp/v2/posts')
+  .then((res) => {
+    if (!res.ok) throw new Error('Nije ok: ' + res.status);
+    return res.json();
+  })
+  .then((data) => console.log(data))
+  .catch((err) => console.error('Fetch error:', err));
+
+
   return (
     <>
       <SEO 

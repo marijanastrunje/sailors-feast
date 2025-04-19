@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import './CartPage.css';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -9,6 +9,7 @@ const CartPage = () => {
   const [listName, setListName] = useState("");
   const [, setSavedLists] = useState({});
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -134,6 +135,7 @@ const CartPage = () => {
         navigate("/login?redirect=/checkout");
       }
     }
+    setShowCheckoutModal(false);
   };
 
   return (
@@ -250,45 +252,21 @@ const CartPage = () => {
                     <button onClick={clearCart} className="btn btn-sm btn-outline-secondary">Clear Cart</button>
                   </div>
                 </div>
-                
-                {/* Updated checkout section with guest checkout option */}
-                <div className="checkout-options p-3 mt-3 border rounded shadow-sm">
-                  <h5 className="mb-3 text-center">Checkout Options</h5>
-                  
-                  <div className="row">
-                    <div className="col-md-6 mb-3 mb-md-0">
-                      <div className="d-grid">
-                        <button onClick={() => proceedToCheckout(false)} className="btn btn-prim">
-                          <i className="fas fa-user me-2"></i>
-                          {token ? "Proceed to Checkout" : "Login & Checkout"}
-                        </button>
-                        {!token && (
-                          <small className="text-muted text-center mt-2">
-                            Login to track your order or save your information for future orders
-                          </small>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="col-md-6">
-                      <div className="d-grid">
-                        <button onClick={() => proceedToCheckout(true)} className="btn btn-outline-secondary">
-                          <i className="fas fa-shopping-cart me-2"></i>
-                          Checkout as Guest
-                        </button>
-                        <small className="text-muted text-center mt-2">
-                          No account needed, quick checkout process
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+                <button 
+                  onClick={() => setShowCheckoutModal(true)} 
+                  className="btn btn-prim w-100 my-3 mb-5"
+                >
+                  <i className="fas fa-shopping-cart me-2"></i>
+                  Continue to Checkout
+                </button>
               </div>
             )}
           </div>
         </div>
       </div>
 
+      {/* Modal za spremanje liste */}
       {showSaveModal && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -303,6 +281,49 @@ const CartPage = () => {
               <div className="modal-footer">
                 <button className="btn btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
                 <button className="btn btn-primary" onClick={saveToBackend}>Save List</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Novi modal za checkout opcije */}
+      {showCheckoutModal && (
+        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Checkout Options</h5>
+                <button type="button" className="btn-close" onClick={() => setShowCheckoutModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="row g-3">
+                  <div className="col-12">
+                    <div className="d-grid">
+                      <button onClick={() => proceedToCheckout(false)} className="btn btn-prim py-3">
+                        <i className="fas fa-user me-2"></i>
+                        {token ? "Proceed to Checkout" : "Login & Checkout"}
+                      </button>
+                      {!token && (
+                        <small className="text-muted text-center mt-2">
+                          Login to track your order or save your information for future orders
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="col-12">
+                    <div className="d-grid">
+                      <button onClick={() => proceedToCheckout(true)} className="btn btn-outline-secondary py-3">
+                        <i className="fas fa-shopping-cart me-2"></i>
+                        Checkout as Guest
+                      </button>
+                      <small className="text-muted text-center mt-2">
+                        No account needed, quick checkout process
+                      </small>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

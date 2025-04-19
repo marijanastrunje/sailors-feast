@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import './Orders.css'
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showQRModal, setShowQRModal] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
         const resUser = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const { id: userId } = await resUser.json();
 
-        const resOrders = await fetch(`${backendUrl}/wp-json/wc/v3/orders?customer=${userId}`, {
+        const resOrders = await fetch(`${backendUrl}/wp-json/wc/v3/orders?customer=${userId}&per_page=100`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const ordersData = await resOrders.json();
@@ -30,6 +35,63 @@ const Orders = () => {
     if (token) fetchOrders();
   }, [token]);
 
+  const isPaid = (order) => order.status === "completed" || order.status === "processing";
+  const isBankTransfer = (order) => order.payment_method === "banktransfer";
+
+  const formatPaymentData = (order) => {
+    const amount = parseFloat(order.total).toFixed(2);
+    const recipient = "Sailor's Feast d.o.o.";
+    const recipientAddress = "Ivana Meštrovića 35, 10000 Zagreb";
+    const recipientIBAN = "HR9124020061101222221";
+    const model = "HR01";
+    const reference = `${order.id}-${new Date(order.date_created).getFullYear()}`;
+    const description = `Order #${order.id}`;
+    const customerName = `${order.billing.first_name} ${order.billing.last_name}`;
+
+    return `HRVHUB30\nEUR\n${amount}\n${customerName}\n.\n.\n${recipient}\n${recipientAddress}\n${recipientIBAN}\n${model}\n${reference}\nCOST\n${description}`;
+  };
+
+  const handleShowQRCode = (order) => {
+    setSelectedOrder(order);
+    setShowQRModal(true);
+  };
+
+  const handleCloseQRModal = () => {
+    setShowQRModal(false);
+    setSelectedOrder(null);
+  };
+
+  const handleCopyBankDetails = (order) => {
+    const bankDetails = `Recipient: Sailor's Feast d.o.o.\nIBAN: HR9124020061101222221\nReference number: ${order.id}-${new Date(order.date_created).getFullYear()}\nAmount: ${parseFloat(order.total).toFixed(2)} EUR\nDescription: Order #${order.id}`;
+    navigator.clipboard.writeText(bankDetails.trim());
+    alert("Bank details copied to clipboard!");
+  };
+
+  const getPaymentDeadline = (order) => {
+    const deliveryDateMeta = order.meta_data?.find((m) => m.key === "billing_delivery_date");
+    if (deliveryDateMeta?.value) {
+      const deliveryDate = new Date(deliveryDateMeta.value);
+      const deadline = new Date(deliveryDate);
+      deadline.setDate(deliveryDate.getDate() - 7);
+      return deadline.toLocaleDateString();
+    }
+    const orderDate = new Date(order.date_created);
+    orderDate.setDate(orderDate.getDate() + 3);
+    return orderDate.toLocaleDateString();
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case "completed": return "bg-success";
+      case "processing": return "bg-primary";
+      case "on-hold": return "bg-warning text-dark";
+      case "pending": return "bg-info text-dark";
+      case "failed": return "bg-danger";
+      case "cancelled": return "bg-secondary";
+      default: return "bg-light text-dark";
+    }
+  };
+
   const labelMap = {
     billing_marina: "Marina",
     billing_charter: "Charter",
@@ -38,86 +100,189 @@ const Orders = () => {
     billing_number_of_guests: "Number of Guests",
     billing_delivery_date: "Delivery Date",
     billing_delivery_time: "Delivery Time",
-    billing_order_notes: "Note",
+    billing_order_notes: "Notes",
+    payment_deadline: "Payment Deadline",
   };
 
-  if (loading) return <p>Loading orders...</p>;
-  if (!orders.length) return <p>You have no orders.</p>;
+  if (loading) return <div className="d-flex justify-content-center my-5"><div className="spinner-border text-primary" role="status"></div></div>;
+
+  if (!orders.length) return <div className="container col-md-8 my-5 text-center"><h2 className="mb-4">My Orders</h2><div className="alert alert-info">You have no orders yet.</div></div>;
 
   return (
-    <div className="container col-md-8 my-5">
+    <div className="container my-5">
       <h2 className="mb-4 text-center">My Orders</h2>
-
-      <style>
-        {`
-          .accordion-button:not(.collapsed) {
-            color: rgb(0, 0, 0);
-            background-color: #f2f2f2;
-            box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
-          }
-          .accordion-button:focus {
-            border-color: #ced4da;
-            box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
-          }
-          .accordion-button:not(.collapsed)::after {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23495057'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-          }
-        `}
-      </style>
-
       <div className="accordion accordion-flush shadow rounded border" id="orders-accordion">
-        {orders.map(({ id, date_created, total, status, meta_data, line_items }, index) => (
-          <div className="accordion-item" key={id}>
-            <h2 className="accordion-header" id={`heading-${id}`}>
-              <button
-                className="accordion-button collapsed fw-bold"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target={`#collapse-${id}`}
-                aria-expanded="false"
-                aria-controls={`collapse-${id}`}
-              >
-                Order #{id} – {new Date(date_created).toLocaleDateString()} – {total} €
-              </button>
-            </h2>
-            <div
-              id={`collapse-${id}`}
-              className="accordion-collapse collapse"
-              aria-labelledby={`heading-${id}`}
-              data-bs-parent="#orders-accordion"
-            >
-              <div className="accordion-body bg-light">
-                <p><strong>Status:</strong> {status}</p>
-
-                {meta_data?.length > 0 && (
-                  <div>
-                    <strong>Additional Info:</strong>
-                    <ul>
-                      {Object.entries(labelMap).map(([key, label]) => {
-                        const meta = meta_data.find((m) => m.key === key);
-                        return meta?.value ? (
-                          <li key={key}>
-                            <strong>{label}:</strong> {meta.value}
-                          </li>
-                        ) : null;
-                      })}
-                    </ul>
+        {orders.map((order) => {
+          const statusBadgeClass = getStatusBadgeClass(order.status);
+          const paymentDeadline = getPaymentDeadline(order);
+          return (
+            <div className="accordion-item" key={order.id}>
+              <h2 className="accordion-header" id={`heading-${order.id}`}>
+                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse-${order.id}`} aria-expanded="false" aria-controls={`collapse-${order.id}`}>
+                  <div className="d-flex justify-content-between align-items-center w-100">
+                    <div><span className="fw-bold">Order #{order.id}</span></div>
+                    <div className="d-flex align-items-center">
+                      <span className={`badge ${statusBadgeClass} me-3 d-none d-sm-inline`}>{order.status}</span>
+                      <span className="fw-bold">{parseFloat(order.total).toFixed(2)} €</span>
+                    </div>
                   </div>
-                )}
+                </button>
+              </h2>
+              <div id={`collapse-${order.id}`} className="accordion-collapse collapse" aria-labelledby={`heading-${order.id}`} data-bs-parent="#orders-accordion">
+                <div className="accordion-body p-0">
+                  <div className="card-orders shadow border-0 overflow-hidden">
+                    <div className="card-body p-0">
+                      <div className="row g-0">
+                        {/* Card contents are now in separate flex divs to enable stacking on mobile */}
+                        <div className="col-lg-6 p-4 border-end border-lg-only">
+                          <h5 className="mb-4 text-primary">Detalji narudžbe</h5>
+                          <div className="mb-4 bg-light rounded p-3">
+                            <div className="mb-2 d-flex flex-column flex-sm-row">
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "140px" }}>Datum:</div>
+                              <div className="fw-semibold">{new Date(order.date_created).toLocaleString()}</div>
+                            </div>
+                            <div className="mb-2 d-flex flex-column flex-sm-row">
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "140px" }}>Status:</div>
+                              <div><span className={`badge ${statusBadgeClass}`}>{order.status}</span></div>
+                            </div>
+                          </div>
+                          <h6 className="mb-3 text-primary">Dodatne informacije</h6>
+                          <div className="bg-light rounded p-3">
+                            <div className="row g-3">
+                              <div className="col-12 col-sm-6">
+                                {['billing_marina', 'billing_charter', 'billing_boat', 'billing_gate'].map((key) => {
+                                  const label = labelMap[key];
+                                  const value = order.meta_data.find((m) => m.key === key)?.value;
+                                  return value && (
+                                    <div className="mb-2" key={key}>
+                                      <div className="text-muted mb-1">{label}:</div>
+                                      <div className="fw-semibold">{value}</div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <div className="col-12 col-sm-6">
+                                {['billing_delivery_date'].map((key) => {
+                                  const label = labelMap[key];
+                                  const value = order.meta_data.find((m) => m.key === key)?.value;
+                                  return value && (
+                                    <div className="mb-2" key={key}>
+                                      <div className="text-muted mb-1">{label}:</div>
+                                      <div className="fw-semibold">{value}</div>
+                                    </div>
+                                  );
+                                })}
+                                <div className="mb-2">
+                                  <div className="text-muted mb-1">Rok plaćanja:</div>
+                                  <div className="fw-semibold text-danger">{paymentDeadline}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <h6 className="mt-4 mb-3 text-primary">Proizvodi</h6>
+                          <div className="bg-light rounded p-3">
+                            {order.line_items.map((item) => (
+                              <div key={item.id} className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-2 pb-2 border-bottom">
+                                <div>
+                                  <span className="fw-semibold">{item.name}</span>
+                                  <span className="text-muted ms-2">× {item.quantity}</span>
+                                </div>
+                                <div className="mt-1 mt-sm-0">{parseFloat(item.total).toFixed(2)} €</div>
+                              </div>
+                            ))}
+                            <div className="d-flex justify-content-between align-items-center fw-bold pt-2">
+                              <div>Ukupno</div>
+                              <div>{parseFloat(order.total).toFixed(2)} €</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="col-lg-6 p-4">
+                          <h5 className="mb-4 text-primary">Informacije o plaćanju</h5>
+                          <div className="mb-4 bg-light rounded p-3">
+                            <div className="mb-2 d-flex flex-column flex-sm-row">
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Način plaćanja:</div>
+                              <div className="fw-semibold">{order.payment_method_title || 'N/A'}</div>
+                            </div>
+                            <div className="mb-2 d-flex flex-column flex-sm-row">
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Status plaćanja:</div>
+                              <div><span className={`badge ${isPaid(order) ? 'bg-success' : 'bg-warning text-dark'}`}>{isPaid(order) ? 'Plaćeno' : 'Na čekanju'}</span></div>
+                            </div>
+                          </div>
+                          {isBankTransfer(order) && !isPaid(order) && (
+                            <div className="bg-light rounded p-4 border border-primary-subtle">
+                              <h6 className="mb-3 text-primary">Detalji bankovnog transfera</h6>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Primatelj:</div>
+                                <div className="fw-semibold">Sailor's Feast d.o.o.</div>
+                              </div>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>IBAN:</div>
+                                <div className="fw-semibold">HR9124020061101222221</div>
+                              </div>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Poziv na broj:</div>
+                                <div className="fw-semibold">{order.id}-{new Date(order.date_created).getFullYear()}</div>
+                              </div>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Iznos:</div>
+                                <div className="fw-semibold">{parseFloat(order.total).toFixed(2)} EUR</div>
+                              </div>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Molimo platiti do:</div>
+                                <div className="fw-semibold text-danger">{paymentDeadline}</div>
+                              </div>
+                              <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mt-4">
+                                <button className="btn btn-outline-primary px-4 mb-2 mb-sm-0" onClick={() => handleCopyBankDetails(order)}>
+                                  <i className="bi bi-clipboard me-2"></i> Kopiraj podatke
+                                </button>
+                                <button className="btn btn-primary px-4" onClick={() => handleShowQRCode(order)}>
+                                  <i className="bi bi-qr-code me-2"></i> Prikaži QR kod
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                          {isPaid(order) && <div className="alert alert-success mt-4"><p className="mb-0">Plaćanje je izvršeno. Hvala na narudžbi!</p></div>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-                <p className="mb-1"><strong>Products:</strong></p>
-                <ul>
-                  {line_items.map(({ id: itemId, name, quantity }) => (
-                    <li key={itemId}>
-                      {name} × {quantity}
-                    </li>
-                  ))}
-                </ul>
+      {showQRModal && selectedOrder && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">QR Payment Code</h5>
+                <button type="button" className="btn-close" onClick={handleCloseQRModal}></button>
+              </div>
+              <div className="modal-body text-center">
+                <div className="qr-code-container bg-white p-3 d-inline-block mb-3">
+                  <QRCodeSVG value={formatPaymentData(selectedOrder)} size={200} level="M" includeMargin={true} />
+                </div>
+                <p className="text-muted">Scan this QR code with your banking app to quickly fill in payment details</p>
+                <div className="alert alert-info mt-3">
+                  <p className="mb-0">
+                    <strong>Order #:</strong> {selectedOrder.id}<br />
+                    <strong>Amount:</strong> {parseFloat(selectedOrder.total).toFixed(2)} €<br />
+                    <strong>Payment Deadline:</strong> {getPaymentDeadline(selectedOrder)}
+                  </p>
+                </div>
+              </div>
+              <div className="modal-footer flex-column flex-sm-row">
+                <button className="btn btn-secondary w-100 w-sm-auto mb-2 mb-sm-0" onClick={handleCloseQRModal}>Close</button>
+                <button className="btn btn-primary w-100 w-sm-auto" onClick={() => handleCopyBankDetails(selectedOrder)}>Copy Bank Details</button>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

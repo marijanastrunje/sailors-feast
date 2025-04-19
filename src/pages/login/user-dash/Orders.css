@@ -1,0 +1,69 @@
+/* Orders komponenta - responzivni stilovi */
+
+/* Osnovni stilovi za karticu narudžbe */
+.card-orders {
+    border-radius: 0.5rem;
+    background-color: #fff;
+  }
+  
+  /* Media query za mobilne uređaje */
+  @media (max-width: 767.98px) {
+    /* Uklanjanje desne granice na mobilnim uređajima */
+    .border-lg-only {
+      border-right: none !important;
+      border-bottom: 1px solid #dee2e6;
+    }
+  
+    /* Veći padding za mobilne prikaze */
+    .accordion-body {
+      padding: 0 !important;
+    }
+  
+    /* Prilagodba accordion buttona za mobilne uređaje */
+    .accordion-button {
+      padding: 0.75rem 1rem;
+    }
+  
+    /* Prilagodba razmaka između elemenata na mobilnim uređajima */
+    .p-4 {
+      padding: 1rem !important;
+    }
+  }
+  
+  /* Media query za tablete i veće */
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    /* Prilagodba za srednje velike uređaje */
+    .accordion-body {
+      padding: 0 !important;
+    }
+  }
+  
+  /* Prilagodbe za modal prozor */
+  @media (max-width: 575.98px) {
+    .modal-dialog {
+      margin: 0.5rem;
+    }
+  
+    .modal-footer {
+      justify-content: center;
+    }
+  }
+  
+  /* Opće pomoćne klase */
+  .w-sm-auto {
+    width: auto !important;
+  }
+  
+  @media (min-width: 576px) {
+    .w-100 {
+      width: 100%;
+    }
+    
+    .w-sm-auto {
+      width: auto !important;
+    }
+    
+    .mb-sm-0 {
+      margin-bottom: 0 !important;
+    }
+  }

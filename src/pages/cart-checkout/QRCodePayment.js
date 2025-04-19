@@ -4,32 +4,33 @@ import { QRCodeSVG } from 'qrcode.react';
 
 const QRCodePayment = ({ qrData, orderId }) => {
   const [copied, setCopied] = useState(false);
+  const amount = parseFloat(qrData.amount || 0).toFixed(2);
 
   // Format payment data for Croatian payment slip format (HUB3A)
   const formatPaymentData = () => {
-    const amount = qrData.amount.toFixed(2);
-  
     const recipient = "Sailor's Feast d.o.o.";
-    const recipientAddress = "Ivana Meštrovića 35, 10000 Zagreb";
+    const recipientAddress = "Ivana Meštrovića 35";
+    const recipientCity = "10000 Zagreb";
     const recipientIBAN = "HR9124020061101222221";
     const model = "HR01";
     const reference = `${orderId}-${new Date().getFullYear()}`;
     const description = `Order #${orderId}`;
   
+    // HUB3A format zahtijeva točno 13 redova, uključujući prazne linije
     return `HRVHUB30
   EUR
   ${amount}
   ${qrData.customerName}
-  .
-  .
+   
+  ${""}
   ${recipient}
   ${recipientAddress}
+  ${recipientCity}
   ${recipientIBAN}
   ${model}
   ${reference}
   COST
-  ${description}
-  `;
+  ${description}`;
   };
   
 
@@ -38,7 +39,7 @@ const QRCodePayment = ({ qrData, orderId }) => {
       Recipient: Sailor's Feast d.o.o.
       IBAN: HR9124020061101222221
       Reference number: ${orderId}-${new Date().getFullYear()}
-      Amount: ${qrData.amount.toFixed(2)} EUR
+      Amount: ${amount} EUR
       Description: Order #${orderId}
     `;
     
@@ -50,12 +51,9 @@ const QRCodePayment = ({ qrData, orderId }) => {
     }, 3000);
   };
 
-  const paymentDeadline = () => {
-    if (qrData.deliveryDate) {
-      const deliveryDate = new Date(qrData.deliveryDate);
-      const deadline = new Date(deliveryDate);
-      deadline.setDate(deliveryDate.getDate() - 7);
-      return deadline.toLocaleDateString();
+  const getPaymentDeadline = () => {
+    if (qrData.paymentDeadline) {
+      return new Date(qrData.paymentDeadline).toLocaleDateString();
     }
     return "Not specified";
   };
@@ -81,13 +79,13 @@ const QRCodePayment = ({ qrData, orderId }) => {
               <p className="mb-1"><strong>Recipient:</strong> Sailor's Feast d.o.o.</p>
               <p className="mb-1"><strong>IBAN:</strong> HR9124020061101222221</p>
               <p className="mb-1"><strong>Reference number:</strong> {orderId}-{new Date().getFullYear()}</p>
-              <p className="mb-1"><strong>Amount:</strong> {qrData.amount.toFixed(2)} EUR</p>
+              <p className="mb-1"><strong>Amount:</strong> {amount} EUR</p>
               <p className="mb-1"><strong>Description:</strong> Order #{orderId}</p>
               
-              {qrData.deliveryDate && (
+              {qrData.paymentDeadline && (
                 <div className="alert alert-warning mt-3">
                   <p className="mb-0">
-                    <strong>Payment Deadline:</strong> {paymentDeadline()}
+                    <strong>Payment Deadline:</strong> {getPaymentDeadline()}
                   </p>
                   <small>Payment must be received 7 days before delivery date</small>
                 </div>

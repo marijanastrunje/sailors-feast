@@ -153,7 +153,7 @@ const Checkout = () => {
     }
     if (!billing.privacyConsent) {
       alert("Please accept the privacy policy before proceeding.");
-      return;
+      return null;
     }
 
     // Check if delivery date is less than 7 days away and delivery details are missing
@@ -173,7 +173,7 @@ const Checkout = () => {
       payment_method: selectedPaymentMethod,
       payment_method_title: selectedPaymentMethod === "vivawallet" ? "Viva Wallet" : "Bank Transfer",
       set_paid: false,
-      status: "pending",
+      status: selectedPaymentMethod === "banktransfer" ? "on-hold" : "pending",
       billing,
       shipping: billing,
       line_items: lineItems,
@@ -289,23 +289,43 @@ const Checkout = () => {
     localStorage.setItem("lastOrderId", orderId);
 
     try {
+      // First part: Send order details to Viva API
       const response = await fetch(`${backendUrl}/wp-json/viva/v1/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalPrice * 100,
+          amount: Math.round(totalPrice * 100), // Ensure amount is in cents and properly rounded
           email: billing.email,
           fullName: `${billing.first_name} ${billing.last_name}`,
-          orderId,
+          orderId, // Pass orderId properly
         })
       });
 
-      if (!response.ok) throw new Error("Failed to initiate payment.");
+      if (!response.ok) {
+        console.error("Failed to initiate payment, response status:", response.status);
+        throw new Error("Failed to initiate payment.");
+      }
 
+      // Second part: Get the order code
       const orderCodeResponse = await fetch(`${backendUrl}/wp-json/viva/v1/order-code`);
+      
+      if (!orderCodeResponse.ok) {
+        console.error("Failed to get order code, response status:", orderCodeResponse.status);
+        throw new Error("Failed to get order code.");
+      }
+      
       const orderCodeData = await orderCodeResponse.json();
-      if (!orderCodeData.orderCode) throw new Error("Order code not returned.");
+      
+      if (!orderCodeData.orderCode) {
+        console.error("Order code not returned in response:", orderCodeData);
+        throw new Error("Order code not returned.");
+      }
 
+      // Clear cart before redirecting to payment page
+      localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Redirect to payment page with the order code
       window.location.href = `https://www.vivapayments.com/web/checkout?ref=${orderCodeData.orderCode}`;
     } catch (error) {
       console.error("Payment processing error:", error.message);

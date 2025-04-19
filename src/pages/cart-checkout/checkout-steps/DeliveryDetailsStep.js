@@ -24,6 +24,19 @@ const DeliveryDetailsStep = ({
     }
   };
 
+  
+  const getMinDate = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // resetiramo vrijeme na 00:00
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() + 4); // dodamo 3 dana
+    return minDate.toISOString().split("T")[0];
+  };
+
+  const minDeliveryDate = getMinDate();
+  
+
+
   // Update delivery warning when component mounts
   useEffect(() => {
     if (billing.delivery_date) {
@@ -37,7 +50,7 @@ const DeliveryDetailsStep = ({
       <h4 className="mb-3">
         Delivery Details
         {!showWarning && (
-          <span className="optional-label">(optional)</span>
+          <span className="optional-label"></span>
         )}
       </h4>
 
@@ -71,7 +84,7 @@ const DeliveryDetailsStep = ({
               value={billing.delivery_date || ''}
               onChange={handleChange}
               disabled={isSubmitting}
-              min={new Date().toISOString().split('T')[0]} // Today or later
+              min={minDeliveryDate}
               required
             />
             {errors.delivery_date && (
@@ -86,6 +99,9 @@ const DeliveryDetailsStep = ({
             </label>
             <input
               type="time"
+              min="08:00"
+              max="22:00"
+              step="1800"
               className={`form-control ${errors.delivery_time ? 'is-invalid' : ''}`}
               id="delivery_time"
               name="delivery_time"
@@ -216,7 +232,13 @@ const DeliveryDetailsStep = ({
           <button
             type="button"
             className="btn btn-prim"
-            onClick={nextStep}
+            onClick={() => {
+              if (!billing.delivery_date) {
+                alert("Please select a delivery date.");
+                return;
+              }
+              nextStep();
+            }}            
             disabled={isSubmitting}
           >
             Continue to Payment
