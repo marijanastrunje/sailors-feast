@@ -119,6 +119,22 @@ const CartPage = () => {
 
   const boxProducts = cart.filter((item) => item.box);
   const groceriesProducts = cart.filter((item) => !item.box);
+  
+  const proceedToCheckout = (asGuest = false) => {
+    if (asGuest) {
+      // Set a flag in session storage to indicate guest checkout
+      sessionStorage.setItem("guest_checkout", "true");
+      navigate("/checkout");
+    } else {
+      // If user is logged in, proceed directly to checkout
+      if (token) {
+        navigate("/checkout");
+      } else {
+        // Otherwise redirect to login with return URL
+        navigate("/login?redirect=/checkout");
+      }
+    }
+  };
 
   return (
     <>
@@ -234,8 +250,38 @@ const CartPage = () => {
                     <button onClick={clearCart} className="btn btn-sm btn-outline-secondary">Clear Cart</button>
                   </div>
                 </div>
-                <div className="text-center">
-                  <Link to="/checkout" className="btn btn-prim w-100 my-3 mb-5">Proceed to Checkout</Link>
+                
+                {/* Updated checkout section with guest checkout option */}
+                <div className="checkout-options p-3 mt-3 border rounded shadow-sm">
+                  <h5 className="mb-3 text-center">Checkout Options</h5>
+                  
+                  <div className="row">
+                    <div className="col-md-6 mb-3 mb-md-0">
+                      <div className="d-grid">
+                        <button onClick={() => proceedToCheckout(false)} className="btn btn-prim">
+                          <i className="fas fa-user me-2"></i>
+                          {token ? "Proceed to Checkout" : "Login & Checkout"}
+                        </button>
+                        {!token && (
+                          <small className="text-muted text-center mt-2">
+                            Login to track your order or save your information for future orders
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="col-md-6">
+                      <div className="d-grid">
+                        <button onClick={() => proceedToCheckout(true)} className="btn btn-outline-secondary">
+                          <i className="fas fa-shopping-cart me-2"></i>
+                          Checkout as Guest
+                        </button>
+                        <small className="text-muted text-center mt-2">
+                          No account needed, quick checkout process
+                        </small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
