@@ -5,6 +5,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './App.css';
 
 import ErrorBoundary from "./components/common/ErrorBoundary";
+import CookieConsent from './components/common/CookieConsent';
 import Header from './components/layout/header/Header';
 import Footer from './components/layout/footer/Footer';
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -107,6 +108,7 @@ function App() {
               <Footer />
             </>
           )}
+          <CookieConsent />
         </div>
       </Router>
     </ErrorBoundary>
