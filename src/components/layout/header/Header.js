@@ -122,9 +122,18 @@ const Header = () => {
     const handleLogout = () => {
         setUsername(null);
     };
+
+    const handleLogin = () => {
+        const user = localStorage.getItem('username');
+        if (user) setUsername(user);
+    };
     
     window.addEventListener('userLogout', handleLogout);
-    return () => window.removeEventListener('userLogout', handleLogout);
+    window.addEventListener('userLogin', handleLogin);
+        return () => {
+            window.removeEventListener('userLogout', handleLogout);
+            window.removeEventListener('userLogin', handleLogin);
+        };
     }, []);
 
     useEffect(() => {

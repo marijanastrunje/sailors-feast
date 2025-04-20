@@ -65,7 +65,7 @@ const SavedLists = ({ savedLists, setSavedLists }) => {
       </style>
 
       <div className="accordion accordion-flush mt-4 shadow rounded border" id="saved-lists-accordion">
-        {Object.keys(savedLists).map((listName, index) => (
+        {Object.keys(savedLists).reverse().map((listName, index) => (
           <div 
             className={`accordion-item ${index === 0 ? 'border-top-0' : ''} ${index === Object.keys(savedLists).length - 1 ? 'border-bottom-0' : ''}`} 
             key={listName}

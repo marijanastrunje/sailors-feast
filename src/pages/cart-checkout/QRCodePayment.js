@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import { QRCodeSVG } from 'qrcode.react';
 
-const QRCodePayment = ({ qrData, orderId }) => {
+const QRCodePayment = ({ qrData, orderId, isGuestCheckout, hasAccount, onShowRegistrationModal }) => {
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const amount = parseFloat(qrData.amount || 0).toFixed(2);
 
@@ -70,9 +71,9 @@ const QRCodePayment = ({ qrData, orderId }) => {
       </div>
 
       <div className="row">
-        <div className="col-md-6 mb-4">
-          <div className="card h-100">
-            <div className="card-header bg-primary text-white">
+        <div className="col-xl-6 mb-4">
+          <div className="card h-100 mx-auto" style={{ width: "100%", minWidth: "310px" }}>
+            <div className="card-header bg-sec text-white">
               <h3 className="card-title h5 mb-0">Bank Transfer Information</h3>
             </div>
             <div className="card-body">
@@ -92,7 +93,7 @@ const QRCodePayment = ({ qrData, orderId }) => {
               )}
               
               <button
-                className="btn btn-outline-primary mt-3"
+                className="btn btn-outline-secondary mt-3"
                 onClick={handleCopyBankDetails}
               >
                 {copied ? "✓ Copied" : "Copy Bank Details"}
@@ -101,9 +102,9 @@ const QRCodePayment = ({ qrData, orderId }) => {
           </div>
         </div>
 
-        <div className="col-md-6 mb-4">
-          <div className="card h-100">
-            <div className="card-header bg-primary text-white">
+        <div className="col-xl-6 mb-4">
+          <div className="card h-100 mx-auto" style={{ width: "100%", minWidth: "310px" }}>
+            <div className="card-header bg-sec text-white">
               <h3 className="card-title h5 mb-0">Scan QR Code to Pay</h3>
             </div>
             <div className="card-body text-center">
@@ -124,10 +125,28 @@ const QRCodePayment = ({ qrData, orderId }) => {
       </div>
 
       <div className="text-center mt-4">
-        <Link to="/user" className="btn btn-prim me-3">
-          View Your Orders
-        </Link>
-        <Link to="/" className="btn btn-outline-secondary">
+      {isGuestCheckout ? (
+          hasAccount ? (
+            <>
+              <p className="text-success">Your account has been created and you're now logged in.</p>
+              <button onClick={() => navigate("/user")} className="btn btn-prim">
+                View Your Orders
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-info">Want to track your orders and save your details?</p>
+              <button onClick={onShowRegistrationModal} className="btn btn-prim">
+                Create Account
+              </button>
+            </>
+          )
+        ) : (
+          <button onClick={() => navigate("/user")} className="btn btn-prim">
+            View Your Orders
+          </button>
+        )}
+        <Link to="/all-boxes" className="btn btn-outline-secondary ms-2">
           Continue Shopping
         </Link>
       </div>

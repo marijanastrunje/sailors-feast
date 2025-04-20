@@ -16,6 +16,13 @@ module.exports = {
             paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
             safelist: {
               standard: [
+                /^col-/,
+                /^row$/,
+                /^container$/,
+                /^container-fluid$/,
+                /^g-/,
+                /^offset-/,
+                /^align-/,
                 /^carousel/,
                 /^modal/,
                 /^btn/,
@@ -35,20 +42,17 @@ module.exports = {
                 /^skeleton/,
                 /^transition/,
                 /^table/,
-                // Add more patterns based on your components
+                // dodaj sve koje neće raditi
               ],
               deep: [/slick-active$/, /is-active$/, /show$/, /active$/],
               greedy: [/^slick/, /^bs-/]
             },
-            // Consider adding this if you have issues with animations or transitions
-            // safelist: ['fade', 'show', 'collapse', 'collapsing', 'active'],
           }),
           new Critters({
             preload: 'swap',
             pruneSource: true,
             compress: true,
             logLevel: 'info',
-            // You might want to add these for better performance
             inlineThreshold: 10000, // Inline all styles below 10kb (increase if needed)
             pruneSource: true,
             minimize: true,

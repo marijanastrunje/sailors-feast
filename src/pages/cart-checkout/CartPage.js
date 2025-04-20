@@ -1,3 +1,6 @@
+// First, let's update the CartPage.js component to improve the guest checkout flow
+// src/pages/cart-checkout/CartPage.js
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './CartPage.css';
@@ -24,6 +27,19 @@ const CartPage = () => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      fetch(`${backendUrl}/wp-json/wp/v2/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.meta?.saved_lists) {
+            setSavedLists(JSON.parse(data.meta.saved_lists));
+          }
+        })
+        .catch((err) => console.error("Error loading saved lists:", err));
+    }
+  }, [token]);
 
   const totalPrice = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
@@ -54,18 +70,6 @@ const CartPage = () => {
     });
   };
 
-  useEffect(() => {
-    if (!token) return;
-    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.meta?.saved_lists) {
-          setSavedLists(JSON.parse(data.meta.saved_lists));
-        }
-      })
-      .catch((err) => console.error("Error loading saved lists:", err));
-  }, [token]);
-
   const saveToBackend = async () => {
     if (!token) {
       navigate("/login?redirect=/cart");
@@ -88,7 +92,7 @@ const CartPage = () => {
           currentLists = parsed;
         }
       } catch (err) {
-        console.warn(" Failed parsing saved_lists:", err);
+        console.warn("Failed parsing saved_lists:", err);
       }
 
       const updatedLists = { ...currentLists, [listName]: cart };
@@ -107,8 +111,8 @@ const CartPage = () => {
       });
 
       const saveData = await saveRes.json();
-      console.log(" Saved lists:", updatedLists);
-      console.log(" Backend response:", saveData);
+      console.log("Saved lists:", updatedLists);
+      console.log("Backend response:", saveData);
 
       setSavedLists(updatedLists);
       alert(`List "${listName}" has been successfully saved!`);
@@ -129,6 +133,7 @@ const CartPage = () => {
     } else {
       // If user is logged in, proceed directly to checkout
       if (token) {
+        sessionStorage.removeItem("guest_checkout"); // Clear any previous guest checkout flag
         navigate("/checkout");
       } else {
         // Otherwise redirect to login with return URL
@@ -136,6 +141,17 @@ const CartPage = () => {
       }
     }
     setShowCheckoutModal(false);
+  };
+
+  // Determine if checkoutModal should show both options or just proceed
+  const handleCheckoutClick = () => {
+    if (token) {
+      // User is logged in, proceed directly to checkout
+      proceedToCheckout(false);
+    } else {
+      // User is not logged in, show modal with options
+      setShowCheckoutModal(true);
+    }
   };
 
   return (
@@ -242,22 +258,19 @@ const CartPage = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <h4 className="mb-2 mb-md-0">Total: {totalPrice()} €</h4>
                   <div>
-                    <button className="btn btn-sm btn-secondary me-2" onClick={() => {
-                      if (!token) {
-                        navigate("/login?redirect=/cart");
-                      } else {
-                        setShowSaveModal(true);
-                      }
-                    }}>Save as List</button>
+                    {token && (
+                      <button className="btn btn-sm btn-secondary me-2" onClick={() => setShowSaveModal(true)}>
+                        Save as List
+                      </button>
+                    )}
                     <button onClick={clearCart} className="btn btn-sm btn-outline-secondary">Clear Cart</button>
                   </div>
                 </div>
 
                 <button 
-                  onClick={() => setShowCheckoutModal(true)} 
+                  onClick={handleCheckoutClick} 
                   className="btn btn-prim w-100 my-3 mb-5"
                 >
-                  <i className="fas fa-shopping-cart me-2"></i>
                   Continue to Checkout
                 </button>
               </div>
@@ -266,7 +279,7 @@ const CartPage = () => {
         </div>
       </div>
 
-      {/* Modal za spremanje liste */}
+      {/* Modal for saving list */}
       {showSaveModal && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -279,15 +292,15 @@ const CartPage = () => {
                 <input type="text" className="form-control" placeholder="Enter list name" value={listName} onChange={(e) => setListName(e.target.value)} />
               </div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
-                <button className="btn btn-primary" onClick={saveToBackend}>Save List</button>
+                <button className="btn btn-sm btn-secondary" onClick={() => setShowSaveModal(false)}>Cancel</button>
+                <button className="btn btn-sm btn-prim" onClick={saveToBackend}>Save List</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Novi modal za checkout opcije */}
+      {/* Checkout options modal - only shown if user is not logged in */}
       {showCheckoutModal && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -300,21 +313,19 @@ const CartPage = () => {
                 <div className="row g-3">
                   <div className="col-12">
                     <div className="d-grid">
-                      <button onClick={() => proceedToCheckout(false)} className="btn btn-prim py-3">
+                      <button onClick={() => proceedToCheckout(false)} className="btn btn-prim btn-sm py-3">
                         <i className="fas fa-user me-2"></i>
-                        {token ? "Proceed to Checkout" : "Login & Checkout"}
+                        Login & Checkout
                       </button>
-                      {!token && (
-                        <small className="text-muted text-center mt-2">
-                          Login to track your order or save your information for future orders
-                        </small>
-                      )}
+                      <small className="text-muted text-center mt-2">
+                        Login to track your order or save your information for future orders
+                      </small>
                     </div>
                   </div>
                   
                   <div className="col-12">
                     <div className="d-grid">
-                      <button onClick={() => proceedToCheckout(true)} className="btn btn-outline-secondary py-3">
+                      <button onClick={() => proceedToCheckout(true)} className="btn btn-sm btn-outline-secondary py-3">
                         <i className="fas fa-shopping-cart me-2"></i>
                         Checkout as Guest
                       </button>

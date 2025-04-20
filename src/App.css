@@ -225,3 +225,10 @@ button, input, textarea, select {
   border-radius: 0;
 }
 
+.bg-prim{
+  background-color: var(--primary-color);
+}
+
+.bg-sec{
+  background-color: var(--text-muted-color);
+}

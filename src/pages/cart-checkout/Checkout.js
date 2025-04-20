@@ -7,6 +7,7 @@ import PersonalDetailsStep from "./checkout-steps/PersonalDetailsStep";
 import DeliveryDetailsStep from "./checkout-steps/DeliveryDetailsStep";
 import PaymentStep from "./checkout-steps/PaymentStep";
 import QRCodePayment from "./QRCodePayment";
+import GuestRegistrationModal from "./checkout-steps/GuestRegistrationModal";
 import "./CheckoutSteps.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -29,6 +30,7 @@ const Checkout = () => {
   const [orderId, setOrderId] = useState(null);
   const [showDeliveryWarning, setShowDeliveryWarning] = useState(false);
   const [hasCheckedDeliveryDate, setHasCheckedDeliveryDate] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   const [billing, setBilling] = useBillingData();
   const [cart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
@@ -42,7 +44,7 @@ const Checkout = () => {
 
   // Fetch user ID if logged in
   useEffect(() => {
-    if (!token) return;
+    if (!token || isGuestCheckout) return;
     
     fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
       headers: {
@@ -52,7 +54,7 @@ const Checkout = () => {
       .then((res) => res.json())
       .then((data) => setUserId(data.id))
       .catch((err) => console.error("Error fetching user:", err));
-  }, [token]);
+  }, [token, isGuestCheckout]);
 
   // Check for payment failure from URL
   useEffect(() => {
@@ -145,6 +147,77 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   };
 
+  // Handle guest registration after successful order
+  const handleGuestRegistration = async (password) => {
+    if (!billing.email || !billing.first_name || !billing.last_name) {
+      alert("Missing required user information.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Create a new user
+      const registerData = {
+        username: billing.email,
+        email: billing.email,
+        password: password,
+        first_name: billing.first_name,
+        last_name: billing.last_name
+      };
+      
+      const registerResponse = await fetch(`${backendUrl}/wp-json/simple-jwt-login/v1/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registerData)
+      });
+      
+      if (!registerResponse.ok) {
+        const errorData = await registerResponse.json();
+        throw new Error(errorData.message || "Failed to create account.");
+      }
+      
+      // After registration, authenticate the user
+      const loginResponse = await fetch(`${backendUrl}/wp-json/jwt-auth/v1/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: billing.email,
+          password: password
+        })
+      });
+      
+      const loginData = await loginResponse.json();
+      
+      if (loginData.token) {
+        // Login successful, save data to local storage
+        localStorage.setItem("token", loginData.token);
+        localStorage.setItem("username", loginData.user_display_name);
+        localStorage.setItem("user_email", billing.email);
+
+        window.dispatchEvent(new Event("userLogin"));
+        
+        // Associate guest order with new user
+        if (orderId) {
+          await fetch(`${backendUrl}/wp-json/sailorsfeast/v1/associate-order`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${loginData.token}`
+            },
+            body: JSON.stringify({ orderId })
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(error.message || "Failed to create account.");
+    } finally {
+      setIsSubmitting(false);
+      setShowRegistrationModal(false);
+    }
+  };
+
   // Create order in WooCommerce
   const createOrder = async () => {
     if (cart.length === 0) {
@@ -174,8 +247,16 @@ const Checkout = () => {
       payment_method_title: selectedPaymentMethod === "vivawallet" ? "Viva Wallet" : "Bank Transfer",
       set_paid: false,
       status: selectedPaymentMethod === "banktransfer" ? "on-hold" : "pending",
-      billing,
-      shipping: billing,
+      billing: {
+        first_name: billing.first_name,
+        last_name: billing.last_name,
+        email: billing.email,
+        phone: billing.phone
+      },
+      shipping: {
+        first_name: billing.first_name,
+        last_name: billing.last_name
+      },
       line_items: lineItems,
       meta_data: [
         ...Object.entries(billing).map(([key, value]) => ({
@@ -194,17 +275,19 @@ const Checkout = () => {
     };
 
     try {
-      // For guest checkout, we need to create a customer first
-      let authHeader = token ? { Authorization: `Bearer ${token}` } : {};
-      
-      const response = await fetch(`${backendUrl}/wp-json/wc/v3/orders`, {
+      // Create order via WooCommerce API
+      const response = await fetch(`${backendUrl}/wp-json/wc/v3/orders?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`, {
         method: "POST",
         headers: { 
-          "Content-Type": "application/json",
-          ...authHeader
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(orderData)
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create order.");
+      }
 
       const data = await response.json();
       if (!data.id) throw new Error("Missing order ID.");
@@ -214,7 +297,7 @@ const Checkout = () => {
       return data.id;
     } catch (error) {
       console.error("Order creation error:", error.message);
-      alert("There was an error while creating the order.");
+      alert("There was an error while creating the order: " + error.message);
       return null;
     }
   };
@@ -262,7 +345,6 @@ const Checkout = () => {
         return;
       }
       
-
       setQrCodeData(qrData);
       setIsSubmitting(false);
       
@@ -270,6 +352,10 @@ const Checkout = () => {
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
       
+      // If it was a guest checkout, offer registration after successful order
+      if (isGuestCheckout) {
+        setShowRegistrationModal(true);
+      }
     } catch (error) {
       console.error("Payment processing error:", error.message);
       alert("There was an error while processing the payment.");
@@ -347,7 +433,7 @@ const Checkout = () => {
   const renderStep = () => {
     // If we've already created the order and selected bank transfer, show QR code
     if (orderCreated && selectedPaymentMethod === "banktransfer" && qrCodeData) {
-      return <QRCodePayment qrData={qrCodeData} orderId={orderId} />;
+      return <QRCodePayment qrData={qrCodeData} orderId={orderId} isGuestCheckout={isGuestCheckout} hasAccount={!!token} onShowRegistrationModal={() => setShowRegistrationModal(true)} />;
     }
 
     switch (currentStep) {
@@ -401,6 +487,11 @@ const Checkout = () => {
       <div className="py-2 text-center">
         <h2>Checkout</h2>
         <p className="lead">Complete your order in a few steps</p>
+        {isGuestCheckout && (
+          <div className="alert alert-info">
+            <small>You're checking out as a guest. You'll have the option to create an account after your order.</small>
+          </div>
+        )}
       </div>
 
       {paymentFailed && (
@@ -420,6 +511,21 @@ const Checkout = () => {
           {renderStep()}
         </div>
       </div>
+
+      {/* Guest registration modal */}
+      {showRegistrationModal && (
+        <GuestRegistrationModal 
+          show={showRegistrationModal}
+          onClose={() => setShowRegistrationModal(false)}
+          onRegister={handleGuestRegistration}
+          userInfo={{
+            email: billing.email,
+            firstName: billing.first_name,
+            lastName: billing.last_name
+          }}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </div>
   );
 };
