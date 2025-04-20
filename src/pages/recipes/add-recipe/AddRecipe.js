@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import compressImage from "../../../utils/compressImage";
+import RelatedBoxesField from "./RecommendedBoxField";
 
 // Component for displaying loading indicator
 const LoadingSpinner = ({ text = "Loading..." }) => (
@@ -338,6 +339,8 @@ const RecipeForm = () => {
   const imageInputRef = useRef(null);
   const [ingredients, setIngredients] = useState([]);
   const [instructions, setInstructions] = useState([]);
+  // Add state for related boxes
+  const [relatedBoxes, setRelatedBoxes] = useState([]);
 
   const [terms, setTerms] = useState({});
   
@@ -469,6 +472,7 @@ const RecipeForm = () => {
     setImage(null);
     setIngredients([]);
     setInstructions([]);
+    setRelatedBoxes([]); // Reset related boxes
 
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
@@ -559,6 +563,7 @@ const RecipeForm = () => {
           recipe_cooking_time: cookingTime,
           recipe_servings: servings,
           recipe_method: method,
+          recipe_related_boxes: relatedBoxes, // Add related boxes
         },
       };
 
@@ -826,6 +831,9 @@ const RecipeForm = () => {
                 <>
                   <IngredientsField ingredients={ingredients} setIngredients={setIngredients} />
                   <StepsField instructions={instructions} setInstructions={setInstructions} />
+                  
+                  {/* Add the Related Boxes Field */}
+                  <RelatedBoxesField selectedBoxes={relatedBoxes} setSelectedBoxes={setRelatedBoxes} />
                 </>
               )}
               

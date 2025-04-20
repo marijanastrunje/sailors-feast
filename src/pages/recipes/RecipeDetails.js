@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import RecipeTags from "../recipes/recipe-card/RecipeTags";
+import RecommendedBoxes from './RecommendedBoxes';
 import MediaImg from "../../components/common/media/MediaImg";
 import BookmarkToggle from "../../components/common/Bookmark";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
@@ -20,6 +21,8 @@ const RecipeDetails = () => {
 
   // Reference za praćenje brojača koraka
   const stepNumbersRef = useRef({});
+
+  const acf = recipe?.acf;
 
   useEffect(() => {
     setIsLoading(true);
@@ -496,7 +499,11 @@ const RecipeDetails = () => {
               })
             )}
           </div>
+          
         </div>
+        {acf?.recipe_related_boxes?.length > 0 && (
+              <RecommendedBoxes boxIds={acf.recipe_related_boxes} />
+            )}
       </div>
 
       <ScrollToTopButton />

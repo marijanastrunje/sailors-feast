@@ -1,0 +1,51 @@
+.box-card .card{
+    min-width: 280px;
+}
+
+@media (max-width: 768px) {
+  .box-card .card{
+    min-width: 350px;
+}
+}
+
+@media (max-width: 768px) {
+  .responsive-th {
+    width: 50% !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .responsive-th {
+    width: 30% !important;
+  }
+}
+
+  .box-img-top {
+    width: 100%;
+    height: 210px;
+    position: relative;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .box-img-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    position: relative;
+  }
+  
+  .box-img-top::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 3;
+  }
+  
+
+  
