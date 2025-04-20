@@ -2,7 +2,9 @@
 // src/pages/cart-checkout/CartPage.js
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import './CartPage.css';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -172,7 +174,7 @@ const CartPage = () => {
                 {boxProducts.length > 0 && (
                   <>
                     <h3 className="text-center text-success mb-3">From Box</h3>
-                    <table className="table table-bordered table-hover align-middle-cart text-center">
+                    <table className="table table-bordered table-hover align-middle-cart text-center mb-1">
                       <thead className="table-secondary">
                         <tr>
                           <th style={{ width: "80px" }}>Image</th>
@@ -213,7 +215,7 @@ const CartPage = () => {
                 {groceriesProducts.length > 0 && (
                   <>
                     <h3 className="text-center text-primary mt-4 mb-3">From Groceries</h3>
-                    <table className="table table-bordered table-hover text-center align-middle-cart">
+                    <table className="table table-bordered table-hover text-center align-middle-cart mb-1">
                       <thead className="table-secondary">
                         <tr>
                           <th style={{ width: "80px" }}>Image</th>
@@ -248,6 +250,10 @@ const CartPage = () => {
                         ))}
                       </tbody>
                     </table>
+                    <small className="text-muted text-end d-block">
+                      Want to save your list? <Link to="/login" className="text-prim">Login here</Link>
+                    </small>
+
                   </>
                 )}
               </>
@@ -311,25 +317,23 @@ const CartPage = () => {
               </div>
               <div className="modal-body">
                 <div className="row g-3">
-                  <div className="col-12">
-                    <div className="d-grid">
-                      <button onClick={() => proceedToCheckout(false)} className="btn btn-prim btn-sm py-3">
-                        <i className="fas fa-user me-2"></i>
+                  <div className="col-12 text-center text-md-start">
+                      <button onClick={() => proceedToCheckout(false)} className="btn btn-prim w-100 py-3">
+                        <FontAwesomeIcon icon={faUser} className="me-2" />
                         Login & Checkout
                       </button>
-                      <small className="text-muted text-center mt-2">
+                      <small className="text-muted ms-md-2 mt-2">
                         Login to track your order or save your information for future orders
                       </small>
                     </div>
-                  </div>
                   
-                  <div className="col-12">
+                  <div className="col-12 text-center text-md-start">
                     <div className="d-grid">
-                      <button onClick={() => proceedToCheckout(true)} className="btn btn-sm btn-outline-secondary py-3">
-                        <i className="fas fa-shopping-cart me-2"></i>
+                      <button onClick={() => proceedToCheckout(true)} className="btn btn-outline-secondary py-3">
+                        <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
                         Checkout as Guest
                       </button>
-                      <small className="text-muted text-center mt-2">
+                      <small className="text-muted ms-md-2 mt-2">
                         No account needed, quick checkout process
                       </small>
                     </div>

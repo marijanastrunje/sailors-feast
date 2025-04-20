@@ -9,6 +9,7 @@ import CookieConsent from './components/common/CookieConsent';
 import Header from './components/layout/header/Header';
 import Footer from './components/layout/footer/Footer';
 import ScrollToTop from "./components/common/ScrollToTop";
+import ForgotPassword from './pages/login/ForgotPassword';
 
 
 const Home = lazy(() => import('./pages/home/Home'));
@@ -102,6 +103,8 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                 <Route path="/faq" element={<FaqPage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
 
                 <Route path="/charter" element={<CharterLandingPage />} />
               </Routes>

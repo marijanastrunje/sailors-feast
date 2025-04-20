@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DeliveryDetailsStep = ({ 
   billing, 
@@ -7,6 +9,7 @@ const DeliveryDetailsStep = ({
   prevStep, 
   isSubmitting,
   errors = {},
+  setValidationErrors,
   showWarning = false,
   setShowDeliveryWarning,
   checkDeliveryDateWarning,
@@ -14,6 +17,45 @@ const DeliveryDetailsStep = ({
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Posebna validacija za vrijeme dostave
+    if (name === "delivery_time" && value) {
+      // Pretvaranje vremena u minute radi lakše usporedbe
+      const [hours, minutes] = value.split(':').map(Number);
+      const totalMinutes = hours * 60 + minutes;
+      
+      // Provjera je li vrijeme između 8:00 i 22:00 i na pola sata
+      if (totalMinutes < 8 * 60 || totalMinutes > 22 * 60 || minutes % 30 !== 0) {
+        // Ako nije validno, onda pronađi najbliže validno vrijeme
+        let newHours, newMinutes;
+        
+        if (totalMinutes < 8 * 60) {
+          newHours = 8;
+          newMinutes = 0;
+        } else if (totalMinutes > 22 * 60) {
+          newHours = 22;
+          newMinutes = 0;
+        } else {
+          // Zaokruživanje na najbližih 30 minuta
+          const roundedMinutes = Math.round(minutes / 30) * 30;
+          newMinutes = roundedMinutes === 60 ? 0 : roundedMinutes;
+          newHours = hours + (roundedMinutes === 60 ? 1 : 0);
+          
+          // Provjera da ne prijeđemo 22:00
+          if (newHours > 22 || (newHours === 22 && newMinutes > 0)) {
+            newHours = 22;
+            newMinutes = 0;
+          }
+        }
+        
+        // Formatiranje za prikaz u inputu (dodajemo vodeće nule)
+        const formattedTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+        
+        setBilling((prev) => ({ ...prev, [name]: formattedTime }));
+        return;
+      }
+    }
+    
     setBilling((prev) => ({ ...prev, [name]: value }));
 
     // Check if date is changing
@@ -21,6 +63,16 @@ const DeliveryDetailsStep = ({
       const needsWarning = checkDeliveryDateWarning(value);
       setShowDeliveryWarning(needsWarning);
       setHasCheckedDeliveryDate(true);
+
+      if (!needsWarning) {
+        setValidationErrors(prev => {
+          const updated = { ...prev };
+          ["marina", "charter", "boat", "gate", "delivery_time"].forEach(field => {
+            delete updated[field];
+          });
+          return updated;
+        });
+      }  
     }
   };
 
@@ -29,13 +81,21 @@ const DeliveryDetailsStep = ({
     const today = new Date();
     today.setHours(0, 0, 0, 0); // resetiramo vrijeme na 00:00
     const minDate = new Date(today);
-    minDate.setDate(today.getDate() + 4); // dodamo 3 dana
+    minDate.setDate(today.getDate() + 4); // dodamo 4 dana
     return minDate.toISOString().split("T")[0];
   };
 
   const minDeliveryDate = getMinDate();
   
-
+  // Formatiranje datuma za prikaz u pomoćnom tekstu
+  const formatDateForDisplay = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+  };
 
   // Update delivery warning when component mounts
   useEffect(() => {
@@ -44,6 +104,21 @@ const DeliveryDetailsStep = ({
       setShowDeliveryWarning(needsWarning);
     }
   }, [billing.delivery_date, checkDeliveryDateWarning, setShowDeliveryWarning]);
+
+  const availableMarinas = [
+    "Marina Kaštela",
+    "Marina Trogir (SCT)",
+    "Marina Baotić",
+    "Marina Kremik",
+    "Marina Frapa Rogoznica"
+  ];
+  
+  // Dobivanje današnjeg datuma za prikaz
+  const today = new Date().toLocaleDateString('en-GB', { 
+    day: 'numeric', 
+    month: 'short', 
+    year: 'numeric' 
+  });
 
   return (
     <div className="checkout-step">
@@ -55,26 +130,33 @@ const DeliveryDetailsStep = ({
       </h4>
 
       {showWarning && (
-        <div className="alert alert-warning mb-3" role="alert">
-          <i className="fas fa-exclamation-triangle me-2"></i>
-          <strong>Important:</strong> Your delivery date is less than 7 days away. Delivery details are required.
+        <div className="alert alert-warning mb-3 d-flex align-items-start" role="alert">
+          <FontAwesomeIcon icon={faInfoCircle} className="me-2 mt-1" />
+          <span>
+            <strong>Important:</strong> Your delivery date is less than 7 days away. Delivery details are required.
+          </span>
         </div>
       )}
 
       {!showWarning && billing.delivery_date && (
-        <div className="alert alert-info mb-3" role="alert">
-          <i className="fas fa-info-circle me-2"></i>
-          Delivery details are optional when ordering more than 7 days in advance. However, 
-          you must provide these details at least 7 days before your delivery date.
+        <div className="alert alert-info mb-3 d-flex align-items-start" role="alert">
+          <FontAwesomeIcon icon={faInfoCircle} className="me-2 mt-1" />
+          <span>
+            Delivery details are optional when ordering more than 7 days in advance. However, 
+            you must provide these details at least 7 days before your delivery date.
+          </span>
         </div>
       )}
+
 
       <form className="needs-validation">
         <div className="row g-3">
           <div className="col-md-6">
-            <label htmlFor="delivery_date" className="form-label">
-              Preferred Delivery Date 
-              <span className="text-danger ms-1">*</span>
+            <label htmlFor="delivery_date" className="form-label d-flex justify-content-between align-items-center">
+              <span>
+                Preferred Delivery Date 
+                <span className="text-danger ms-1">*</span>
+              </span>
             </label>
             <input
               type="date"
@@ -87,6 +169,9 @@ const DeliveryDetailsStep = ({
               min={minDeliveryDate}
               required
             />
+            <small className="form-text text-muted">
+              Today is {today}. Earliest delivery date is {formatDateForDisplay(minDeliveryDate)} (3 days from today).
+            </small>
             {errors.delivery_date && (
               <div className="invalid-feedback">{errors.delivery_date}</div>
             )}
@@ -108,8 +193,11 @@ const DeliveryDetailsStep = ({
               value={billing.delivery_time || ''}
               onChange={handleChange}
               disabled={isSubmitting}
-              required={showWarning}
+              required
             />
+            <small className="form-text text-muted">
+              Available times: 08:00 to 22:00, every 30 minutes
+            </small>
             {errors.delivery_time && (
               <div className="invalid-feedback">{errors.delivery_time}</div>
             )}
@@ -121,17 +209,20 @@ const DeliveryDetailsStep = ({
               {showWarning && <span className="text-danger ms-1">*</span>}
               {!showWarning && <span className="optional-label">(optional)</span>}
             </label>
-            <input
-              type="text"
-              className={`form-control ${errors.marina ? 'is-invalid' : ''}`}
+            <select
+              className={`form-select ${errors.marina ? 'is-invalid' : ''}`}
               id="marina"
               name="marina"
               value={billing.marina || ''}
               onChange={handleChange}
               disabled={isSubmitting}
-              placeholder="e.g. Marina Kaštela"
-              required={showWarning}
-            />
+              required
+            >
+              <option value="">Select a marina</option>
+              {availableMarinas.map((marina) => (
+                <option key={marina} value={marina}>{marina}</option>
+              ))}
+            </select>
             {errors.marina && (
               <div className="invalid-feedback">{errors.marina}</div>
             )}
@@ -145,14 +236,14 @@ const DeliveryDetailsStep = ({
             </label>
             <input
               type="text"
-              className={`form-control ${errors.charter ? 'is-invalid' : ''}`}
+              className={`form-control ${(showWarning && errors.charter) ? 'is-invalid' : ''}`}
               id="charter"
               name="charter"
               value={billing.charter || ''}
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Croatia Yachting"
-              required={showWarning}
+              required
             />
             {errors.charter && (
               <div className="invalid-feedback">{errors.charter}</div>
@@ -174,7 +265,7 @@ const DeliveryDetailsStep = ({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Bavaria 46 'Sea Dream'"
-              required={showWarning}
+              required
             />
             {errors.boat && (
               <div className="invalid-feedback">{errors.boat}</div>
@@ -196,7 +287,7 @@ const DeliveryDetailsStep = ({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Gate B"
-              required={showWarning}
+              required
             />
             {errors.gate && (
               <div className="invalid-feedback">{errors.gate}</div>

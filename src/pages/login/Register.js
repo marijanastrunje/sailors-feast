@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./LoginRegister.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -24,12 +24,17 @@ const Register = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [captchaValue, setCaptchaValue] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
         });
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     const registerUser = (userData) => {
@@ -205,7 +210,7 @@ const Register = () => {
                                     <label className="text-start w-100" htmlFor="password">Password</label>
                                     <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
                                     <input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         id="password"
                                         name="password"
                                         value={form.password}
@@ -215,6 +220,14 @@ const Register = () => {
                                         aria-label="Password"
                                         required
                                     />
+                                    <button
+                                        type="button"
+                                        className="input-group-text"
+                                        onClick={togglePasswordVisibility}
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                    >
+                                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                                    </button>
                                 </div>
 
                                 <div className="recaptcha-wrapper mt-3">
@@ -240,7 +253,7 @@ const Register = () => {
                             <div className="text-center mt-3">
                                 <p>
                                     Already have an account?{" "}
-                                    <Link to="/login" title="Go to login page">Log in</Link>
+                                    <Link to="/login" title="Go to login page" className="text-prim">Log in</Link>
                                 </p>
                             </div>
                         </div>

@@ -454,6 +454,7 @@ const Checkout = () => {
             billing={billing} 
             setBilling={setBilling}
             errors={validationErrors}
+            setValidationErrors={setValidationErrors}
             showWarning={showDeliveryWarning} 
             nextStep={nextStep}
             prevStep={prevStep}
@@ -487,11 +488,6 @@ const Checkout = () => {
       <div className="py-2 text-center">
         <h2>Checkout</h2>
         <p className="lead">Complete your order in a few steps</p>
-        {isGuestCheckout && (
-          <div className="alert alert-info">
-            <small>You're checking out as a guest. You'll have the option to create an account after your order.</small>
-          </div>
-        )}
       </div>
 
       {paymentFailed && (

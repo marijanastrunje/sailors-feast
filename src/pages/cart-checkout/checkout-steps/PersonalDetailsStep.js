@@ -1,9 +1,19 @@
 import React from "react";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSubmitting }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setBilling((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handlePhoneChange = (value, country) => {
+    setBilling((prev) => ({ 
+      ...prev, 
+      phone: value,
+      country_code: `+${country.dialCode}`
+    }));
   };
 
   return (
@@ -64,20 +74,32 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
 
           <div className="col-12">
             <label htmlFor="phone" className="form-label">Phone</label>
-            <input
-              type="text"
-              className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-              id="phone"
-              name="phone"
+            <PhoneInput
+              country={'hr'}
+              autoFormat={false}
               value={billing.phone || ''}
-              onChange={handleChange}
-              required
-              disabled={isSubmitting}
+              onChange={handlePhoneChange}
+              placeholder=""
+              inputProps={{
+                name: 'phone',
+                required: true,
+                disabled: isSubmitting,
+                autoComplete: 'tel',
+              }}
+              containerClass="phone-input-container w-100"
+              inputClass={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+              buttonClass="custom-flag-button"
+              dropdownClass="custom-dropdown"
             />
+
             {errors.phone && (
               <div className="error-feedback">{errors.phone}</div>
             )}
+            <small className="form-text text-muted">
+              We'll only use this to contact you about your delivery if needed.
+            </small>
           </div>
+
           
           <div className="col-12">
             <label htmlFor="number_of_guests" className="form-label">

@@ -135,7 +135,6 @@ const QRCodePayment = ({ qrData, orderId, isGuestCheckout, hasAccount, onShowReg
             </>
           ) : (
             <>
-              <p className="text-info">Want to track your orders and save your details?</p>
               <button onClick={onShowRegistrationModal} className="btn btn-prim">
                 Create Account
               </button>

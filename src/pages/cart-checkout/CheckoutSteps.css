@@ -60,11 +60,6 @@
     font-weight: 500;
   }
   
-  .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(204, 68, 37, 0.25);
-  }
-  
   .error-feedback {
     width: 100%;
     font-size: 80%;

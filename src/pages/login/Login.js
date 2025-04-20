@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./LoginRegister.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -13,6 +13,7 @@ const Login = () => {
     const [form, setForm] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -31,6 +32,10 @@ const Login = () => {
 
     const handleCaptchaChange = (value) => {
         setCaptchaValue(value);
+    };
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     const handleLogin = (e) => {
@@ -154,7 +159,7 @@ const Login = () => {
                                         <FontAwesomeIcon icon={faLock} />
                                     </span>
                                     <input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         id="password"
                                         name="password"
                                         value={form.password}
@@ -164,15 +169,24 @@ const Login = () => {
                                         aria-label="Password"
                                         required
                                     />
+                                    <button
+                                        type="button"
+                                        className="input-group-text"
+                                        onClick={togglePasswordVisibility}
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                    >
+                                        <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                                    </button>
                                 </div>
 
-                                <div className="d-flex mb-3 align-items-center">
-                                    <input type="checkbox" id="remember-me" aria-label="Remember me" />
-                                    <label htmlFor="remember-me" className="text-start ms-1 w-100">Remember me</label>
-                                    <div className="text-end">
-                                        <Link to="/forgot-password" title="Recover your password">Forgot password?</Link>
+                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <div className="form-check">
+                                        <input type="checkbox" className="form-check-input" id="remember-me" />
+                                        <label className="form-check-label text-muted" htmlFor="remember-me">Remember me</label>
                                     </div>
+                                    <Link to="/forgot-password" title="Recover your password" className="text-muted">Forgot password?</Link>
                                 </div>
+
 
                                 <div className="recaptcha-wrapper mt-3">
                                     <ReCAPTCHA sitekey={siteKey} onChange={handleCaptchaChange} />
@@ -195,7 +209,7 @@ const Login = () => {
                             <div className="text-center mt-3">
                                 <p>
                                     Don't have an account?{" "}
-                                    <Link to={`/register?redirect=${encodeURIComponent(redirect)}`} title="Go to registration page">
+                                    <Link to={`/register?redirect=${encodeURIComponent(redirect)}`} title="Go to registration page" className="text-prim">
                                         Sign up
                                     </Link>
                                 </p>
