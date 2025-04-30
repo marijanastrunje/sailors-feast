@@ -243,10 +243,14 @@ const Checkout = () => {
     // Prepare order data
     const orderData = {
       customer_id: userId || 0, // Use 0 for guest checkout
-      payment_method: selectedPaymentMethod,
-      payment_method_title: selectedPaymentMethod === "vivawallet" ? "Viva Wallet" : "Bank Transfer",
+      payment_method: selectedPaymentMethod === "cash" ? "cod" : selectedPaymentMethod,
+      payment_method_title: selectedPaymentMethod === "vivawallet" 
+        ? "Viva Wallet" 
+        : selectedPaymentMethod === "cash"
+          ? "Cash on Delivery"
+          : "Bank Transfer",
       set_paid: false,
-      status: selectedPaymentMethod === "banktransfer" ? "on-hold" : "pending",
+      status: selectedPaymentMethod === "banktransfer" ? "on-hold" : selectedPaymentMethod === "cash" ? "processing" : "pending", 
       billing: {
         first_name: billing.first_name,
         last_name: billing.last_name,
@@ -363,6 +367,47 @@ const Checkout = () => {
     }
   };
 
+  const handleCashPayment = async () => {
+    setIsSubmitting(true);
+    const orderId = await createOrder(); // Ova funkcija već postavlja payment_method: selectedPaymentMethod
+    if (!orderId) {
+      setIsSubmitting(false);
+      return;
+    }
+  
+    try {
+      // Ažurirajte status narudžbe na "processing" umjesto "pending"
+      const updateResponse = await fetch(`${backendUrl}/wp-json/wc/v3/orders/${orderId}?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "processing" })
+      });
+  
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update order status");
+      }
+      
+      // Očistite košaricu nakon uspješne narudžbe
+      localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
+      
+      // Spremite ID narudžbe u localStorage
+      localStorage.setItem("lastOrderId", orderId);
+      
+      // Ako je guest checkout, ponudite registraciju
+      if (isGuestCheckout) {
+        setShowRegistrationModal(true);
+      }
+      
+      // Preusmjerite na stranicu s potvrdom narudžbe
+      navigate(`/order-success/${orderId}`);
+    } catch (error) {
+      console.error("Error processing cash payment:", error.message);
+      alert("There was an error while processing your order.");
+      setIsSubmitting(false);
+    }
+  };
+
   // Process payment via Viva Wallet
   const handlePayment = async () => {
     setIsSubmitting(true);
@@ -424,6 +469,8 @@ const Checkout = () => {
   const processPayment = () => {
     if (selectedPaymentMethod === "banktransfer") {
       handleBankTransfer();
+    } else if (selectedPaymentMethod === "cash") {
+      handleCashPayment();
     } else {
       handlePayment();
     }

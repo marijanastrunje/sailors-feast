@@ -2,6 +2,7 @@ import { useEffect, useState, lazy } from 'react';
 import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import 'react-phone-input-2/lib/style.css';
 import './App.css';
 
 import ErrorBoundary from "./components/common/ErrorBoundary";

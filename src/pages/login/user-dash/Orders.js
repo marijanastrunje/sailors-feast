@@ -37,6 +37,7 @@ const Orders = () => {
 
   const isPaid = (order) => order.status === "completed" || order.status === "processing";
   const isBankTransfer = (order) => order.payment_method === "banktransfer";
+  const isCashPayment = (order) => order.payment_method === "cod";
 
   const formatPaymentData = (order) => {
     const amount = parseFloat(order.total).toFixed(2);
@@ -104,7 +105,7 @@ const Orders = () => {
     payment_deadline: "Payment Deadline",
   };
 
-  if (loading) return <div className="d-flex justify-content-center my-5"><div className="spinner-border text-primary" role="status"></div></div>;
+  if (loading) return <div className="d-flex justify-content-center my-5"><div className="spinner-border text-prim" role="status"></div></div>;
 
   if (!orders.length) return <div className="container col-md-8 my-5 text-center"><h2 className="mb-4">My Orders</h2><div className="alert alert-info">You have no orders yet.</div></div>;
 
@@ -135,10 +136,10 @@ const Orders = () => {
                       <div className="row g-0">
                         {/* Card contents are now in separate flex divs to enable stacking on mobile */}
                         <div className="col-lg-6 p-4 border-end border-lg-only">
-                          <h5 className="mb-4 text-primary">Detalji narudžbe</h5>
+                          <h5 className="mb-4 text-primary">Order Details</h5>
                           <div className="mb-4 bg-light rounded p-3">
                             <div className="mb-2 d-flex flex-column flex-sm-row">
-                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "140px" }}>Datum:</div>
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "140px" }}>Date:</div>
                               <div className="fw-semibold">{new Date(order.date_created).toLocaleString()}</div>
                             </div>
                             <div className="mb-2 d-flex flex-column flex-sm-row">
@@ -146,7 +147,7 @@ const Orders = () => {
                               <div><span className={`badge ${statusBadgeClass}`}>{order.status}</span></div>
                             </div>
                           </div>
-                          <h6 className="mb-3 text-primary">Dodatne informacije</h6>
+                          <h6 className="mb-3 text-primary">Additional Information</h6>
                           <div className="bg-light rounded p-3">
                             <div className="row g-3">
                               <div className="col-12 col-sm-6">
@@ -172,14 +173,16 @@ const Orders = () => {
                                     </div>
                                   );
                                 })}
-                                <div className="mb-2">
-                                  <div className="text-muted mb-1">Rok plaćanja:</div>
-                                  <div className="fw-semibold text-danger">{paymentDeadline}</div>
-                                </div>
+                                {!isCashPayment(order) && (
+                                  <div className="mb-2">
+                                    <div className="text-muted mb-1">Payment Deadline:</div>
+                                    <div className="fw-semibold text-danger">{paymentDeadline}</div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
-                          <h6 className="mt-4 mb-3 text-primary">Proizvodi</h6>
+                          <h6 className="mt-4 mb-3 text-primary">Products</h6>
                           <div className="bg-light rounded p-3">
                             {order.line_items.map((item) => (
                               <div key={item.id} className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-2 pb-2 border-bottom">
@@ -191,29 +194,31 @@ const Orders = () => {
                               </div>
                             ))}
                             <div className="d-flex justify-content-between align-items-center fw-bold pt-2">
-                              <div>Ukupno</div>
+                              <div>Total</div>
                               <div>{parseFloat(order.total).toFixed(2)} €</div>
                             </div>
                           </div>
                         </div>
                         
                         <div className="col-lg-6 p-4">
-                          <h5 className="mb-4 text-primary">Informacije o plaćanju</h5>
+                          <h5 className="mb-4 text-primary">Payment Information</h5>
                           <div className="mb-4 bg-light rounded p-3">
                             <div className="mb-2 d-flex flex-column flex-sm-row">
-                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Način plaćanja:</div>
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Payment Method:</div>
                               <div className="fw-semibold">{order.payment_method_title || 'N/A'}</div>
                             </div>
                             <div className="mb-2 d-flex flex-column flex-sm-row">
-                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Status plaćanja:</div>
-                              <div><span className={`badge ${isPaid(order) ? 'bg-success' : 'bg-warning text-dark'}`}>{isPaid(order) ? 'Plaćeno' : 'Na čekanju'}</span></div>
+                              <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Payment Status:</div>
+                              <div><span className={`badge ${isPaid(order) ? 'bg-success' : 'bg-warning text-dark'}`}>{isPaid(order) ? 'Paid' : 'Pending'}</span></div>
                             </div>
                           </div>
+                          
+                          {/* Bank Transfer Display */}
                           {isBankTransfer(order) && !isPaid(order) && (
                             <div className="bg-light rounded p-4 border border-primary-subtle">
-                              <h6 className="mb-3 text-primary">Detalji bankovnog transfera</h6>
+                              <h6 className="mb-3 text-primary">Bank Transfer Details</h6>
                               <div className="mb-2 d-flex flex-column flex-sm-row">
-                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Primatelj:</div>
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Recipient:</div>
                                 <div className="fw-semibold">Sailor's Feast d.o.o.</div>
                               </div>
                               <div className="mb-2 d-flex flex-column flex-sm-row">
@@ -221,28 +226,57 @@ const Orders = () => {
                                 <div className="fw-semibold">HR9124020061101222221</div>
                               </div>
                               <div className="mb-2 d-flex flex-column flex-sm-row">
-                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Poziv na broj:</div>
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Reference Number:</div>
                                 <div className="fw-semibold">{order.id}-{new Date(order.date_created).getFullYear()}</div>
                               </div>
                               <div className="mb-2 d-flex flex-column flex-sm-row">
-                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Iznos:</div>
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Amount:</div>
                                 <div className="fw-semibold">{parseFloat(order.total).toFixed(2)} EUR</div>
                               </div>
                               <div className="mb-2 d-flex flex-column flex-sm-row">
-                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Molimo platiti do:</div>
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Please pay by:</div>
                                 <div className="fw-semibold text-danger">{paymentDeadline}</div>
                               </div>
                               <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mt-4">
                                 <button className="btn btn-outline-primary px-4 mb-2 mb-sm-0" onClick={() => handleCopyBankDetails(order)}>
-                                  <i className="bi bi-clipboard me-2"></i> Kopiraj podatke
+                                  <i className="bi bi-clipboard me-2"></i> Copy Details
                                 </button>
                                 <button className="btn btn-primary px-4" onClick={() => handleShowQRCode(order)}>
-                                  <i className="bi bi-qr-code me-2"></i> Prikaži QR kod
+                                  <i className="bi bi-qr-code me-2"></i> Show QR Code
                                 </button>
                               </div>
                             </div>
                           )}
-                          {isPaid(order) && <div className="alert alert-success mt-4"><p className="mb-0">Plaćanje je izvršeno. Hvala na narudžbi!</p></div>}
+                          
+                          {/* Cash Payment Display */}
+                          {isCashPayment(order) && (
+                            <div className="bg-light rounded p-4 border border-success-subtle">
+                              <h6 className="mb-3 text-success">Cash Payment on Delivery</h6>
+                              <p>Your order will be paid in cash upon delivery.</p>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Amount to pay:</div>
+                                <div className="fw-semibold">{parseFloat(order.total).toFixed(2)} EUR</div>
+                              </div>
+                              <div className="mb-2 d-flex flex-column flex-sm-row">
+                                <div className="text-muted mb-1 mb-sm-0" style={{ minWidth: "160px" }}>Delivery date:</div>
+                                <div className="fw-semibold">
+                                  {order.meta_data.find(m => m.key === 'billing_delivery_date')?.value || 'Not specified'}
+                                </div>
+                              </div>
+                              <div className="alert alert-info mt-3 mb-0">
+                                <p className="mb-0">
+                                  <i className="bi bi-info-circle me-2"></i>
+                                  Please prepare the exact amount in cash for payment upon delivery.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {isPaid(order) && !isCashPayment(order) && (
+                            <div className="alert alert-success mt-4">
+                              <p className="mb-0">Payment has been received. Thank you for your order!</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

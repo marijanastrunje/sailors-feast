@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faExclamationTriangle, faCreditCard, faUniversity } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faExclamationTriangle, faCreditCard, faUniversity, faMoneyBillWave } from "@fortawesome/free-solid-svg-icons";
 
 const PaymentStep = ({ 
   billing, 
@@ -12,8 +12,12 @@ const PaymentStep = ({
   selectedPaymentMethod,
   setSelectedPaymentMethod,
   showDeliveryWarning,
-  deliveryDate 
+  deliveryDate,
+  error
 }) => {
+
+  const userType = localStorage.getItem("user_type");
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBilling((prev) => ({
@@ -39,9 +43,35 @@ const PaymentStep = ({
   const paymentDeadline = getPaymentDeadline();
   const requiresImmediatePayment = isImmediatePaymentRequired();
   
+  // Dobivanje odgovarajućeg teksta gumba ovisno o metodi plaćanja
+  const getButtonText = () => {
+    if (isSubmitting) {
+      return (
+        <>
+          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Processing...
+        </>
+      );
+    } else if (selectedPaymentMethod === 'vivawallet') {
+      return "Pay Now";
+    } else if (selectedPaymentMethod === 'cash') {
+      return "Complete Order";
+    } else {
+      return "Complete Order";
+    }
+  };
+  
   return (
     <div className="checkout-step">
       <h4 className="mb-3 pb-2 border-bottom">Payment</h4>
+      
+      {/* Show error message if any */}
+      {error && (
+        <div className="alert alert-danger mb-4">
+          {error}
+        </div>
+      )}
+      
       <form className="needs-validation">
         {/* Payment notice for early bookings */}
         {deliveryDate && !requiresImmediatePayment && (
@@ -55,6 +85,7 @@ const PaymentStep = ({
               <ul className="mb-0 mt-2">
                 <li>Pay now using credit/debit card, or</li>
                 <li>Pay later by bank transfer (before the deadline)</li>
+                {userType === "crew" && <li>Pay in cash on delivery (crew members only)</li>}
               </ul>
               {paymentDeadline && (
                 <p className="mt-2 mb-0 fw-bold">Payment Deadline: {paymentDeadline}</p>
@@ -71,6 +102,7 @@ const PaymentStep = ({
               <p className="mb-0">
                 <strong>Important:</strong> Since your delivery date is less than 7 days away, 
                 immediate payment is required to process your order.
+                {userType === "crew" && " However, as a crew member, you can still pay in cash on delivery."}
               </p>
             </div>
           </div>
@@ -103,6 +135,11 @@ const PaymentStep = ({
               </label>
               <img src="/img/payment/viva-wallet.png" alt="Viva Wallet" className="ms-auto" height="30" />
             </div>
+            {selectedPaymentMethod === 'vivawallet' && (
+              <p className="small text-muted mt-2 ms-4 ps-3">
+                You will be redirected to Viva Wallet's secure payment page to complete your payment.
+              </p>
+            )}
           </div>
           
           {/* Bank Transfer option - only available for orders more than 7 days before delivery */}
@@ -132,15 +169,46 @@ const PaymentStep = ({
                 </label>
                 <img src="/img/payment/bank-transfer.png" alt="Bank Transfer" className="ms-auto" height="30" />
               </div>
+              {selectedPaymentMethod === 'banktransfer' && (
+                <p className="small text-muted mt-2 ms-4 ps-3">
+                  After confirming your order, you'll receive payment instructions with a QR code for easy bank transfer.
+                </p>
+              )}
             </div>
           )}
-          
-          <p className="small text-muted mt-3 ms-2">
-            {selectedPaymentMethod === 'vivawallet' ? 
-              "You will be redirected to Viva Wallet's secure payment page to complete your payment." :
-              "After confirming your order, you'll receive payment instructions with a QR code for easy bank transfer."
-            }
-          </p>
+
+          {/* Cash option - only available for crew members */}
+          {userType === "crew" && (
+            <div
+              className={`payment-option rounded border p-3 mt-3 ${selectedPaymentMethod === 'cash' ? 'border-primary shadow-sm' : ''}`}
+              onClick={() => setSelectedPaymentMethod('cash')}
+              style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+            >
+              <div className="d-flex align-items-center">
+                <input
+                  type="radio"
+                  id="cash-on-delivery"
+                  name="payment_method"
+                  checked={selectedPaymentMethod === 'cash'}
+                  onChange={() => setSelectedPaymentMethod('cash')}
+                  className="me-3"
+                />
+                <label htmlFor="cash-on-delivery" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faMoneyBillWave} className="me-3 text-primary" />
+                  <div>
+                    <span className="fw-bold">Pay in Cash on Delivery</span>
+                    <small className="d-block text-muted">Available only for crew members</small>
+                  </div>
+                </label>
+                <img src="/img/payment/cash.png" alt="Cash Payment" className="ms-auto" height="30" />
+              </div>
+              {selectedPaymentMethod === 'cash' && (
+                <p className="small text-muted mt-2 ms-4 ps-3">
+                  You'll pay the full amount in cash upon delivery to our staff member.
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -242,18 +310,9 @@ const PaymentStep = ({
               type="button"
               className="btn btn-prim"
               onClick={handlePayment}
-              disabled={isSubmitting || !billing.privacyConsent}
+              disabled={isSubmitting || !billing.privacyConsent || !selectedPaymentMethod}
             >
-              {isSubmitting ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Processing...
-                </>
-              ) : selectedPaymentMethod === 'vivawallet' ? (
-                "Pay Now"
-              ) : (
-                "Complete Order"
-              )}
+              {getButtonText()}
             </button>
           </div>
         </div>

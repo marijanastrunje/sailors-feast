@@ -13,7 +13,11 @@ module.exports = {
       if (process.env.NODE_ENV === 'production') {
         webpackConfig.plugins.push(
           new PurgeCSSPlugin({
-            paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+            paths: [
+              ...glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
+              path.join(__dirname, 'node_modules/react-phone-input-2/lib/style.css'),
+            ],
+            
             safelist: {
               standard: [
                 /^col-/,
@@ -42,10 +46,36 @@ module.exports = {
                 /^skeleton/,
                 /^transition/,
                 /^table/,
-                // dodaj sve koje neće raditi
+              
+                // PhoneInput relevant
+                /^react-phone-input-/,
+                /^react-tel-input$/,
+                /^flag$/,
+                /^flag-dropdown$/,
+                /^selected-flag$/,
+                /^country-list$/,
+                /^form-control$/,
+                /^phone-input-container$/,
+                /^custom-flag-button$/,
+                /^custom-dropdown$/,
+                /^country$/,
+                /^highlight$/,
+                /^search$/,
+                /^search-box$/,
+                /^arrow$/,
+                /^dial-code$/,
+              ],              
+              deep: [
+                /slick-active$/, 
+                /is-active$/, 
+                /show$/, 
+                /active$/
               ],
-              deep: [/slick-active$/, /is-active$/, /show$/, /active$/],
-              greedy: [/^slick/, /^bs-/]
+              greedy: [
+                /^slick/, 
+                /^bs-/, 
+                /^react-tel-input/
+              ]
             },
           }),
           new Critters({

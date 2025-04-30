@@ -18,7 +18,8 @@ const Register = () => {
         first_name: "",
         last_name: "",
         email: "",
-        password: ""
+        password: "",
+        user_type: ""
     });
 
     const [error, setError] = useState("");
@@ -81,6 +82,7 @@ const Register = () => {
                 last_name: form.last_name,
                 email: form.email,
                 password: form.password,
+                meta: { user_type: form.user_type }
             });
         })
         .then((data) => {
@@ -100,6 +102,7 @@ const Register = () => {
             localStorage.setItem("token", loginData.token);
             localStorage.setItem("username", loginData.user_display_name);
             localStorage.setItem("user_email", form.email);
+            localStorage.setItem("user_type", form.user_type);
             navigate(redirect);
             window.location.reload();
         })
@@ -150,15 +153,47 @@ const Register = () => {
                                 </Link>
                             </div>
 
-                            <h3 className="mb-0 mt-lg-4" id="register-heading">Create Account</h3>
-                            <p>Sign up to get started</p>
+                            <h3 className="mb-0 mt-lg-2" id="register-heading">Create Account</h3>
+                            <p className="mb-0">Sign up to get started</p>
 
                             <form
                                 className={isLoading ? "loading" : ""}
                                 onSubmit={handleRegister}
                                 aria-labelledby="register-heading"
                             >
-                                <div className="input-group">
+                                <div className="input-group mt-2">
+                                    <label className="text-start w-100">User Type</label>
+                                    <div className="d-flex gap-3 mt-1">
+                                        <div className="form-check">
+                                            <input
+                                                type="radio"
+                                                id="guest"
+                                                name="user_type"
+                                                className="form-check-input"
+                                                value="guest"
+                                                checked={form.user_type === "guest"}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            <label className="form-check-label" htmlFor="guest">Guest</label>
+                                        </div>
+                                        <div className="form-check">
+                                            <input
+                                                type="radio"
+                                                id="crew"
+                                                name="user_type"
+                                                className="form-check-input"
+                                                value="crew"
+                                                checked={form.user_type === "crew"}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            <label className="form-check-label" htmlFor="crew">Crew</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="input-group mt-2">
                                     <label className="text-start w-100" htmlFor="first_name">First Name</label>
                                     <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
                                     <input
@@ -174,7 +209,7 @@ const Register = () => {
                                     />
                                 </div>
 
-                                <div className="input-group mt-3">
+                                <div className="input-group mt-2">
                                     <label className="text-start w-100" htmlFor="last_name">Last Name</label>
                                     <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faUser} /></span>
                                     <input
@@ -190,7 +225,7 @@ const Register = () => {
                                     />
                                 </div>
 
-                                <div className="input-group mt-3">
+                                <div className="input-group mt-2">
                                     <label className="text-start w-100" htmlFor="email">Email address</label>
                                     <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faEnvelope} /></span>
                                     <input
@@ -206,7 +241,7 @@ const Register = () => {
                                     />
                                 </div>
 
-                                <div className="input-group mt-3">
+                                <div className="input-group mt-2">
                                     <label className="text-start w-100" htmlFor="password">Password</label>
                                     <span className="input-group-text rounded-start"><FontAwesomeIcon icon={faLock} /></span>
                                     <input
@@ -230,7 +265,7 @@ const Register = () => {
                                     </button>
                                 </div>
 
-                                <div className="recaptcha-wrapper mt-3">
+                                <div className="recaptcha-wrapper mt-2">
                                     <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
                                 </div>
 
@@ -250,7 +285,7 @@ const Register = () => {
                                 </button>
                             </form>
 
-                            <div className="text-center mt-3">
+                            <div className="text-center mt-1">
                                 <p>
                                     Already have an account?{" "}
                                     <Link to="/login" title="Go to login page" className="text-prim">Log in</Link>

@@ -76,8 +76,23 @@ const Login = () => {
                 localStorage.setItem("username", data.user_display_name);
                 localStorage.setItem("user_email", form.username);
 
-                navigate(redirect);
-                window.location.reload();
+                // Dohvati user_type iz REST API-ja
+                fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+                    headers: {
+                        Authorization: `Bearer ${data.token}`,
+                    },
+                })
+                .then(res => res.json())
+                .then(user => {
+                    localStorage.setItem("user_type", user.user_type || "");
+                    navigate(redirect);
+                    window.location.reload();
+                })
+                .catch(err => {
+                    console.warn("Failed to fetch user_type:", err);
+                    navigate(redirect);
+                    window.location.reload();
+                });
             })
             .catch((err) => {
                 console.error("Login error:", err);

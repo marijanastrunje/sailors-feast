@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const DeliveryDetailsStep = ({ 
   billing, 
@@ -15,67 +17,84 @@ const DeliveryDetailsStep = ({
   checkDeliveryDateWarning,
   setHasCheckedDeliveryDate
 }) => {
+  // State to store available time slots
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  // Loading state for time slots
+  const [loadingTimeSlots, setLoadingTimeSlots] = useState(false);
+
+  // All available marinas
+  const availableMarinas = [
+    "Marina Kaštela",
+    "Marina Trogir (SCT)",
+    "Marina Baotić",
+    "Marina Kremik",
+    "Marina Frapa Rogoznica"
+  ];
+
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Posebna validacija za vrijeme dostave
-    if (name === "delivery_time" && value) {
-      // Pretvaranje vremena u minute radi lakše usporedbe
-      const [hours, minutes] = value.split(':').map(Number);
-      const totalMinutes = hours * 60 + minutes;
-      
-      // Provjera je li vrijeme između 8:00 i 22:00 i na pola sata
-      if (totalMinutes < 8 * 60 || totalMinutes > 22 * 60 || minutes % 30 !== 0) {
-        // Ako nije validno, onda pronađi najbliže validno vrijeme
-        let newHours, newMinutes;
-        
-        if (totalMinutes < 8 * 60) {
-          newHours = 8;
-          newMinutes = 0;
-        } else if (totalMinutes > 22 * 60) {
-          newHours = 22;
-          newMinutes = 0;
-        } else {
-          // Zaokruživanje na najbližih 30 minuta
-          const roundedMinutes = Math.round(minutes / 30) * 30;
-          newMinutes = roundedMinutes === 60 ? 0 : roundedMinutes;
-          newHours = hours + (roundedMinutes === 60 ? 1 : 0);
-          
-          // Provjera da ne prijeđemo 22:00
-          if (newHours > 22 || (newHours === 22 && newMinutes > 0)) {
-            newHours = 22;
-            newMinutes = 0;
-          }
-        }
-        
-        // Formatiranje za prikaz u inputu (dodajemo vodeće nule)
-        const formattedTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
-        
-        setBilling((prev) => ({ ...prev, [name]: formattedTime }));
-        return;
-      }
-    }
-    
     setBilling((prev) => ({ ...prev, [name]: value }));
 
-    // Check if date is changing
-    if (name === "delivery_date" && value) {
-      const needsWarning = checkDeliveryDateWarning(value);
-      setShowDeliveryWarning(needsWarning);
-      setHasCheckedDeliveryDate(true);
+    // When delivery date or marina changes, fetch available time slots
+    if ((name === "delivery_date" && value) || (name === "marina" && value)) {
+      if (billing.delivery_date && (name === "marina" || billing.marina)) {
+        fetchAvailableTimeSlots(name === "delivery_date" ? value : billing.delivery_date, name === "marina" ? value : billing.marina);
+      }
 
-      if (!needsWarning) {
-        setValidationErrors(prev => {
-          const updated = { ...prev };
-          ["marina", "charter", "boat", "gate", "delivery_time"].forEach(field => {
-            delete updated[field];
+      // Check if date is changing
+      if (name === "delivery_date" && value) {
+        const needsWarning = checkDeliveryDateWarning(value);
+        setShowDeliveryWarning(needsWarning);
+        setHasCheckedDeliveryDate(true);
+
+        if (!needsWarning) {
+          setValidationErrors(prev => {
+            const updated = { ...prev };
+            ["charter", "boat", "gate"].forEach(field => {
+              delete updated[field];
+            });
+            return updated;
           });
-          return updated;
-        });
-      }  
+        }
+      }
     }
   };
 
+  // Function to fetch available time slots based on delivery date and marina
+  const fetchAvailableTimeSlots = useCallback(async (date, marina) => {
+    if (!date || !marina) return;
+    
+    setLoadingTimeSlots(true);
+    try {
+      const response = await fetch(`${backendUrl}/wp-json/wc-delivery/v1/available-slots`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ delivery_date: date, marina: marina }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        setAvailableTimeSlots(data.available_slots || []);
+        if (billing.delivery_time && !data.available_slots.includes(billing.delivery_time)) {
+          setBilling(prev => ({ ...prev, delivery_time: '' }));
+        }
+      } else {
+        console.error('Error fetching time slots:', data.message);
+        setAvailableTimeSlots([]);
+      }
+    } catch (error) {
+      console.error('Error fetching time slots:', error);
+      setAvailableTimeSlots([]);
+    } finally {
+      setLoadingTimeSlots(false);
+    }
+  }, [billing.delivery_time, setBilling]);
+  
   
   const getMinDate = () => {
     const today = new Date();
@@ -97,21 +116,18 @@ const DeliveryDetailsStep = ({
     });
   };
 
-  // Update delivery warning when component mounts
+  // Update delivery warning and fetch time slots when component mounts or relevant fields change
   useEffect(() => {
     if (billing.delivery_date) {
       const needsWarning = checkDeliveryDateWarning(billing.delivery_date);
       setShowDeliveryWarning(needsWarning);
+      
+      // Fetch available time slots if both date and marina are selected
+      if (billing.marina) {
+        fetchAvailableTimeSlots(billing.delivery_date, billing.marina);
+      }
     }
-  }, [billing.delivery_date, checkDeliveryDateWarning, setShowDeliveryWarning]);
-
-  const availableMarinas = [
-    "Marina Kaštela",
-    "Marina Trogir (SCT)",
-    "Marina Baotić",
-    "Marina Kremik",
-    "Marina Frapa Rogoznica"
-  ];
+  }, [billing.delivery_date, billing.marina, checkDeliveryDateWarning, setShowDeliveryWarning, fetchAvailableTimeSlots]);
   
   // Dobivanje današnjeg datuma za prikaz
   const today = new Date().toLocaleDateString('en-GB', { 
@@ -148,7 +164,6 @@ const DeliveryDetailsStep = ({
         </div>
       )}
 
-
       <form className="needs-validation">
         <div className="row g-3">
           <div className="col-md-6">
@@ -178,36 +193,9 @@ const DeliveryDetailsStep = ({
           </div>
 
           <div className="col-md-6">
-            <label htmlFor="delivery_time" className="form-label">
-              Preferred Delivery Time
-              {showWarning && <span className="text-danger ms-1">*</span>}
-            </label>
-            <input
-              type="time"
-              min="08:00"
-              max="22:00"
-              step="1800"
-              className={`form-control ${errors.delivery_time ? 'is-invalid' : ''}`}
-              id="delivery_time"
-              name="delivery_time"
-              value={billing.delivery_time || ''}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
-            <small className="form-text text-muted">
-              Available times: 08:00 to 22:00, every 30 minutes
-            </small>
-            {errors.delivery_time && (
-              <div className="invalid-feedback">{errors.delivery_time}</div>
-            )}
-          </div>
-
-          <div className="col-md-6">
             <label htmlFor="marina" className="form-label">
               Marina
-              {showWarning && <span className="text-danger ms-1">*</span>}
-              {!showWarning && <span className="optional-label">(optional)</span>}
+              <span className="text-danger ms-1">*</span>
             </label>
             <select
               className={`form-select ${errors.marina ? 'is-invalid' : ''}`}
@@ -229,6 +217,49 @@ const DeliveryDetailsStep = ({
           </div>
 
           <div className="col-md-6">
+            <label htmlFor="delivery_time" className="form-label">
+              Preferred Delivery Time
+              <span className="text-danger ms-1">*</span>
+            </label>
+            <select
+              className={`form-select ${errors.delivery_time ? 'is-invalid' : ''}`}
+              id="delivery_time"
+              name="delivery_time"
+              value={billing.delivery_time || ''}
+              onChange={handleChange}
+              disabled={isSubmitting || loadingTimeSlots || !billing.marina || !billing.delivery_date}
+              required
+            >
+              <option value="">Select time slot</option>
+              {loadingTimeSlots ? (
+                <option value="" disabled>Loading available time slots...</option>
+              ) : (
+                availableTimeSlots.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                ))
+              )}
+            </select>
+            {!billing.marina && (
+              <small className="form-text text-muted">
+                Please select a marina first to see available time slots
+              </small>
+            )}
+            {!billing.delivery_date && billing.marina && (
+              <small className="form-text text-muted">
+                Please select a delivery date to see available time slots
+              </small>
+            )}
+            {billing.marina && billing.delivery_date && availableTimeSlots.length === 0 && !loadingTimeSlots && (
+              <small className="form-text text-muted">
+                No time slots available for this date and marina
+              </small>
+            )}
+            {errors.delivery_time && (
+              <div className="invalid-feedback">{errors.delivery_time}</div>
+            )}
+          </div>
+
+          <div className="col-md-6">
             <label htmlFor="charter" className="form-label">
               Charter
               {showWarning && <span className="text-danger ms-1">*</span>}
@@ -243,7 +274,7 @@ const DeliveryDetailsStep = ({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Croatia Yachting"
-              required
+              required={showWarning}
             />
             {errors.charter && (
               <div className="invalid-feedback">{errors.charter}</div>
@@ -265,7 +296,7 @@ const DeliveryDetailsStep = ({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Bavaria 46 'Sea Dream'"
-              required
+              required={showWarning}
             />
             {errors.boat && (
               <div className="invalid-feedback">{errors.boat}</div>
@@ -287,7 +318,7 @@ const DeliveryDetailsStep = ({
               onChange={handleChange}
               disabled={isSubmitting}
               placeholder="e.g. Gate B"
-              required
+              required={showWarning}
             />
             {errors.gate && (
               <div className="invalid-feedback">{errors.gate}</div>
@@ -326,6 +357,14 @@ const DeliveryDetailsStep = ({
             onClick={() => {
               if (!billing.delivery_date) {
                 alert("Please select a delivery date.");
+                return;
+              }
+              if (!billing.marina) {
+                alert("Please select a marina.");
+                return;
+              }
+              if (!billing.delivery_time) {
+                alert("Please select a delivery time.");
                 return;
               }
               nextStep();

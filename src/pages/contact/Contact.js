@@ -144,7 +144,7 @@ const ContactForm = () => {
                   required
                 />
                 <label className="form-check-label" htmlFor="privacyConsent">
-                  I agree to the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>.
+                  I agree to the <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-prim">privacy policy</a>.
                 </label>
               </div>
 
