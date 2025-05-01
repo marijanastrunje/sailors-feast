@@ -1,7 +1,16 @@
 import React from "react";
+import PhoneInput from 'react-phone-input-2';
 import "./ProfileData.css";
 
 const ProfileData = ({ billing, setBilling, saveUserData }) => {
+  const handlePhoneChange = (value, country) => {
+    setBilling((prev) => ({ 
+      ...prev, 
+      phone: value,
+      country_code: `+${country.dialCode}`
+    }));
+  };
+
   return (
     <div className="col-12 col-md-8 mx-auto mt-5 p-3">
       <h2 className="mb-3">Personal Information</h2>
@@ -42,13 +51,24 @@ const ProfileData = ({ billing, setBilling, saveUserData }) => {
 
         <div className="col-12">
           <label htmlFor="phone" className="form-label">Phone</label>
-          <input
-            id="phone"
-            type="text"
-            className="form-control"
-            value={billing.phone}
-            onChange={(e) => setBilling((prev) => ({ ...prev, phone: e.target.value }))}
-          />
+          <div className="phone-input-container">
+            <PhoneInput
+              country={'hr'}
+              autoFormat={false}
+              value={billing.phone || ''}
+              onChange={handlePhoneChange}
+              placeholder=""
+              inputProps={{
+                name: 'phone',
+                required: false,
+                autoComplete: 'tel',
+                className: 'form-control'
+              }}
+              containerClass=""
+              buttonClass="custom-flag-button"
+              dropdownClass="custom-dropdown"
+            />
+          </div>
         </div>
 
         <div className="col-6">

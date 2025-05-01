@@ -1,7 +1,9 @@
+// Updated PaymentStep component with PayPal message inside the payment option
 import React from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faExclamationTriangle, faCreditCard, faUniversity, faMoneyBillWave } from "@fortawesome/free-solid-svg-icons";
+import { faPaypal } from "@fortawesome/free-brands-svg-icons";
 
 const PaymentStep = ({ 
   billing, 
@@ -13,7 +15,10 @@ const PaymentStep = ({
   setSelectedPaymentMethod,
   showDeliveryWarning,
   deliveryDate,
-  error
+  error,
+  handlePaypalPayment, 
+  orderId, 
+  totalPrice
 }) => {
 
   const userType = localStorage.getItem("user_type");
@@ -43,7 +48,7 @@ const PaymentStep = ({
   const paymentDeadline = getPaymentDeadline();
   const requiresImmediatePayment = isImmediatePaymentRequired();
   
-  // Dobivanje odgovarajućeg teksta gumba ovisno o metodi plaćanja
+  // Get appropriate button text based on payment method
   const getButtonText = () => {
     if (isSubmitting) {
       return (
@@ -53,6 +58,8 @@ const PaymentStep = ({
         </>
       );
     } else if (selectedPaymentMethod === 'vivawallet') {
+      return "Pay Now";
+    } else if (selectedPaymentMethod === 'paypal') {
       return "Pay Now";
     } else if (selectedPaymentMethod === 'cash') {
       return "Complete Order";
@@ -83,7 +90,8 @@ const PaymentStep = ({
                 Since your delivery date is more than 7 days away, you can:
               </p>
               <ul className="mb-0 mt-2">
-                <li>Pay now using credit/debit card, or</li>
+                <li>Pay now using credit/debit card via Viva Wallet, or</li>
+                <li>Pay now using PayPal, or</li>
                 <li>Pay later by bank transfer (before the deadline)</li>
                 {userType === "crew" && <li>Pay in cash on delivery (crew members only)</li>}
               </ul>
@@ -141,11 +149,42 @@ const PaymentStep = ({
               </p>
             )}
           </div>
+
+          {/* PayPal option */}
+          <div 
+            className={`payment-option rounded border p-3 mb-3 ${selectedPaymentMethod === 'paypal' ? 'border-primary shadow-sm' : ''}`}
+            onClick={() => setSelectedPaymentMethod('paypal')}
+            style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+          >
+            <div className="d-flex align-items-center">
+              <input
+                type="radio"
+                id="paypal"
+                name="payment_method"
+                checked={selectedPaymentMethod === 'paypal'}
+                onChange={() => setSelectedPaymentMethod('paypal')}
+                className="me-3"
+              />
+              <label htmlFor="paypal" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
+                <FontAwesomeIcon icon={faPaypal} className="me-3 text-primary" />
+                <div>
+                  <span className="fw-bold">Pay Now with PayPal</span>
+                  <small className="d-block text-muted">Fast and secure payment</small>
+                </div>
+              </label>
+              <img src="/img/payment/paypal.png" alt="PayPal" className="ms-auto" height="30" />
+            </div>
+            {selectedPaymentMethod === 'paypal' && (
+              <p className="small text-muted mt-2 ms-4 ps-3">
+                You will be redirected to PayPal's secure payment page to complete your payment.
+              </p>
+            )}
+          </div>
           
           {/* Bank Transfer option - only available for orders more than 7 days before delivery */}
           {!requiresImmediatePayment && (
             <div 
-              className={`payment-option rounded border p-3 ${selectedPaymentMethod === 'banktransfer' ? 'border-primary shadow-sm' : ''}`}
+              className={`payment-option rounded border p-3 mb-3 ${selectedPaymentMethod === 'banktransfer' ? 'border-primary shadow-sm' : ''}`}
               onClick={() => setSelectedPaymentMethod('banktransfer')}
               style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
             >

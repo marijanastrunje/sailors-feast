@@ -5,26 +5,31 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 const GuestRegistrationModal = ({ show, onClose, onRegister, userInfo, isSubmitting }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Validate password
+
+    if (!userType) {
+      setError("Please select a user type");
+      return;
+    }
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    
+
     setError("");
-    onRegister(password);
+    onRegister(password, userType);
   };
 
   const togglePasswordVisibility = () => {
@@ -43,24 +48,24 @@ const GuestRegistrationModal = ({ show, onClose, onRegister, userInfo, isSubmitt
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Create Your Account</h5>
-            <button 
-              type="button" 
-              className="btn-close" 
-              aria-label="Close" 
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Close"
               onClick={onClose}
               disabled={isSubmitting}
             ></button>
           </div>
-          
+
           <div className="modal-body">
             <div className="alert alert-success">
               <p className="mb-0">Your order has been placed successfully!</p>
             </div>
-            
+
             <p>
               Would you like to create an account to track your orders and save your information for future purchases?
             </p>
-            
+
             <div className="mb-3">
               <strong>Your information:</strong>
               <ul className="list-unstyled ms-3">
@@ -68,12 +73,46 @@ const GuestRegistrationModal = ({ show, onClose, onRegister, userInfo, isSubmitt
                 <li><strong>Name:</strong> {userInfo.firstName} {userInfo.lastName}</li>
               </ul>
             </div>
-            
+
             {error && (
               <div className="alert alert-danger py-2">{error}</div>
             )}
-            
+
             <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label">User Type</label>
+                <div className="d-flex gap-3">
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      id="guest"
+                      name="userType"
+                      className="form-check-input"
+                      value="guest"
+                      checked={userType === "guest"}
+                      onChange={(e) => setUserType(e.target.value)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <label className="form-check-label" htmlFor="guest">Guest</label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      type="radio"
+                      id="crew"
+                      name="userType"
+                      className="form-check-input"
+                      value="crew"
+                      checked={userType === "crew"}
+                      onChange={(e) => setUserType(e.target.value)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <label className="form-check-label" htmlFor="crew">Crew</label>
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">Set Password</label>
                 <div className="input-group">
@@ -98,7 +137,7 @@ const GuestRegistrationModal = ({ show, onClose, onRegister, userInfo, isSubmitt
                   </button>
                 </div>
               </div>
-              
+
               <div className="mb-3">
                 <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                 <div className="input-group">
@@ -125,19 +164,19 @@ const GuestRegistrationModal = ({ show, onClose, onRegister, userInfo, isSubmitt
               </div>
             </form>
           </div>
-          
+
           <div className="modal-footer">
-            <button 
-              type="button" 
-              className="btn btn-outline-secondary" 
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
               onClick={onClose}
               disabled={isSubmitting}
             >
               No thanks
             </button>
-            <button 
-              type="button" 
-              className="btn btn-prim" 
+            <button
+              type="button"
+              className="btn btn-prim"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >

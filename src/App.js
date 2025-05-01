@@ -32,6 +32,7 @@ const Checkout = lazy(() => import('./pages/cart-checkout/Checkout'));
 const UserDashboard = lazy(() => import('./pages/login/user-dash/userDashboard'));
 const Success = lazy(() => import('./pages/cart-checkout/Success'));
 const Failure = lazy(() => import('./pages/cart-checkout/Failure'));
+const PayPalSuccess = lazy(() => import('./pages/cart-checkout/PayPalSuccess'));
 const AddRecipe = lazy(() => import('./pages/recipes/add-recipe/AddRecipe'));
 const AddBlogPost = lazy(() => import('./pages/blog/AddBlogPost'));
 const PrivacyPolicyPage = lazy(() => import('./pages/pp-tc/PrivacyPolicy'));
@@ -97,6 +98,7 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/success" element={<Success />} />
+                <Route path="/order-success/:orderId" element={<PayPalSuccess />} />
                 <Route path="/failure" element={<Failure />} />
                 <Route path="/user" element={<UserDashboard />} />
                 <Route path="/addrecipe" element={<AddRecipe />} />

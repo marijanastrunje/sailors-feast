@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoon, faSun, faClipboard } from "@fortawesome/free-solid-svg-icons";
 import RecipeTags from "../recipes/recipe-card/RecipeTags";
 import RecommendedBoxes from './RecommendedBoxes';
 import MediaImg from "../../components/common/media/MediaImg";
@@ -18,6 +20,8 @@ const RecipeDetails = () => {
   const [originalServings, setOriginalServings] = useState(0);
   const [screenWakeLock, setScreenWakeLock] = useState(null);
   const [wakeLockActive, setWakeLockActive] = useState(false);
+  const [copiedIngredients, setCopiedIngredients] = useState(false);
+  const [copiedInstructions, setCopiedInstructions] = useState(false);
 
   // Reference za praćenje brojača koraka
   const stepNumbersRef = useRef({});
@@ -212,6 +216,8 @@ const RecipeDetails = () => {
     });
     
     navigator.clipboard.writeText(text.trim());
+    setCopiedInstructions(true);
+    setTimeout(() => setCopiedInstructions(false), 2000);
   };
 
   const copyIngredients = () => {
@@ -234,6 +240,8 @@ const RecipeDetails = () => {
     });
     
     navigator.clipboard.writeText(text.trim());
+    setCopiedIngredients(true);
+    setTimeout(() => setCopiedIngredients(false), 2000);
   };
 
   // Funkcije za upravljanje brojem porcija
@@ -325,6 +333,7 @@ const RecipeDetails = () => {
               title={wakeLockActive ? "Screen will stay on" : "Click to keep screen on"}
               aria-label={wakeLockActive ? "Deactivate keep screen on" : "Activate keep screen on"}
            >
+              <FontAwesomeIcon icon={wakeLockActive ? faSun : faMoon} className="me-1" />
               {wakeLockActive ? "Screen On" : "Keep Screen On"}
             </button>
           </div>
@@ -407,10 +416,11 @@ const RecipeDetails = () => {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="h4 mb-0">Ingredients</h3>
               <button
-                className="btn btn-sm btn-outline-secondary"
+                className={`btn btn-sm recipe-copy-btn ${copiedIngredients ? 'btn-success' : 'btn-outline-secondary'}`}
                 onClick={copyIngredients}
               >
-                Copy
+                <FontAwesomeIcon icon={faClipboard} className="me-1" />
+                {copiedIngredients ? 'Copied!' : 'Copy'}
               </button>
             </div>
 
@@ -447,10 +457,11 @@ const RecipeDetails = () => {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="h4 mb-0">Instructions</h3>
               <button
-                className="btn btn-sm btn-outline-secondary"
+                className={`btn btn-sm recipe-copy-btn ${copiedInstructions ? 'btn-success' : 'btn-outline-secondary'}`}
                 onClick={copyInstructions}
               >
-                Copy
+                <FontAwesomeIcon icon={faClipboard} className="me-1" />
+                {copiedInstructions ? 'Copied!' : 'Copy'}
               </button>
             </div>
 

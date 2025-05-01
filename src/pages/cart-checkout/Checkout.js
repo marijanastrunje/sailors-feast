@@ -1,3 +1,4 @@
+// Fixed Checkout component with proper PayPal integration
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBillingData from "./useBillingData";
@@ -7,6 +8,7 @@ import PersonalDetailsStep from "./checkout-steps/PersonalDetailsStep";
 import DeliveryDetailsStep from "./checkout-steps/DeliveryDetailsStep";
 import PaymentStep from "./checkout-steps/PaymentStep";
 import QRCodePayment from "./QRCodePayment";
+import PayPalSuccess from "./PayPalSuccess";
 import GuestRegistrationModal from "./checkout-steps/GuestRegistrationModal";
 import "./CheckoutSteps.css";
 
@@ -59,9 +61,24 @@ const Checkout = () => {
   // Check for payment failure from URL
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    
+    // Provjeri za neuspjelo plaćanje
     if (params.get("payment") === "failed") {
       setPaymentFailed(true);
-      setCurrentStep(3); // Go directly to payment step
+      setCurrentStep(3); 
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Provjeri je li korisnik vratio s PayPal-a nakon uspješne uplate
+    if (params.get("paypal") === "success") {
+      const pathParts = location.pathname.split('/');
+      const orderId = pathParts[pathParts.length - 1];
+      
+      if (orderId) {
+        setOrderId(orderId);
+        setOrderCreated(true);
+        setSelectedPaymentMethod("paypal");
+      }
     }
   }, [location]);
 
@@ -148,36 +165,35 @@ const Checkout = () => {
   };
 
   // Handle guest registration after successful order
-  const handleGuestRegistration = async (password) => {
+  const handleGuestRegistration = async (password, userType) => {
     if (!billing.email || !billing.first_name || !billing.last_name) {
       alert("Missing required user information.");
       return;
     }
-
+  
     try {
       setIsSubmitting(true);
-      
-      // Create a new user
+  
       const registerData = {
         username: billing.email,
         email: billing.email,
         password: password,
         first_name: billing.first_name,
-        last_name: billing.last_name
+        last_name: billing.last_name,
+        meta: { user_type: userType }
       };
-      
+  
       const registerResponse = await fetch(`${backendUrl}/wp-json/simple-jwt-login/v1/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(registerData)
       });
-      
+  
       if (!registerResponse.ok) {
         const errorData = await registerResponse.json();
         throw new Error(errorData.message || "Failed to create account.");
       }
-      
-      // After registration, authenticate the user
+  
       const loginResponse = await fetch(`${backendUrl}/wp-json/jwt-auth/v1/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -186,18 +202,17 @@ const Checkout = () => {
           password: password
         })
       });
-      
+  
       const loginData = await loginResponse.json();
-      
+  
       if (loginData.token) {
-        // Login successful, save data to local storage
         localStorage.setItem("token", loginData.token);
         localStorage.setItem("username", loginData.user_display_name);
         localStorage.setItem("user_email", billing.email);
-
+        localStorage.setItem("user_type", userType);
+  
         window.dispatchEvent(new Event("userLogin"));
-        
-        // Associate guest order with new user
+  
         if (orderId) {
           await fetch(`${backendUrl}/wp-json/sailorsfeast/v1/associate-order`, {
             method: "POST",
@@ -217,6 +232,7 @@ const Checkout = () => {
       setShowRegistrationModal(false);
     }
   };
+  
 
   // Create order in WooCommerce
   const createOrder = async () => {
@@ -240,15 +256,21 @@ const Checkout = () => {
       }
     }
 
+    // Set payment method to PayPal when creating order for PayPal payment
+    const paymentMethod = selectedPaymentMethod === "paypal" ? "paypal" : selectedPaymentMethod;
+    const paymentMethodTitle = selectedPaymentMethod === "vivawallet" 
+      ? "Viva Wallet" 
+      : selectedPaymentMethod === "cash"
+        ? "Cash on Delivery"
+        : selectedPaymentMethod === "paypal"
+          ? "PayPal"
+          : "Bank Transfer";
+
     // Prepare order data
     const orderData = {
       customer_id: userId || 0, // Use 0 for guest checkout
-      payment_method: selectedPaymentMethod === "cash" ? "cod" : selectedPaymentMethod,
-      payment_method_title: selectedPaymentMethod === "vivawallet" 
-        ? "Viva Wallet" 
-        : selectedPaymentMethod === "cash"
-          ? "Cash on Delivery"
-          : "Bank Transfer",
+      payment_method: paymentMethod === "cash" ? "cod" : paymentMethod,
+      payment_method_title: paymentMethodTitle,
       set_paid: false,
       status: selectedPaymentMethod === "banktransfer" ? "on-hold" : selectedPaymentMethod === "cash" ? "processing" : "pending", 
       billing: {
@@ -369,14 +391,14 @@ const Checkout = () => {
 
   const handleCashPayment = async () => {
     setIsSubmitting(true);
-    const orderId = await createOrder(); // Ova funkcija već postavlja payment_method: selectedPaymentMethod
+    const orderId = await createOrder();
     if (!orderId) {
       setIsSubmitting(false);
       return;
     }
   
     try {
-      // Ažurirajte status narudžbe na "processing" umjesto "pending"
+      // Update order status to "processing"
       const updateResponse = await fetch(`${backendUrl}/wp-json/wc/v3/orders/${orderId}?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -387,19 +409,19 @@ const Checkout = () => {
         throw new Error("Failed to update order status");
       }
       
-      // Očistite košaricu nakon uspješne narudžbe
+      // Clear cart after successful order
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
       
-      // Spremite ID narudžbe u localStorage
+      // Save order ID in localStorage
       localStorage.setItem("lastOrderId", orderId);
       
-      // Ako je guest checkout, ponudite registraciju
+      // If it was a guest checkout, offer registration
       if (isGuestCheckout) {
         setShowRegistrationModal(true);
       }
       
-      // Preusmjerite na stranicu s potvrdom narudžbe
+      // Redirect to order success page
       navigate(`/order-success/${orderId}`);
     } catch (error) {
       console.error("Error processing cash payment:", error.message);
@@ -409,7 +431,7 @@ const Checkout = () => {
   };
 
   // Process payment via Viva Wallet
-  const handlePayment = async () => {
+  const handleVivaPayment = async () => {
     setIsSubmitting(true);
     const orderId = await createOrder();
     if (!orderId) {
@@ -465,24 +487,95 @@ const Checkout = () => {
     }
   };
 
-  // Process the selected payment method
-  const processPayment = () => {
-    if (selectedPaymentMethod === "banktransfer") {
-      handleBankTransfer();
-    } else if (selectedPaymentMethod === "cash") {
-      handleCashPayment();
-    } else {
-      handlePayment();
+  // Handle PayPal payment completion
+  const handlePaypalPayment = async () => {
+    setIsSubmitting(true);
+    const orderId = await createOrder();
+    if (!orderId) {
+      setIsSubmitting(false);
+      return;
+    }
+  
+    localStorage.setItem("lastOrderId", orderId);
+  
+    try {
+
+      sessionStorage.setItem("guest_checkout", isGuestCheckout ? "true" : "false");
+
+      const response = await fetch(`${backendUrl}/wp-json/paypal/v1/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalPrice,
+          orderId: orderId,
+          returnUrl: `${window.location.origin}/order-success/${orderId}?paypal=success`,
+          cancelUrl: `${window.location.origin}/checkout?payment=failed`
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to create PayPal order");
+      }
+  
+      const data = await response.json();
+      
+      if (data.approvalUrl) {
+        window.location.href = data.approvalUrl;
+      } else {
+        throw new Error("No approval URL received from PayPal");
+      }
+    } catch (error) {
+      console.error("PayPal payment error:", error.message);
+      alert("There was an error initiating PayPal payment.");
+      setIsSubmitting(false);
     }
   };
+  
 
+  // Process the selected payment method
+
+  const processPayment = async () => {
+    if (selectedPaymentMethod === "banktransfer") {
+      await handleBankTransfer();
+    } else if (selectedPaymentMethod === "cash") {
+      await handleCashPayment();
+    } else if (selectedPaymentMethod === "paypal") {
+      await handlePaypalPayment();
+    } else {
+      await handleVivaPayment();
+    }
+  };
+  
   // Render current step
   const renderStep = () => {
-    // If we've already created the order and selected bank transfer, show QR code
-    if (orderCreated && selectedPaymentMethod === "banktransfer" && qrCodeData) {
-      return <QRCodePayment qrData={qrCodeData} orderId={orderId} isGuestCheckout={isGuestCheckout} hasAccount={!!token} onShowRegistrationModal={() => setShowRegistrationModal(true)} />;
+    const params = new URLSearchParams(location.search);
+    const isPayPalSuccess = params.get("paypal") === "success";
+
+    if (isPayPalSuccess && orderCreated) {
+      return (
+        <PayPalSuccess
+          orderId={orderId}
+          isGuestCheckout={isGuestCheckout}
+          hasAccount={!!token}
+          onShowRegistrationModal={() => setShowRegistrationModal(true)}
+          showRegistrationModal={showRegistrationModal}
+        />
+      );
     }
 
+    // Ako je bank transfer
+    if (orderCreated && selectedPaymentMethod === "banktransfer" && qrCodeData) {
+      return (
+        <QRCodePayment 
+          qrData={qrCodeData}
+          orderId={orderId}
+          isGuestCheckout={isGuestCheckout}
+          hasAccount={!!token}
+          onShowRegistrationModal={() => setShowRegistrationModal(true)}
+        />
+      );
+    }
+    
     switch (currentStep) {
       case 1:
         return (
@@ -517,12 +610,15 @@ const Checkout = () => {
             billing={billing}
             setBilling={setBilling}
             handlePayment={processPayment}
+            handlePaypalPayment={handlePaypalPayment}
             prevStep={prevStep}
             isSubmitting={isSubmitting}
             selectedPaymentMethod={selectedPaymentMethod}
             setSelectedPaymentMethod={setSelectedPaymentMethod}
             showDeliveryWarning={showDeliveryWarning}
             deliveryDate={billing.delivery_date}
+            orderId={orderId}
+            totalPrice={totalPrice}
           />
         );
       default:

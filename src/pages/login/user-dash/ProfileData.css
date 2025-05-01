@@ -1,0 +1,59 @@
+/* Phone input container */
+.phone-input-container {
+    display: flex;
+    width: 100%;
+  }
+  
+  /* Osnovni kontejner za react-phone-input-2 */
+  .phone-input-container .react-tel-input {
+    display: flex;
+    width: 100%;
+  }
+  
+  /* Input polje telefona */
+  .phone-input-container .react-tel-input .form-control {
+    flex: 1;
+    width: 100% !important;
+    border-radius: 0 0.25rem 0.25rem 0 !important;
+    height: calc(1.5em + 0.75rem + 2px) !important; /* Uskladi s Bootstrap form-control */
+  }
+  
+  /* Gumb sa zastavicom */
+  .custom-flag-button {
+    border: 1px solid #ced4da !important;
+    border-right: none !important;
+    background: white !important;
+    border-radius: 0.25rem 0 0 0.25rem !important;
+    padding: 6px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+  }
+  
+  /* Flag dropdown */
+  .react-tel-input .flag-dropdown {
+    border: none !important;
+    background: transparent !important;
+  }
+  
+  /* Selected flag */
+  .react-tel-input .selected-flag {
+    padding: 0 !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* Arrow u flag dropdown */
+  .react-tel-input .selected-flag .arrow {
+    border-top: 4px solid #555 !important;
+    left: 25px !important;
+  }
+  
+  /* Custom dropdown za države */
+  .custom-dropdown {
+    z-index: 1000 !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    width: 300px !important;
+  }
