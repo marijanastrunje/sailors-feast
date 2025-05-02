@@ -1,0 +1,30 @@
+/* Aktivni tab za mobilne uređaje */
+.nav-pills .nav-link.active {
+    background-color: #CC4425;
+    color: white;
+  }
+  
+  /* Neaktivni tab za mobilne uređaje */
+  .nav-link, .nav-link:hover {
+    color: #333;
+    background-color: transparent;
+  }
+  
+  /* Aktivni item za sidebar na desktop verziji */
+  .list-group-item.active {
+    background-color: #CC4425;
+    color: white;
+    border: 1px solid #dee2e6;
+  }
+  
+  /* Neaktivni item za sidebar na desktop verziji */
+  .list-group-item {
+    background-color: transparent;
+    color: #333;
+    border: 1px solid #dee2e6;
+  }
+  
+  /* Sticky sidebar za desktop */
+  .position-sticky {
+    top: 100px;
+  }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Faq from "../../components/common/Faq";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import SEO from "../../components/common/SEO";
 import "./AllBoxes.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -43,6 +44,14 @@ const AllBoxes = () => {
   }, []);
 
   return (
+    <>
+    <SEO
+      title="All boxes | Sailor's Feast"
+      description="Check out our fun and tasty Sailor's Feast food boxes! Get snacks, drinks, and more delivered right to your boat in Croatia."
+      keywords={['food boxes', 'boat snacks', 'sailing Croatia', 'yacht food', 'Sailor\'s Feast']}
+      path="/all-boxes"
+    />
+
     <div className="container pb-3">
       <div className="pricing-header p-3 pb-md-4 mx-auto text-center">
         <h1>Pricing</h1>
@@ -81,9 +90,9 @@ const AllBoxes = () => {
         })}
       </div>
 
-      <h2 className="display-6 text-center mb-md-5 pt-md-5">Compare</h2>
+      <h2 className="display-6 text-center mb-md-5 pt-md-5 d-none">Compare</h2>
 
-      <div className="table-responsive">
+      <div className="table-responsive d-none">
         <table className="table text-center">
           <thead>
             <tr>
@@ -137,6 +146,7 @@ const AllBoxes = () => {
       </div>
       <ScrollToTopButton />
     </div>
+    </>
   );
 };
 

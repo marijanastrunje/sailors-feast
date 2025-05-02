@@ -5,6 +5,7 @@ import RecipeCard from "./recipe-card/RecipeCard";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import RecipeSlider from "./RecipeSlider";
 import Pagination from "../../components/ui/Pagination";
+import SEO from "../../components/common/SEO";
 import Select from "react-select";
 import './RecipesPage.css'
 
@@ -365,164 +366,177 @@ const RecipesPage = () => {
   }, [selectedOptions, cookingTime, cookingMethod, filters, resetFilters, handleMultiSelectChange]);
 
   return (
-    <section id="recipes" className="container py-2">
-      <h1 className="text-center mb-4">All Recipes</h1>
+    <>
+      <SEO
+        title="Recipes | Sailor's Feast"
+        description="Discover a collection of easy, delicious recipes perfect for your sailing trip in Croatia. Filter by type, diet, cooking method and more!"
+        keywords={[
+          "boat recipes",
+          "easy recipes",
+          "Croatian food",
+          "sailing meals",
+        ]}
+        path="/recipes"
+      />
+      <section id="recipes" className="container py-2">
+        <h1 className="text-center mb-4">All Recipes</h1>
 
-      <div className="container d-flex justify-content-center">
-        {/* Vrijeme dropdown */}
-        <div ref={timeRef} className="position-relative">
-          <div className="position-relative">
-            <button
-              className={`btn btn-lg btn-outline-secondary me-2 rounded-pill d-flex align-items-center gap-2 ${cookingTime.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
-              onClick={toggleTimeDropdown}
-            >
-              <FontAwesomeIcon icon={faClock} />
-              <span className="d-none d-sm-block">Time</span>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={`transition-icon ${showTimeDropdown ? "rotate" : ""}`}
-              />
-            </button>
+        <div className="container d-flex justify-content-center">
+          {/* Vrijeme dropdown */}
+          <div ref={timeRef} className="position-relative">
+            <div className="position-relative">
+              <button
+                className={`btn btn-lg btn-outline-secondary me-2 rounded-pill d-flex align-items-center gap-2 ${cookingTime.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
+                onClick={toggleTimeDropdown}
+              >
+                <FontAwesomeIcon icon={faClock} />
+                <span className="d-none d-sm-block">Time</span>
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={`transition-icon ${showTimeDropdown ? "rotate" : ""}`}
+                />
+              </button>
 
-            {showTimeDropdown && (
-              <div className="dropdown-menu show p-2 mt-1" style={{ display: "block" }}>
-                {cookingTimeOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    className={`dropdown-item ${cookingTime.includes(opt.value) ? "active" : ""}`}
-                    onClick={() => handleTimeSelect(opt.value)}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>  
-
-        {/* Method */}
-        <div ref={methodRef} className="position-relative">
-          <div className="position-relative">
-            <button
-              className={`btn btn-lg rounded-pill me-2 d-flex align-items-center gap-2 ${cookingMethod.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
-              onClick={toggleMethodDropdown}
-            >
-              <FontAwesomeIcon icon={faSpoon} />
-              <span className="d-none d-sm-block">Method</span>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={`transition-icon ${showMethodDropdown ? "rotate" : ""}`}
-              />
-            </button>
-
-            {showMethodDropdown && (
-              <div className="dropdown-menu show p-2 mt-1" style={{ display: "block" }}>
-                {methodOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    className={`dropdown-item d-flex align-items-center gap-2 ${cookingMethod.includes(opt.value) ? "active" : ""}`}
-                    onClick={() => handleMethodSelect(opt.value)}
-                  >
-                    <img src={opt.icon} alt={opt.label} width={20} height={20} />
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Details */}
-        <div ref={detailsRef} className="position-relative">
-          <div className="position-relative">
-            <button
-              className={`btn btn-lg rounded-pill d-flex align-items-center gap-2 ${Object.values(selectedOptions).some(opts => opts?.length > 0) ? "btn-prim text-white" : "btn-outline-secondary"}`}
-              onClick={toggleDetailsDropdown}
-            >
-              <FontAwesomeIcon icon={faSlidersH} />
-              <span className="d-none d-sm-block">Detail</span>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={`transition-icon ${showDetailsDropdown ? "rotate" : ""}`}
-              />
-            </button>
-
-            {showDetailsDropdown && (
-              <div className="dropdown-menu show p-3 mt-1" style={{ display: "block", minWidth: "300px" }} onClick={(e) => e.stopPropagation()}>
-                {Object.entries(taxonomyFilters).map(([taxonomy, label]) => (
-                  <div key={taxonomy} className="col mb-3">
-                    <label className="form-label fw-semibold">{label}</label>
-                    <Select
-                      isMulti
-                      isSearchable={false}
-                      options={terms[taxonomy]?.map((term) => ({ value: term.id, label: term.name }))}
-                      value={selectedOptions[taxonomy] || []}
-                      onChange={(selected) => handleMultiSelectChange(taxonomy, selected)}
-                      placeholder={`Select ${label}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Active filters */}
-      {renderActiveFilters}
-
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="text-center my-5">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Results */}
-      {!isLoading && (
-        <>
-          {isFiltering ? (
-            <div className="col-md-10 mx-auto">
-              <div className="row recipes-results">
-                {currentRecipes.length > 0 ? (
-                  <>
-                    {currentRecipes.map((recipe) => (
-                      <div key={recipe.id} className="col-6 col-md-4 col-lg-3 mb-4 p-0">
-                        <RecipeCard recipe={recipe} />
-                      </div>
-                    ))}
-                    {totalPages > 1 && (
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div className="text-center my-5">
-                    <p>No recipes found matching your filters.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-center pt-3 my-3">Popular by Category</h2>
-              {categories.map((category) => (
-                <div key={category.id} className="mb-5 col-lg-10 mx-auto">
-                  <h3 className="text-center p-3">{category.name}</h3>
-                  <RecipeSlider categoryId={category.id} />
+              {showTimeDropdown && (
+                <div className="dropdown-menu show p-2 mt-1" style={{ display: "block" }}>
+                  {cookingTimeOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`dropdown-item ${cookingTime.includes(opt.value) ? "active" : ""}`}
+                      onClick={() => handleTimeSelect(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </>
-          )}
-        </>
-      )}
-      <ScrollToTopButton />
-    </section>
+              )}
+            </div>
+          </div>  
+
+          {/* Method */}
+          <div ref={methodRef} className="position-relative">
+            <div className="position-relative">
+              <button
+                className={`btn btn-lg rounded-pill me-2 d-flex align-items-center gap-2 ${cookingMethod.length > 0 ? "btn-prim text-white" : "btn-outline-secondary"}`}
+                onClick={toggleMethodDropdown}
+              >
+                <FontAwesomeIcon icon={faSpoon} />
+                <span className="d-none d-sm-block">Method</span>
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={`transition-icon ${showMethodDropdown ? "rotate" : ""}`}
+                />
+              </button>
+
+              {showMethodDropdown && (
+                <div className="dropdown-menu show p-2 mt-1" style={{ display: "block" }}>
+                  {methodOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`dropdown-item d-flex align-items-center gap-2 ${cookingMethod.includes(opt.value) ? "active" : ""}`}
+                      onClick={() => handleMethodSelect(opt.value)}
+                    >
+                      <img src={opt.icon} alt={opt.label} width={20} height={20} />
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Details */}
+          <div ref={detailsRef} className="position-relative">
+            <div className="position-relative">
+              <button
+                className={`btn btn-lg rounded-pill d-flex align-items-center gap-2 ${Object.values(selectedOptions).some(opts => opts?.length > 0) ? "btn-prim text-white" : "btn-outline-secondary"}`}
+                onClick={toggleDetailsDropdown}
+              >
+                <FontAwesomeIcon icon={faSlidersH} />
+                <span className="d-none d-sm-block">Detail</span>
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={`transition-icon ${showDetailsDropdown ? "rotate" : ""}`}
+                />
+              </button>
+
+              {showDetailsDropdown && (
+                <div className="dropdown-menu show p-3 mt-1" style={{ display: "block", minWidth: "300px" }} onClick={(e) => e.stopPropagation()}>
+                  {Object.entries(taxonomyFilters).map(([taxonomy, label]) => (
+                    <div key={taxonomy} className="col mb-3">
+                      <label className="form-label fw-semibold">{label}</label>
+                      <Select
+                        isMulti
+                        isSearchable={false}
+                        options={terms[taxonomy]?.map((term) => ({ value: term.id, label: term.name }))}
+                        value={selectedOptions[taxonomy] || []}
+                        onChange={(selected) => handleMultiSelectChange(taxonomy, selected)}
+                        placeholder={`Select ${label}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Active filters */}
+        {renderActiveFilters}
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="text-center my-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Results */}
+        {!isLoading && (
+          <>
+            {isFiltering ? (
+              <div className="col-md-10 mx-auto">
+                <div className="row recipes-results">
+                  {currentRecipes.length > 0 ? (
+                    <>
+                      {currentRecipes.map((recipe) => (
+                        <div key={recipe.id} className="col-6 col-md-4 col-lg-3 mb-4 p-0">
+                          <RecipeCard recipe={recipe} />
+                        </div>
+                      ))}
+                      {totalPages > 1 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center my-5">
+                      <p>No recipes found matching your filters.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-center pt-3 my-3">Popular by Category</h2>
+                {categories.map((category) => (
+                  <div key={category.id} className="mb-5 col-lg-10 mx-auto">
+                    <h3 className="text-center p-3">{category.name}</h3>
+                    <RecipeSlider categoryId={category.id} />
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        )}
+        <ScrollToTopButton />
+      </section>
+    </>
   );
 };
 

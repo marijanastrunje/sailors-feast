@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Faq from "../../components/common/Faq";
+import SEO from "../../components/common/SEO";
 
 import './Contact.css'
 
@@ -64,6 +65,19 @@ const ContactForm = () => {
 
   return (
     <>
+      <SEO
+        title="Contact | Sailor's Feast"
+        description="Got questions about your yacht grocery order or delivery in Croatia? Contact us — we're here to help make your sailing trip easy and fun!"
+        keywords={[
+          'contact Sailor\'s Feast',
+          'yacht grocery help',
+          'Croatia boat delivery',
+          'customer support',
+          'sailing groceries'
+        ]}
+        path="/contact"
+      />
+
       <div className="my-5">
         <div className="p-2 text-center bg-contact">
           <div className="container pb-3">

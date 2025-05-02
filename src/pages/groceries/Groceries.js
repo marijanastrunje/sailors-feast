@@ -10,6 +10,7 @@ import Pagination from "../../components/ui/Pagination";
 import ProductsGridSkeleton from './ProductsGridSkeleton';
 import Faq from "../../components/common/Faq";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import SEO from "../../components/common/SEO";
 
 import './Groceries.css';
 
@@ -509,137 +510,151 @@ const Groceries = () => {
   }, []);
 
   return (
-    <div ref={containerRef}>
-      <div className="groceries-hero p-2 text-center" aria-label="Groceries hero section">
-        <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
-        <div className="col-lg-6 mx-auto">
-          <p className="lead mb-4 text-white position-relative z-2">
-          Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
-          </p>
-        </div>
-      </div>
-
-      <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />
-
-      {!isSearchActive && (
-        <>
-          <MobileCategoriesSlider
-            categories={categories}
-            fetchSubcategories={fetchSubcategories}
-            activeCategory={openCategory}
-          />
-
-          <MobileSubcategoriesSlider
-            subcategories={subcategories}
-            openCategory={openCategory}
-            fetchProducts={fetchProducts}
-            excludedSubcategories={[671, 669, 670]}
-            setActiveSubcategoryName={setActiveSubcategoryName}
-            setActiveSubcategory={setActiveSubcategory}
-            activeSubcategory={activeSubcategory}
-          />
-        </>
-      )}
-
-      <div className="container-fluid mx-auto" aria-label="Groceries product section">
-        <div className="row">
-          {!isSearchActive && (
-            <div className="col-sm-4 col-md-3 desktop-scroll d-none d-sm-block">
-              <h5 title="Category list heading">Categories</h5>
-              <CategoriesSidebar
-                categories={categories}
-                openCategory={openCategory}
-                subcategories={subcategories}
-                fetchSubcategories={fetchSubcategories}
-                fetchProducts={(id) => fetchProducts(id, true)}
-                setActiveSubcategoryName={setActiveSubcategoryName}
-                setActiveSubcategory={setActiveSubcategory}
-                activeSubcategory={activeSubcategory}
-              />
-            </div>
-          )}
-
-          <div className={`${isSearchActive ? 'col-12' : 'col-sm-8'} mx-auto px-3`}>
-            {isSearchActive ? (
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>
-                  Search results: <span className="text-prim">"{searchTerm}"</span>
-                  <small className="ms-2 text-muted">({filteredProducts.length})</small>
-                </h2>
-                <button 
-                  className="btn btn-sm btn-outline-secondary" 
-                  onClick={() => {
-                    navigate('/groceries', { replace: true });
-                    setIsSearchActive(false);
-                    setSearchTerm("");
-                    searchInitiatedRef.current = false;
-                  }}
-                >
-                  Clear search
-                </button>
-              </div>
-            ) : (
-              activeSubcategoryName && (
-                <h2 className="mb-3">{activeSubcategoryName}</h2>
-              )
-            )}
-
-            {isLoadingProducts ? (
-              <ProductsGridSkeleton count={16} />
-            ) : (
-              <>
-                {paginatedProducts.length > 0 ? (
-                  <>
-                    <ProductsGrid products={paginatedProducts} onShowModal={handleShowModal} />
-                    {totalPages > 1 && (
-                      <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div className="alert alert-info my-5 text-center">
-                    <h4>No products found</h4>
-                    {isSearchActive && (
-                      <p>
-                        No products match your search term "{searchTerm}".
-                        <br />
-                        <button
-                          className="btn btn-outline-primary mt-3"
-                          onClick={() => {
-                            navigate('/groceries', { replace: true });
-                            setIsSearchActive(false);
-                            setSearchTerm("");
-                            searchInitiatedRef.current = false;
-                          }}
-                        >
-                          Clear search
-                        </button>
-                      </p>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
+    <>
+      <SEO
+        title="Groceries | Sailor's Feast"
+        description="Shop fresh groceries, snacks, and drinks for your sailing trip in Croatia. Get everything delivered right to your boat for an easy, fun vacation!"
+        keywords={[
+          'boat groceries',
+          'sailing snacks',
+          'yacht delivery Croatia',
+          'fresh food on boat',
+          'Sailor\'s Feast groceries'
+        ]}
+        path="/groceries"
+      />
+      <div ref={containerRef}>
+        <div className="groceries-hero p-2 text-center" aria-label="Groceries hero section">
+          <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
+          <div className="col-lg-6 mx-auto">
+            <p className="lead mb-4 text-white position-relative z-2">
+            Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
+            </p>
           </div>
         </div>
 
-        {selectedProduct && (
-          <ModalProduct
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-          />
+        <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />
+
+        {!isSearchActive && (
+          <>
+            <MobileCategoriesSlider
+              categories={categories}
+              fetchSubcategories={fetchSubcategories}
+              activeCategory={openCategory}
+            />
+
+            <MobileSubcategoriesSlider
+              subcategories={subcategories}
+              openCategory={openCategory}
+              fetchProducts={fetchProducts}
+              excludedSubcategories={[671, 669, 670]}
+              setActiveSubcategoryName={setActiveSubcategoryName}
+              setActiveSubcategory={setActiveSubcategory}
+              activeSubcategory={activeSubcategory}
+            />
+          </>
         )}
-      </div>
 
-      <div id="Faq" aria-label="FAQ section">
-        {isVisible.faq && <Faq topicId={195} topic="Groceries" />}
-      </div>
+        <div className="container-fluid mx-auto" aria-label="Groceries product section">
+          <div className="row">
+            {!isSearchActive && (
+              <div className="col-sm-4 col-md-3 desktop-scroll d-none d-sm-block">
+                <h5 title="Category list heading">Categories</h5>
+                <CategoriesSidebar
+                  categories={categories}
+                  openCategory={openCategory}
+                  subcategories={subcategories}
+                  fetchSubcategories={fetchSubcategories}
+                  fetchProducts={(id) => fetchProducts(id, true)}
+                  setActiveSubcategoryName={setActiveSubcategoryName}
+                  setActiveSubcategory={setActiveSubcategory}
+                  activeSubcategory={activeSubcategory}
+                />
+              </div>
+            )}
 
-      <ScrollToTopButton />
-    </div>
+            <div className={`${isSearchActive ? 'col-12' : 'col-sm-8'} mx-auto px-3`}>
+              {isSearchActive ? (
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h2>
+                    Search results: <span className="text-prim">"{searchTerm}"</span>
+                    <small className="ms-2 text-muted">({filteredProducts.length})</small>
+                  </h2>
+                  <button 
+                    className="btn btn-sm btn-outline-secondary" 
+                    onClick={() => {
+                      navigate('/groceries', { replace: true });
+                      setIsSearchActive(false);
+                      setSearchTerm("");
+                      searchInitiatedRef.current = false;
+                    }}
+                  >
+                    Clear search
+                  </button>
+                </div>
+              ) : (
+                activeSubcategoryName && (
+                  <h2 className="mb-3">{activeSubcategoryName}</h2>
+                )
+              )}
+
+              {isLoadingProducts ? (
+                <ProductsGridSkeleton count={16} />
+              ) : (
+                <>
+                  {paginatedProducts.length > 0 ? (
+                    <>
+                      <ProductsGrid products={paginatedProducts} onShowModal={handleShowModal} />
+                      {totalPages > 1 && (
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <div className="alert alert-info my-5 text-center">
+                      <h4>No products found</h4>
+                      {isSearchActive && (
+                        <p>
+                          No products match your search term "{searchTerm}".
+                          <br />
+                          <button
+                            className="btn btn-outline-primary mt-3"
+                            onClick={() => {
+                              navigate('/groceries', { replace: true });
+                              setIsSearchActive(false);
+                              setSearchTerm("");
+                              searchInitiatedRef.current = false;
+                            }}
+                          >
+                            Clear search
+                          </button>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          {selectedProduct && (
+            <ModalProduct
+              product={selectedProduct}
+              onClose={() => setSelectedProduct(null)}
+            />
+          )}
+        </div>
+
+        <div id="Faq" aria-label="FAQ section">
+          {isVisible.faq && <Faq topicId={195} topic="Groceries" />}
+        </div>
+
+        <ScrollToTopButton />
+      </div>
+    </>
   );
 };
 

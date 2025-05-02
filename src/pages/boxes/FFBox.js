@@ -2,11 +2,24 @@ import React from "react";
 import BoxLayout from "./Box";
 import Faq from "../../components/common/Faq";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import SEO from "../../components/common/SEO";
 
 const FFBox = () => {
 
   return (
     <>
+      <SEO
+        title="Friends & Family box | Sailor's Feast"
+        description="Make sailing even more fun with our Friends & Family box! Packed with snacks, drinks, and goodies everyone on board will love, delivered to your boat in Croatia."
+        keywords={[
+          'Friends & Family Box',
+          'boat snacks',
+          'family sailing',
+          'Croatia food delivery',
+          'Sailor\'s Feast'
+        ]}
+        path="/friends-family-box"
+      />
       <BoxLayout
         categoryId={198}
         categoryMapping={{

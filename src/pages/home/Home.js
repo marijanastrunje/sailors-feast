@@ -42,21 +42,13 @@ const Home = () => {
       });
   }, []);
 
-  fetch('https://backend.sailorsfeast.com/wp-json/wp/v2/posts')
-  .then((res) => {
-    if (!res.ok) throw new Error('Nije ok: ' + res.status);
-    return res.json();
-  })
-  .then((data) => console.log(data))
-  .catch((err) => console.error('Fetch error:', err));
-
-
   return (
     <>
-      <SEO 
-        title="Home" 
-        description="Discover fresh food delivery service for sailors. Order groceries and pre-made food boxes delivered directly to your boat in Croatian marinas."
-        keywords={['food delivery', 'sailing', 'Croatia', 'marina delivery', 'fresh groceries']}
+      <SEO
+        title="Sailor's Feast | Fresh food for your boat"
+        description="Sailor's Feast brings fresh food and drinks right to your boat in Croatia. Get groceries and fun snack boxes delivered fast to your marina!"
+        keywords={['boat food delivery', 'sailing Croatia', 'marina groceries', 'yacht snacks', 'Sailor\'s Feast']}
+        path="/"
       />
       
       <Hero />

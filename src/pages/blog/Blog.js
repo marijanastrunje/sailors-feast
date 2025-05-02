@@ -4,6 +4,7 @@ import BlogShortSkeleton from "../../components/blog/BlogShortSkeleton";
 import InstagramGallery from "../../components/common/instagram/Instagram";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import Pagination from "../../components/ui/Pagination";
+import SEO from "../../components/common/SEO"; 
 import "./Blog.css";
 
 const STORAGE_KEY = 'blog_page_state';
@@ -169,68 +170,76 @@ const Blog = () => {
   };
 
   return (
-    <section id="blog">
-      <div className="container-fluid pb-5">
-        <div className="row justify-content-center">
-          <div className="col-sm-12 col-md-10 col-lg-8 offset-lg-1">
-            <h1 className="text-center">Blog</h1>
-            <div className="filteri d-flex justify-content-center justify-content-md-start justify-content-lg-center pb-5 flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  className={`btn ${
-                    selectedCategory === cat.id ? "btn-secondary" : "btn-outline-secondary"
-                  }`}
-                  onClick={() => handleCategorySelect(cat.id)}
-                >
-                  {cat.name}
-                </button>
-              ))}
-              {selectedCategory && (
-                <button
-                  className="btn btn-outline-secondary"
-                  onClick={resetCategoryFilter}
-                >
-                  Show All
-                </button>
+    <>
+      <SEO
+        title="Blog | Sailor's Feast"
+        description="Join the Sailor's Feast blog for fun stories, easy recipes, and cool sailing tips! Get the best ideas to make your Croatia boat trip tasty and awesome."
+        keywords={['sailing tips', 'easy recipes', 'Croatia travel', 'boat food', 'yachting blog', 'Sailor\'s Feast']}
+        path="/blog"
+      />
+      <section id="blog">
+        <div className="container-fluid pb-5">
+          <div className="row justify-content-center">
+            <div className="col-sm-12 col-md-10 col-lg-8 offset-lg-1">
+              <h1 className="text-center">Blog</h1>
+              <div className="filteri d-flex justify-content-center justify-content-md-start justify-content-lg-center pb-5 flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`btn ${
+                      selectedCategory === cat.id ? "btn-secondary" : "btn-outline-secondary"
+                    }`}
+                    onClick={() => handleCategorySelect(cat.id)}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+                {selectedCategory && (
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={resetCategoryFilter}
+                  >
+                    Show All
+                  </button>
+                )}
+              </div>
+
+              {loading ? (
+                // Show skeletons during loading
+                renderSkeletons()
+              ) : error ? (
+                // Show error message if fetch failed
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              ) : currentPosts.length > 0 ? (
+                // Show posts when loaded
+                <>
+                  {currentPosts.map((post) => (
+                    <BlogShort key={post.id} post={post} />
+                  ))}
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  )}
+                </>
+              ) : (
+                // Message if no posts found
+                <p className="text-center">No posts available.</p>
               )}
             </div>
 
-            {loading ? (
-              // Show skeletons during loading
-              renderSkeletons()
-            ) : error ? (
-              // Show error message if fetch failed
-              <div className="alert alert-danger" role="alert">
-                {error}
-              </div>
-            ) : currentPosts.length > 0 ? (
-              // Show posts when loaded
-              <>
-                {currentPosts.map((post) => (
-                  <BlogShort key={post.id} post={post} />
-                ))}
-                {totalPages > 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
-                )}
-              </>
-            ) : (
-              // Message if no posts found
-              <p className="text-center">No posts available.</p>
-            )}
-          </div>
-
-          <div className="insta-blog-sidebar col-md-2">
-            <InstagramGallery />
+            <div className="insta-blog-sidebar col-md-2">
+              <InstagramGallery />
+            </div>
           </div>
         </div>
-      </div>
-      <ScrollToTopButton />
-    </section>
+        <ScrollToTopButton />
+      </section>
+    </>
   );
 };
 

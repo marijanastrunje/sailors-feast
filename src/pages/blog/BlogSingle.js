@@ -48,8 +48,17 @@ const BlogSingle = () => {
     <>
       <SEO
         title={post.title?.rendered}
-        description={post.excerpt?.rendered.replace(/(<([^>]+)>)/gi, "")}
+        description={post.excerpt?.rendered ? post.excerpt?.rendered.replace(/(<([^>]+)>)/gi, "") : "Discover amazing sailing stories, tasty recipes, and cool tips from Sailor's Feast. Make your boat trip fun and easy!"}
+        keywords={[
+          'sailing stories',
+          'easy recipes',
+          'Croatia boat trips',
+          'yachting tips',
+          'family sailing',
+          'Sailor\'s Feast'
+        ]}
         ogImage={ogImageUrl}
+        path={`/blog/${post.slug}`}
       />
       <article className="blog-single">
         <div className="container pb-5">

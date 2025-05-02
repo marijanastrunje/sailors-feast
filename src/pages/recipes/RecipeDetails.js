@@ -7,6 +7,7 @@ import RecommendedBoxes from './RecommendedBoxes';
 import MediaImg from "../../components/common/media/MediaImg";
 import BookmarkToggle from "../../components/common/Bookmark";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import SEO from "../../components/common/SEO";
 
 import './RecipeDetails.css'
 
@@ -293,232 +294,253 @@ const RecipeDetails = () => {
   const groupedSteps = getStepsBySection();
 
   return (
-    <div className="container py-2">
-      {/* Recipe Header */}
-      <div className="text-center mb-4">
-        <h1 className="mb-2">{recipe.title.rendered}</h1>
-        <div className="d-flex justify-content-center mb-2">
-          <RecipeTags recipe={recipe} />
-        </div>
-        <p>
-          By <b>{recipe._embedded?.author?.[0]?.name || "Sailor's Feast"}</b> <span className="mx-2">•</span> {" "}
-          {new Date(recipe.date).toLocaleDateString()}
-        </p>
-      </div>
+    <>
+      <SEO
+        title={recipe.title?.rendered}
+        description={
+          recipe.acf?.recipe_description_details 
+            ? recipe.acf.recipe_description_details 
+            : "Explore tasty and easy recipes from Sailor's Feast for your next boat trip. Cook onboard with joy!"
+        }
+        keywords={[
+          'boat recipes',
+          'easy sailing meals',
+          'Mediterranean cuisine',
+          'yacht cooking',
+          'family recipes',
+          'Sailor\'s Feast'
+        ]}
+        ogImage={recipe._embedded?.['wp:featuredmedia']?.[0]?.source_url}
+        path={`/recipes/${recipe.slug}`}
+      />
 
-      <div className="row mb-4">
-        {/* Left Column - Image and Info */}
-        <div className="col-md-6 mb-4">
-          <div className="recipe-details-image position-relative mb-3">
-            <MediaImg 
-              mediaId={recipe.featured_media} 
-              alt={recipe.title.rendered} 
-              className="img-fluid rounded"
-            />
-            <BookmarkToggle itemId={recipe.id} className="bookmark-toggle-details" />
+      <div className="container py-2">
+        {/* Recipe Header */}
+        <div className="text-center mb-4">
+          <h1 className="mb-2">{recipe.title.rendered}</h1>
+          <div className="d-flex justify-content-center mb-2">
+            <RecipeTags recipe={recipe} />
           </div>
-
-          {/* Description details */}
-          {recipe.acf?.recipe_description_details && (
-            <div>
-              <p className="mb-0">{recipe.acf.recipe_description_details}</p>
-            </div>
-          )}
-          
-          {/* Keep Screen On Button */}
-          <div className="d-block d-md-none d-flex justify-content-end mt-3">
-            <button 
-              className={`btn btn-sm ${wakeLockActive ? 'btn-success' : 'btn-secondary'}`}
-              onClick={handleWakeLock}
-              title={wakeLockActive ? "Screen will stay on" : "Click to keep screen on"}
-              aria-label={wakeLockActive ? "Deactivate keep screen on" : "Activate keep screen on"}
-           >
-              <FontAwesomeIcon icon={wakeLockActive ? faSun : faMoon} className="me-1" />
-              {wakeLockActive ? "Screen On" : "Keep Screen On"}
-            </button>
-          </div>
+          <p>
+            By <b>{recipe._embedded?.author?.[0]?.name || "Sailor's Feast"}</b> <span className="mx-2">•</span> {" "}
+            {new Date(recipe.date).toLocaleDateString()}
+          </p>
         </div>
 
-        {/* Right Column - Recipe Details */}
-        <div className="col-md-6">
-          {/* Time Info Box */}
-          <div className="border rounded p-3">
-            <h5 className="mb-3">Recipe Information</h5>
-            
-            {/* Time Info */}
-            <div className="row text-center mb-3">
-              <div className="col-4 border-end">
-                <p className="mb-1 text-secondary">Prep Time</p>
-                <p className="fw-bold">{recipe.acf?.recipe_prep_time || 0} mins</p>
-              </div>
-              <div className="col-4 border-end">
-                <p className="mb-1 text-secondary">Cook Time</p>
-                <p className="fw-bold">{recipe.acf?.recipe_cooking_time || 0} mins</p>
-              </div>
-              <div className="col-4">
-                <p className="mb-1 text-secondary">Total Time</p>
-                <p className="fw-bold">{totalTime} mins</p>
-              </div>
+        <div className="row mb-4">
+          {/* Left Column - Image and Info */}
+          <div className="col-md-6 mb-4">
+            <div className="recipe-details-image position-relative mb-3">
+              <MediaImg 
+                mediaId={recipe.featured_media} 
+                alt={recipe.title.rendered} 
+                className="img-fluid rounded"
+              />
+              <BookmarkToggle itemId={recipe.id} className="bookmark-toggle-details" />
             </div>
 
-            {/* Recipe Details */}
-            <div className="row text-center">
-              <div className="col-4 border-end">
-                <p className="mb-0 text-secondary">Servings</p>
-                <div className="d-flex justify-content-center align-items-center">
-                  <button 
-                    className="servings-button text-secondary" 
-                    onClick={decreaseServings}
-                    disabled={servings <= 1}
-                  >-
-                  </button>
-                  <p className="ms-1 fs-5 fw-bold mb-0 mt-1">{servings}</p>
-                  <button 
-                    className="servings-button text-secondary" 
-                    onClick={increaseServings}
-                  >+
-                  </button>
-                </div>
+            {/* Description details */}
+            {recipe.acf?.recipe_description_details && (
+              <div>
+                <p className="mb-0">{recipe.acf.recipe_description_details}</p>
               </div>
-              <div className="col-4 border-end">
-                <p className="mb-1 text-secondary">Difficulty</p>
-                <p className="fw-bold">{recipeDifficulty}</p>
-              </div>
-              <div className="col-4">
-                <p className="mb-1 text-secondary">Method</p>
-                {Array.isArray(recipe.acf?.recipe_method) && recipe.acf.recipe_method.length > 0 ? (
-                  <div className="d-flex justify-content-center">
-                    {recipe.acf.recipe_method.map((method, index) => (
-                      <img
-                        key={index}
-                        src={`/img/recipes/${method}.svg`}
-                        width="24"
-                        height="24"
-                        alt={method}
-                        title={method}
-                        className="mx-1"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="fw-bold">N/A</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="row">
-        {/* Ingredients */}
-        <div className="col-md-6 mb-4">
-          <div className="border rounded p-3 h-100">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h3 className="h4 mb-0">Ingredients</h3>
-              <button
-                className={`btn btn-sm recipe-copy-btn ${copiedIngredients ? 'btn-success' : 'btn-outline-secondary'}`}
-                onClick={copyIngredients}
-              >
-                <FontAwesomeIcon icon={faClipboard} className="me-1" />
-                {copiedIngredients ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-
-            {/* Prikazi sastojke po sekcijama */}
-            {Object.keys(groupedIngredients).length === 0 ? (
-              <p>No ingredients available for this recipe.</p>
-            ) : (
-              Object.entries(groupedIngredients).map(([section, ingredients]) => (
-                <div key={section} className="mb-4">
-                  {/* Naslov sekcije (samo ako nije "Ostali sastojci" ili ako ima više sekcija) */}
-                  {(section !== "Ostali sastojci" || Object.keys(groupedIngredients).length > 1) && (
-                    <h4 className="h5 mt-3 border-bottom pb-2">{section}</h4>
-                  )}
-                  
-                  {/* Lista sastojaka u sekciji */}
-                  <ul className="list-group list-group-flush">
-                    {ingredients.map((ing, idx) => (
-                      <li key={idx} className="list-group-item border-0 mx-3 p-0">
-                        <div>
-                          {ing.name} {ing.quantity} {ing.unit}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
             )}
+            
+            {/* Keep Screen On Button */}
+            <div className="d-block d-md-none d-flex justify-content-end mt-3">
+              <button 
+                className={`btn btn-sm ${wakeLockActive ? 'btn-success' : 'btn-secondary'}`}
+                onClick={handleWakeLock}
+                title={wakeLockActive ? "Screen will stay on" : "Click to keep screen on"}
+                aria-label={wakeLockActive ? "Deactivate keep screen on" : "Activate keep screen on"}
+            >
+                <FontAwesomeIcon icon={wakeLockActive ? faSun : faMoon} className="me-1" />
+                {wakeLockActive ? "Screen On" : "Keep Screen On"}
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column - Recipe Details */}
+          <div className="col-md-6">
+            {/* Time Info Box */}
+            <div className="border rounded p-3">
+              <h5 className="mb-3">Recipe Information</h5>
+              
+              {/* Time Info */}
+              <div className="row text-center mb-3">
+                <div className="col-4 border-end">
+                  <p className="mb-1 text-secondary">Prep Time</p>
+                  <p className="fw-bold">{recipe.acf?.recipe_prep_time || 0} mins</p>
+                </div>
+                <div className="col-4 border-end">
+                  <p className="mb-1 text-secondary">Cook Time</p>
+                  <p className="fw-bold">{recipe.acf?.recipe_cooking_time || 0} mins</p>
+                </div>
+                <div className="col-4">
+                  <p className="mb-1 text-secondary">Total Time</p>
+                  <p className="fw-bold">{totalTime} mins</p>
+                </div>
+              </div>
+
+              {/* Recipe Details */}
+              <div className="row text-center">
+                <div className="col-4 border-end">
+                  <p className="mb-0 text-secondary">Servings</p>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <button 
+                      className="servings-button text-secondary" 
+                      onClick={decreaseServings}
+                      disabled={servings <= 1}
+                    >-
+                    </button>
+                    <p className="ms-1 fs-5 fw-bold mb-0 mt-1">{servings}</p>
+                    <button 
+                      className="servings-button text-secondary" 
+                      onClick={increaseServings}
+                    >+
+                    </button>
+                  </div>
+                </div>
+                <div className="col-4 border-end">
+                  <p className="mb-1 text-secondary">Difficulty</p>
+                  <p className="fw-bold">{recipeDifficulty}</p>
+                </div>
+                <div className="col-4">
+                  <p className="mb-1 text-secondary">Method</p>
+                  {Array.isArray(recipe.acf?.recipe_method) && recipe.acf.recipe_method.length > 0 ? (
+                    <div className="d-flex justify-content-center">
+                      {recipe.acf.recipe_method.map((method, index) => (
+                        <img
+                          key={index}
+                          src={`/img/recipes/${method}.svg`}
+                          width="24"
+                          height="24"
+                          alt={method}
+                          title={method}
+                          className="mx-1"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="fw-bold">N/A</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="col-md-6 mb-4">
-          <div className="border rounded p-3 h-100">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h3 className="h4 mb-0">Instructions</h3>
-              <button
-                className={`btn btn-sm recipe-copy-btn ${copiedInstructions ? 'btn-success' : 'btn-outline-secondary'}`}
-                onClick={copyInstructions}
-              >
-                <FontAwesomeIcon icon={faClipboard} className="me-1" />
-                {copiedInstructions ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
+        <div className="row">
+          {/* Ingredients */}
+          <div className="col-md-6 mb-4">
+            <div className="border rounded p-3 h-100">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="h4 mb-0">Ingredients</h3>
+                <button
+                  className={`btn btn-sm recipe-copy-btn ${copiedIngredients ? 'btn-success' : 'btn-outline-secondary'}`}
+                  onClick={copyIngredients}
+                >
+                  <FontAwesomeIcon icon={faClipboard} className="me-1" />
+                  {copiedIngredients ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
 
-            {/* Prikazi korake po sekcijama */}
-            {Object.keys(groupedSteps).length === 0 ? (
-              <p>No instructions available for this recipe.</p>
-            ) : (
-              Object.entries(groupedSteps).map(([section, steps]) => {
-                // Resetiraj brojanje koraka za svaku sekciju
-                let sectionStepNumber = 1;
-                
-                return (
+              {/* Prikazi sastojke po sekcijama */}
+              {Object.keys(groupedIngredients).length === 0 ? (
+                <p>No ingredients available for this recipe.</p>
+              ) : (
+                Object.entries(groupedIngredients).map(([section, ingredients]) => (
                   <div key={section} className="mb-4">
-                    {/* Naslov sekcije (samo ako nije "Ostali koraci" ili ako ima više sekcija) */}
-                    {(section !== "Ostali koraci" || Object.keys(groupedSteps).length > 1) && (
+                    {/* Naslov sekcije (samo ako nije "Ostali sastojci" ili ako ima više sekcija) */}
+                    {(section !== "Ostali sastojci" || Object.keys(groupedIngredients).length > 1) && (
                       <h4 className="h5 mt-3 border-bottom pb-2">{section}</h4>
                     )}
                     
-                    {/* Lista koraka */}
-                    <div className="mt-3">
-                      {steps.map((step, idx) => {
-                        // Koristimo brojanje koraka od 1 za svaku sekciju
-                        const currentStepNumber = sectionStepNumber++;
-                        
-                        return (
-                          <div key={idx} className="mb-4">
-                            <div className="d-flex">
-                              <div className="me-3">
-                                <span className="badge bg-secondary rounded">{currentStepNumber}</span>
-                              </div>
-                              <div>
-                                {step.title && (
-                                  <h5 className="h6 mb-1 fw-bold">{step.title}</h5>
-                                )}
+                    {/* Lista sastojaka u sekciji */}
+                    <ul className="list-group list-group-flush">
+                      {ingredients.map((ing, idx) => (
+                        <li key={idx} className="list-group-item border-0 mx-3 p-0">
+                          <div>
+                            {ing.name} {ing.quantity} {ing.unit}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="col-md-6 mb-4">
+            <div className="border rounded p-3 h-100">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="h4 mb-0">Instructions</h3>
+                <button
+                  className={`btn btn-sm recipe-copy-btn ${copiedInstructions ? 'btn-success' : 'btn-outline-secondary'}`}
+                  onClick={copyInstructions}
+                >
+                  <FontAwesomeIcon icon={faClipboard} className="me-1" />
+                  {copiedInstructions ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+
+              {/* Prikazi korake po sekcijama */}
+              {Object.keys(groupedSteps).length === 0 ? (
+                <p>No instructions available for this recipe.</p>
+              ) : (
+                Object.entries(groupedSteps).map(([section, steps]) => {
+                  // Resetiraj brojanje koraka za svaku sekciju
+                  let sectionStepNumber = 1;
+                  
+                  return (
+                    <div key={section} className="mb-4">
+                      {/* Naslov sekcije (samo ako nije "Ostali koraci" ili ako ima više sekcija) */}
+                      {(section !== "Ostali koraci" || Object.keys(groupedSteps).length > 1) && (
+                        <h4 className="h5 mt-3 border-bottom pb-2">{section}</h4>
+                      )}
+                      
+                      {/* Lista koraka */}
+                      <div className="mt-3">
+                        {steps.map((step, idx) => {
+                          // Koristimo brojanje koraka od 1 za svaku sekciju
+                          const currentStepNumber = sectionStepNumber++;
+                          
+                          return (
+                            <div key={idx} className="mb-4">
+                              <div className="d-flex">
+                                <div className="me-3">
+                                  <span className="badge bg-secondary rounded">{currentStepNumber}</span>
+                                </div>
                                 <div>
-                                  {step.text}
+                                  {step.title && (
+                                    <h5 className="h6 mb-1 fw-bold">{step.title}</h5>
+                                  )}
+                                  <div>
+                                    {step.text}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
+            
           </div>
-          
+          {acf?.recipe_related_boxes?.length > 0 && (
+                <RecommendedBoxes boxIds={acf.recipe_related_boxes} />
+              )}
         </div>
-        {acf?.recipe_related_boxes?.length > 0 && (
-              <RecommendedBoxes boxIds={acf.recipe_related_boxes} />
-            )}
-      </div>
 
-      <ScrollToTopButton />
-    </div>
+        <ScrollToTopButton />
+      </div>
+    </>
   );
 };
 

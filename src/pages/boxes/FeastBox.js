@@ -2,11 +2,24 @@ import React from "react";
 import BoxLayout from "./Box";
 import Faq from "../../components/common/Faq";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
+import SEO from "../../components/common/SEO";
 
 const FeastBox = () => {
 
   return (
     <>
+      <SEO
+        title="Feast box | Sailor's Feast"
+        description="Discover our delicious Feast box packed with fresh snacks, drinks, and goodies, delivered straight to your boat in Croatia!"
+        keywords={[
+          'Sailor\'s Feast Box',
+          'boat snacks',
+          'Croatia delivery',
+          'yacht food box',
+          'sailing treats'
+        ]}
+        path="/feast-box"
+      />
       <BoxLayout
         categoryId={202}
         categoryMapping={{

@@ -193,7 +193,7 @@ const DeliveryMap = () => {
                 <div className="icon-container">
                   <SeaIcon />
                 </div>
-                <span className="weather-value">~15°C</span>
+                <span className="weather-value">~19°C</span>
               </div>
             </div>
           ) : (

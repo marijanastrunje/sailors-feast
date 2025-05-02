@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import DeliveryMap from "../home/sections/delivery/DeliveryMap";
+import SEO from "../../components/common/SEO";
 import "./CharterLandingPage.css";
 
 const CharterLandingPage = () => {
@@ -145,6 +146,19 @@ const CharterLandingPage = () => {
 
   return (
     <>
+      <SEO
+        title="Charter Partner Program | Sailor's Feast"
+        description="Boost your charter business with Sailor's Feast! Offer your guests fresh, local food delivered right to their boat and make their sailing experience unforgettable."
+        keywords={[
+          'charter partner program',
+          'sailing Croatia',
+          'yacht food delivery',
+          'marina provisioning',
+          'Sailor\'s Feast'
+        ]}
+        path="/charter"
+      />
+
       {/* Hero Section */}
       <section className="charter-hero d-flex align-items-center text-white position-relative">
         <div className="container py-4">
