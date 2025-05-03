@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, memo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumbs from "../../components/ui/Breadcrumbs";
 import CategoriesSidebar from "./CategoriesSidebar";
@@ -19,46 +19,109 @@ const wcKey = process.env.REACT_APP_WC_KEY;
 const wcSecret = process.env.REACT_APP_WC_SECRET;
 const authHeader = "Basic " + btoa(`${wcKey}:${wcSecret}`);
 
+// Memoize ProductsGrid for better performance
+const MemoizedProductsGrid = memo(ProductsGrid);
+
+// Persistence helpers
+const saveToSessionStorage = (key, data) => {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error('Error saving to sessionStorage:', error);
+  }
+};
+
+const loadFromSessionStorage = (key) => {
+  try {
+    const data = sessionStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error('Error loading from sessionStorage:', error);
+    return null;
+  }
+};
+
 const Groceries = () => {
   const [categories, setCategories] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
   const [subcategories, setSubcategories] = useState({});
   const [activeSubcategoryName, setActiveSubcategoryName] = useState("");
   const [products, setProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]); // Store all products for searching
+  const [allProducts, setAllProducts] = useState([]); 
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true); // Start with loading
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [, setIsLoadingAllProducts] = useState(false);
   const [activeSubcategory, setActiveSubcategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [initialLoad, setInitialLoad] = useState(false); // Changed to false to remove initial spinner
+  const [initialLoad, setInitialLoad] = useState(false);
   const searchInitiatedRef = useRef(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 16;
   
   const location = useLocation();
   const navigate = useNavigate();
   const preselectedCategoryId = location.state?.categoryId;
   const containerRef = useRef(null);
+  const contentStartRef = useRef(null);
 
-  // Cache for all products - to avoid repeated fetches
-  const allProductsCache = useRef(null);
-  
-  // Product cache by category
-  const productsByCategory = useRef({});
-  
-  // Subcategories cache
-  const subcategoriesCache = useRef({});
-  
-  // Simple cache to prevent duplicate fetches
+  // Initialize caches from session storage or create new ones
+  const allProductsCache = useRef(loadFromSessionStorage('allProductsCache') || null);
+  const productsByCategory = useRef(loadFromSessionStorage('productsByCategory') || {});
+  const subcategoriesCache = useRef(loadFromSessionStorage('subcategoriesCache') || {});
   const fetchCache = useRef({});
 
-  // Nova funkcija koja direktno pretražuje proizvode preko API-ja
+  const scrollToContent = useCallback(() => {
+    if (contentStartRef.current) {
+      contentStartRef.current.scrollIntoView({ behavior: "smooth" });
+    } else {
+      // Fallback in case ref isn't available
+      window.scrollTo({ behavior: "smooth" }); 
+    }
+  }, []);
+  
+  // Save caches to session storage when component unmounts
+  useEffect(() => {
+    // No need to return cleanup function
+    const handleBeforeUnload = () => {
+      if (allProductsCache.current) {
+        saveToSessionStorage('allProductsCache', allProductsCache.current);
+      }
+      if (Object.keys(productsByCategory.current).length > 0) {
+        saveToSessionStorage('productsByCategory', productsByCategory.current);
+      }
+      if (Object.keys(subcategoriesCache.current).length > 0) {
+        saveToSessionStorage('subcategoriesCache', subcategoriesCache.current);
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      handleBeforeUnload(); // Save on unmount
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  // Direct API search
   const directSearchProducts = useCallback((term) => {
+    if (!term) return;
+    
     setIsLoadingProducts(true);
     console.log(`Performing direct API search for: "${term}"`);
 
-    // Direktno pretražujemo proizvode preko WooCommerce API-ja
+    // Check if we have this search cached
+    const cacheKey = `search_${term.toLowerCase().trim()}`;
+    const cachedResults = loadFromSessionStorage(cacheKey);
+    
+    if (cachedResults) {
+      console.log(`Using cached search results for: "${term}"`);
+      setFilteredProducts(cachedResults);
+      setIsLoadingProducts(false);
+      return;
+    }
+
     fetch(`${backendUrl}/wp-json/wc/v3/products?search=${encodeURIComponent(term)}&per_page=100`, {
       headers: { Authorization: authHeader }
     })
@@ -66,10 +129,14 @@ const Groceries = () => {
       .then(data => {
         console.log(`Found ${data.length} products directly from API for search: "${term}"`);
         setFilteredProducts(data);
-        setIsLoadingProducts(false);
+        
+        // Cache the search results
+        saveToSessionStorage(cacheKey, data);
       })
       .catch(error => {
         console.error("Error during direct API search:", error);
+      })
+      .finally(() => {
         setIsLoadingProducts(false);
       });
   }, []);
@@ -78,12 +145,11 @@ const Groceries = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const search = searchParams.get('search');
+    
     if (search) {
       setSearchTerm(search);
       setIsSearchActive(true);
-      searchInitiatedRef.current = true; // označavamo da je search pokrenut preko URL-a
-
-      // Odmah pretražujemo ako imamo search parametar
+      searchInitiatedRef.current = true;
       directSearchProducts(search);
     } else {
       setSearchTerm("");
@@ -92,7 +158,7 @@ const Groceries = () => {
     }
   }, [location.search, products, directSearchProducts]);
 
-  // Fetch all products once for searching - this happens in the background
+  // Fetch all products once for searching - with improved caching
   const fetchAllProducts = useCallback(() => {
     // If we already have all products cached, use them
     if (allProductsCache.current) {
@@ -115,10 +181,8 @@ const Groceries = () => {
           const newAccumulated = [...accumulated, ...data];
           
           if (currentPage < totalPages) {
-            // Fetch next batch
             return fetchBatch(currentPage + 1, newAccumulated);
           } else {
-            // We've fetched all pages
             return newAccumulated;
           }
         });
@@ -128,6 +192,7 @@ const Groceries = () => {
       .then(allProductsData => {
         // Cache the data for future use
         allProductsCache.current = allProductsData;
+        saveToSessionStorage('allProductsCache', allProductsData);
         
         // Also organize products by category for quick access
         const productsByCat = {};
@@ -140,20 +205,28 @@ const Groceries = () => {
           });
         });
         productsByCategory.current = productsByCat;
+        saveToSessionStorage('productsByCategory', productsByCat);
         
         setAllProducts(allProductsData);
-        setIsLoadingAllProducts(false);
         return allProductsData;
       })
       .catch(error => {
         console.error("Error fetching all products:", error);
-        setIsLoadingAllProducts(false);
         return [];
+      })
+      .finally(() => {
+        setIsLoadingAllProducts(false);
       });
   }, []);
 
-  // Optimized function to fetch category products
+  // Optimized function to fetch category products with better caching
   const fetchProducts = useCallback((categoryId, isDirectClick = false) => {
+    if (!categoryId) return;
+
+    if (isDirectClick) {
+      scrollToContent();
+    }
+    
     // Clear search if this is a direct category click
     const searchParams = new URLSearchParams(location.search);
     const hasSearchParam = searchParams.has('search');
@@ -168,6 +241,7 @@ const Groceries = () => {
     if (productsByCategory.current[categoryId]) {
       if (isDirectClick) {
         const cachedProducts = productsByCategory.current[categoryId];
+        console.log(`Using ${cachedProducts.length} cached products for category ${categoryId}`);
         setProducts(cachedProducts);
         setFilteredProducts(cachedProducts);
         setInitialLoad(false);
@@ -194,6 +268,7 @@ const Groceries = () => {
       .then(data => {
         // Cache the products for this category
         productsByCategory.current[categoryId] = data;
+        saveToSessionStorage('productsByCategory', productsByCategory.current);
         
         if (isDirectClick) {
           setProducts(data);
@@ -208,9 +283,9 @@ const Groceries = () => {
         setIsLoadingProducts(false);
         delete fetchCache.current[cacheKey];
       });
-  }, [isSearchActive, navigate, location.search]);
+  }, [isSearchActive, navigate, location.search, scrollToContent]);
 
-  // Enhanced search function that searches through all products
+  // Enhanced search function that searches through all products - with debounce
   const searchAllProducts = useCallback((term) => {
     if (!term) {
       setFilteredProducts(products);
@@ -218,6 +293,17 @@ const Groceries = () => {
     }
 
     setIsLoadingProducts(true);
+
+    // Check if we have this search cached
+    const cacheKey = `local_search_${term.toLowerCase().trim()}`;
+    const cachedResults = loadFromSessionStorage(cacheKey);
+    
+    if (cachedResults) {
+      console.log(`Using cached local search results for: "${term}"`);
+      setFilteredProducts(cachedResults);
+      setIsLoadingProducts(false);
+      return;
+    }
 
     // First check if we have all products
     const performSearch = (productsToSearch) => {
@@ -242,6 +328,9 @@ const Groceries = () => {
         );
       });
       
+      // Cache the search results
+      saveToSessionStorage(cacheKey, filtered);
+      
       setFilteredProducts(filtered);
       setIsLoadingProducts(false);
     };
@@ -258,11 +347,14 @@ const Groceries = () => {
     }
   }, [products, allProducts, fetchAllProducts]);
 
-  // Apply search filter when search term changes (osim početnog učitavanja)
+  // Debounced search - prevent too many searches when typing
   useEffect(() => {
-    // Samo za lokalne pretrage, ne za inicijalne (koje koriste direktno API pretraživanje)
     if (isSearchActive && searchTerm && !searchInitiatedRef.current) {
-      searchAllProducts(searchTerm);
+      const debounceTimer = setTimeout(() => {
+        searchAllProducts(searchTerm);
+      }, 300); // 300ms debounce
+      
+      return () => clearTimeout(debounceTimer);
     } else if (!isSearchActive) {
       setFilteredProducts(products);
     }
@@ -275,8 +367,12 @@ const Groceries = () => {
     }
   }, [initialLoad, fetchAllProducts, isSearchActive]);
 
-  // Optimized subcategories fetch
+  // Optimized subcategories fetch - fixes the double loading issue
   const fetchSubcategories = useCallback((categoryId) => {
+    if (!categoryId) return;
+
+    scrollToContent();
+    
     // Clear search if active when changing categories
     const searchParams = new URLSearchParams(location.search);
     const hasSearchParam = searchParams.has('search');
@@ -299,6 +395,7 @@ const Groceries = () => {
     // If we have subcategories cached, use them immediately
     if (subcategoriesCache.current[categoryId]) {
       const sorted = subcategoriesCache.current[categoryId];
+      console.log(`Using ${sorted.length} cached subcategories for category ${categoryId}`);
       setSubcategories(prev => ({ ...prev, [categoryId]: sorted }));
       
       if (sorted.length > 0) {
@@ -322,11 +419,11 @@ const Groceries = () => {
     }
 
     fetchCache.current[cacheKey] = true;
+    setIsLoadingProducts(true);
 
-    // Start fetching products for the category immediately (in parallel)
-    // This speeds up the perceived load time
-    fetchProducts(categoryId, true);
-
+    // IMPORTANT: Don't fetch products for the category immediately
+    // This is the key change to prevent double loading
+    
     fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}&per_page=100`, {
       headers: { Authorization: authHeader }
     })
@@ -336,9 +433,11 @@ const Groceries = () => {
         
         // Cache the subcategories
         subcategoriesCache.current[categoryId] = sorted;
+        saveToSessionStorage('subcategoriesCache', subcategoriesCache.current);
+        
         setSubcategories(prev => ({ ...prev, [categoryId]: sorted }));
         
-        // Only need to update active subcategory here if there are subcategories
+        // Only fetch products now that we know whether to use category or subcategory
         if (sorted.length > 0) {
           const firstSub = sorted[0];
           setActiveSubcategoryName(firstSub.name);
@@ -347,20 +446,29 @@ const Groceries = () => {
         } else {
           setActiveSubcategoryName("");
           setActiveSubcategory(null);
-          // Already fetching category products above
+          fetchProducts(categoryId, true);
         }
       })
       .catch(error => {
         console.error(`Error fetching subcategories for ${categoryId}:`, error);
+        // If error, try to fetch category products
+        fetchProducts(categoryId, true);
       })
       .finally(() => {
         delete fetchCache.current[cacheKey];
       });
-  }, [fetchProducts, openCategory, isSearchActive, navigate, location.search]);
+  }, [fetchProducts, openCategory, isSearchActive, navigate, location.search, scrollToContent]);
 
-  // Optimized main categories fetch - use a default empty array while loading
+  // Optimized main categories fetch with cache
   useEffect(() => {
     const excluded = [17, 108, 206, 198, 202];
+    
+    // Check if we have categories in session storage
+    const cachedCategories = loadFromSessionStorage('categories');
+    if (cachedCategories && cachedCategories.length > 0) {
+      setCategories(cachedCategories);
+      return;
+    }
     
     // Set default empty categories if not loaded yet
     if (categories.length === 0) {
@@ -382,7 +490,9 @@ const Groceries = () => {
         const filtered = data
           .filter(cat => !excluded.includes(cat.id))
           .sort((a, b) => a.menu_order - b.menu_order);
+        
         setCategories(filtered);
+        saveToSessionStorage('categories', filtered);
       })
       .catch(error => {
         console.error("Error fetching categories:", error);
@@ -392,7 +502,7 @@ const Groceries = () => {
       });
   }, [categories.length]);
 
-  // Load initial category
+  // Load initial category - only once when categories are loaded
   useEffect(() => {
     if (categories.length > 0 && !openCategory && !isSearchActive) {
       const initialId = preselectedCategoryId || categories[0].id;
@@ -400,11 +510,11 @@ const Groceries = () => {
     }
   }, [categories, preselectedCategoryId, fetchSubcategories, openCategory, isSearchActive]);
 
-  // Preload subcategories for faster navigation
+  // Preload subcategories for faster navigation - with smarter caching
   useEffect(() => {
     const preloadSubcategories = async () => {
       // Only preload after initial render and if we have categories
-      if (!initialLoad && categories.length > 0) {
+      if (categories.length > 0) {
         // Preload subcategories for first few categories in the background
         const categoriesToPreload = categories.slice(0, 5);
         for (const category of categoriesToPreload) {
@@ -414,35 +524,39 @@ const Groceries = () => {
                 headers: { Authorization: authHeader }
               });
               const data = await response.json();
-              subcategoriesCache.current[category.id] = data.sort((a, b) => a.menu_order - b.menu_order);
+              const sorted = data.sort((a, b) => a.menu_order - b.menu_order);
+              subcategoriesCache.current[category.id] = sorted;
+              
+              // Update session storage periodically to avoid too many writes
+              if (Math.random() < 0.2) { // 20% chance to update storage
+                saveToSessionStorage('subcategoriesCache', subcategoriesCache.current);
+              }
             } catch (error) {
               console.error(`Error preloading subcategories for ${category.id}:`, error);
             }
           }
         }
+        
+        // Ensure storage is updated after all preloads
+        saveToSessionStorage('subcategoriesCache', subcategoriesCache.current);
       }
     };
     
     preloadSubcategories();
-  }, [initialLoad, categories]);
+  }, [categories]);
 
-  const handleShowModal = (product) => {
+  const handleShowModal = useCallback((product) => {
     setSelectedProduct(product);
-  };
+  }, []);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 16;
-
-  // Resetiraj na prvu stranicu kad se promijeni aktivna podkategorija
+  // Reset pagination when subcategory changes
   useEffect(() => {
     setCurrentPage(1);
   }, [activeSubcategory]);
 
-
-  // Clear search when clicking in certain areas
+  // Clear search when clicking in certain areas - with cleanup
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // klik izvan područja pretrage
       const clickedOutsideSearch = containerRef.current &&
         !event.target.closest('.search-box') &&
         !event.target.closest('.autocomplete-results') &&
@@ -456,9 +570,8 @@ const Groceries = () => {
       if (
         isSearchActive &&
         clickedOutsideSearch &&
-        searchInitiatedRef.current // samo ako je search iniciran
+        searchInitiatedRef.current
       ) {
-        // očisti search samo kad korisnik eksplicitno klikne izvan
         navigate('/groceries', { replace: true });
         setIsSearchActive(false);
         setSearchTerm("");
@@ -472,19 +585,22 @@ const Groceries = () => {
     };
   }, [isSearchActive, navigate]);
   
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
+  // Pagination calculations - memoized to prevent unnecessary recalculations
+  const paginationData = React.useMemo(() => {
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const paginatedProducts = filteredProducts.slice(
+      (currentPage - 1) * productsPerPage,
+      currentPage * productsPerPage
+    );
+    return { totalPages, paginatedProducts };
+  }, [filteredProducts, currentPage, productsPerPage]);
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
+  const handlePageChange = useCallback((page) => {
+    if (page >= 1 && page <= paginationData.totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "smooth" }); 
+      scrollToContent(); 
     }
-  };
+  }, [paginationData.totalPages, scrollToContent]);
 
   // Lazy loading for FAQ
   const [isVisible, setIsVisible] = useState({
@@ -509,6 +625,15 @@ const Groceries = () => {
     };
   }, []);
 
+  // Clear search button handler - extracted to reduce inline function creation
+  const handleClearSearch = useCallback(() => {
+    scrollToContent();
+    navigate('/groceries', { replace: true });
+    setIsSearchActive(false);
+    setSearchTerm("");
+    searchInitiatedRef.current = false;
+  }, [navigate, scrollToContent]);
+
   return (
     <>
       <SEO
@@ -531,6 +656,7 @@ const Groceries = () => {
             Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
             </p>
           </div>
+          <div ref={contentStartRef}></div>
         </div>
 
         <Breadcrumbs items={[{ name: "Home", link: "/" }, { name: "Groceries" }]} />
@@ -582,12 +708,7 @@ const Groceries = () => {
                   </h2>
                   <button 
                     className="btn btn-sm btn-outline-secondary" 
-                    onClick={() => {
-                      navigate('/groceries', { replace: true });
-                      setIsSearchActive(false);
-                      setSearchTerm("");
-                      searchInitiatedRef.current = false;
-                    }}
+                    onClick={handleClearSearch}
                   >
                     Clear search
                   </button>
@@ -602,13 +723,13 @@ const Groceries = () => {
                 <ProductsGridSkeleton count={16} />
               ) : (
                 <>
-                  {paginatedProducts.length > 0 ? (
+                  {paginationData.paginatedProducts.length > 0 ? (
                     <>
-                      <ProductsGrid products={paginatedProducts} onShowModal={handleShowModal} />
-                      {totalPages > 1 && (
+                      <MemoizedProductsGrid products={paginationData.paginatedProducts} onShowModal={handleShowModal} />
+                      {paginationData.totalPages > 1 && (
                         <Pagination
                           currentPage={currentPage}
-                          totalPages={totalPages}
+                          totalPages={paginationData.totalPages}
                           onPageChange={handlePageChange}
                         />
                       )}
@@ -622,12 +743,7 @@ const Groceries = () => {
                           <br />
                           <button
                             className="btn btn-outline-primary mt-3"
-                            onClick={() => {
-                              navigate('/groceries', { replace: true });
-                              setIsSearchActive(false);
-                              setSearchTerm("");
-                              searchInitiatedRef.current = false;
-                            }}
+                            onClick={handleClearSearch}
                           >
                             Clear search
                           </button>
