@@ -14,9 +14,10 @@ const authHeader = {
   Authorization: "Basic " + btoa(`${wcKey}:${wcSecret}`),
 };
 
-const CACHE_EXPIRATION = 60 * 60 * 1000;
+const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hour
 let globalCache = {};
 
+// Initialize cache from localStorage if available
 try {
   const savedCache = localStorage.getItem('box_api_cache');
   if (savedCache) {
@@ -33,6 +34,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   const componentMounted = useRef(true);
   const apiCache = useRef(globalCache);
   const navigate = useNavigate();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const [subcategories, setSubcategories] = useState([]);
   const [subcategoryProducts, setSubcategoryProducts] = useState({});
@@ -45,7 +47,16 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [activeModalCategory, setActiveModalCategory] = useState(null);
 
+  // Update loading state when header or products load
   useEffect(() => {
+    setIsLoading(!(headerLoaded && productsLoaded));
+  }, [headerLoaded, productsLoaded]);
+
+  // Fetch category info and subcategories with products
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchCategoryInfo = async () => {
       const cacheKey = `category_${categoryId}`;
       if (apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
@@ -57,6 +68,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
       try {
         const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, {
           headers: authHeader,
+          signal
         });
         const data = await res.json();
         if (!componentMounted.current) return;
@@ -74,7 +86,9 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
         setCategoryInfo(info);
         setHeaderLoaded(true);
       } catch (err) {
-        console.error("Greška u dohvaćanju kategorije:", err);
+        if (err.name !== 'AbortError') {
+          console.error("Error fetching category:", err);
+        }
         setHeaderLoaded(true);
       }
     };
@@ -91,6 +105,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
       try {
         const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
           headers: authHeader,
+          signal
         });
         const subcategoriesData = await subcatRes.json();
         if (!componentMounted.current) return;
@@ -100,7 +115,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
           const allSubcategoryIds = subcategoriesData.map(sub => sub.id).join(",");
           const productRes = await fetch(
             `${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories`,
-            { headers: authHeader }
+            { headers: authHeader, signal }
           );
           const allProducts = await productRes.json();
           if (!componentMounted.current) return;
@@ -124,7 +139,9 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
 
         setProductsLoaded(true);
       } catch (error) {
-        console.error("Greška u dohvaćanju proizvoda:", error);
+        if (error.name !== 'AbortError') {
+          console.error("Error fetching products:", error);
+        }
         setProductsLoaded(true);
       }
     };
@@ -133,34 +150,41 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     fetchSubcategoriesAndProducts();
 
     return () => {
+      controller.abort();
       componentMounted.current = false;
+      
+      // Optimize cache storage by removing unnecessary data
       try {
-        localStorage.setItem('box_api_cache', JSON.stringify(apiCache.current));
-        globalCache = apiCache.current;
+        const cacheToSave = {...apiCache.current};
+        // Remove potentially large temporary data before saving
+        delete cacheToSave.tempData;
+        
+        localStorage.setItem('box_api_cache', JSON.stringify(cacheToSave));
+        globalCache = cacheToSave;
       } catch (e) {
         console.error('Error saving cache to localStorage', e);
       }
     };
   }, [categoryId]);
 
-  useEffect(() => {
-    if (headerLoaded && productsLoaded) {
-      setIsLoading(false);
-    }
-  }, [headerLoaded, productsLoaded]);
-
-  const handleShowProductModal = (product) => {
+  // Memoized handler for showing product modal
+  const handleShowProductModal = useCallback((product) => {
     setSelectedProduct(product);
-  };
+  }, []);
 
-  const handleRemoveProduct = (subcategoryId, productId) => {
+  // Memoized handler for removing products
+  const handleRemoveProduct = useCallback((subcategoryId, productId) => {
     setSubcategoryProducts(prev => ({
       ...prev,
       [subcategoryId]: prev[subcategoryId].filter(p => p.id !== productId),
     }));
-  };
+  }, []);
 
+  // Fetch extra products for subcategories
   const fetchExtraSubcategories = useCallback(async (parentCategoryId) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    
     setExtraProducts([]);
     const cacheKey = `extras_${parentCategoryId}`;
     if (apiCache.current && apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
@@ -171,6 +195,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     try {
       const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
         headers: authHeader,
+        signal
       });
       const subcats = await res.json();
       if (!componentMounted.current) return;
@@ -178,7 +203,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
       const productPromises = subcats.map(async subcat => {
         const res = await fetch(
           `${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}&_fields=id,name,price,images,categories`,
-          { headers: authHeader }
+          { headers: authHeader, signal }
         );
         const products = await res.json();
         return { id: subcat.id, name: subcat.name, products };
@@ -193,11 +218,18 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
 
       setExtraProducts(withProducts);
     } catch (error) {
-      console.error("Greška u dohvaćanju dodatnih subkategorija:", error);
+      if (error.name !== 'AbortError') {
+        console.error("Error fetching extra subcategories:", error);
+      }
       setExtraProducts([]);
     }
+    
+    return () => {
+      controller.abort();
+    };
   }, []);
 
+  // Memoized handler for showing modal
   const handleShowModal = useCallback((subcategoryId) => {
     setExtraProducts([]);
     setActiveModalCategory(subcategoryId);
@@ -205,7 +237,8 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     fetchExtraSubcategories(categoryMapping[subcategoryId]);
   }, [fetchExtraSubcategories, categoryMapping]);
 
-  const handleAddProduct = (product, quantity) => {
+  // Memoized handler for adding products
+  const handleAddProduct = useCallback((product, quantity) => {
     const productSubcategoryId = product.categories?.find(cat =>
       subcategories.some(sub => sub.id === cat.id)
     )?.id;
@@ -213,7 +246,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     const subcategoryId = productSubcategoryId || activeModalCategory;
 
     if (!subcategoryId) {
-      console.error("Nije poznata podkategorija za dodavanje proizvoda");
+      console.error("Unknown subcategory for adding product");
       return;
     }
 
@@ -239,8 +272,9 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     });
 
     setShowModal(false);
-  };
+  }, [subcategories, activeModalCategory]);
 
+  // Memoized calculation for total sum
   const totalSum = useMemo(() => {
     return subcategories.reduce((sum, sub) => {
       return (
@@ -250,49 +284,70 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     }, 0);
   }, [subcategories, subcategoryProducts]);
 
-  const addToCart = () => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-    // Pronađi ID-eve proizvoda iz boxa
-    const currentBoxProductIds = new Set();
-    subcategories.forEach((subcategory) => {
-      subcategoryProducts[subcategory.id]?.forEach((product) => {
-        currentBoxProductIds.add(product.id);
-      });
-    });
-  
-    // Filtriraj postojeće iz košarice
-    cart = cart.filter((item) => !item.box || currentBoxProductIds.has(item.id));
-  
-    // Dodaj/azuriraj proizvode iz boxa
-    subcategories.forEach((subcategory) => {
-      subcategoryProducts[subcategory.id]?.forEach((product) => {
-        const quantity = product.quantity || 1;
-        if (quantity > 0) {
-          const existingProduct = cart.find((item) => item.id === product.id);
-          if (existingProduct) {
-            existingProduct.quantity = quantity;
-          } else {
-            cart.push({
-              id: product.id,
-              image: product.images,
-              title: product.name,
-              price: product.price,
-              quantity: quantity,
-              box: true,
-            });
-          }
-        }
-      });
-    });
-  
-    // Spremi i ažuriraj
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
-    navigate("/cart");
-  };
-  
+  // Memoized subcategory products list for optimized rendering
+  const subcategoryProductsList = useMemo(() => {
+    return Object.entries(subcategoryProducts).map(([id, products]) => ({
+      id: parseInt(id, 10),
+      products
+    }));
+  }, [subcategoryProducts]);
 
+  // Debounced add to cart function
+  const addToCart = useCallback(() => {
+    if (isAddingToCart) return;
+    
+    setIsAddingToCart(true);
+    
+    try {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    
+      // Find product IDs from box
+      const currentBoxProductIds = new Set();
+      subcategories.forEach((subcategory) => {
+        subcategoryProducts[subcategory.id]?.forEach((product) => {
+          currentBoxProductIds.add(product.id);
+        });
+      });
+    
+      // Filter existing items from cart
+      cart = cart.filter((item) => !item.box || currentBoxProductIds.has(item.id));
+    
+      // Add/update products from box
+      subcategories.forEach((subcategory) => {
+        subcategoryProducts[subcategory.id]?.forEach((product) => {
+          const quantity = product.quantity || 1;
+          if (quantity > 0) {
+            const existingProduct = cart.find((item) => item.id === product.id);
+            if (existingProduct) {
+              existingProduct.quantity = quantity;
+            } else {
+              cart.push({
+                id: product.id,
+                image: product.images,
+                title: product.name,
+                price: product.price,
+                quantity: quantity,
+                box: true,
+              });
+            }
+          }
+        });
+      });
+    
+      // Save and update
+      localStorage.setItem("cart", JSON.stringify(cart));
+      window.dispatchEvent(new Event("cartUpdated"));
+      navigate("/cart");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    } finally {
+      setTimeout(() => {
+        setIsAddingToCart(false);
+      }, 500); // Prevent double-clicks
+    }
+  }, [subcategories, subcategoryProducts, navigate, isAddingToCart]);
+
+  // Memoized handler for closing modal
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setTimeout(() => {
@@ -327,11 +382,13 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
         image={categoryInfo.image}
         totalSum={totalSum}
         onAddToCart={addToCart}
+        isAddingToCart={isAddingToCart}
       />
 
       <BoxProductTable
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
+        subcategoryProductsList={subcategoryProductsList}
         setSubcategoryProducts={setSubcategoryProducts}
         onShowProductModal={handleShowProductModal}
         handleRemoveProduct={handleRemoveProduct}

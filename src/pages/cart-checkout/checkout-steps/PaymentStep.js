@@ -58,13 +58,13 @@ const PaymentStep = ({
         </>
       );
     } else if (selectedPaymentMethod === 'vivawallet') {
-      return "Pay Now";
+      return "Pay now";
     } else if (selectedPaymentMethod === 'paypal') {
-      return "Pay Now";
+      return "Pay now";
     } else if (selectedPaymentMethod === 'cash') {
-      return "Complete Order";
+      return "Complete order";
     } else {
-      return "Complete Order";
+      return "Complete order";
     }
   };
   
@@ -85,7 +85,7 @@ const PaymentStep = ({
           <div className="alert alert-info mb-4 d-flex align-items-start">
             <FontAwesomeIcon icon={faInfoCircle} className="me-3 mt-1" />
             <div>
-              <p className="mb-0 fw-bold">Early Booking Notice:</p>
+              <p className="mb-0 fw-bold">Early booking notice:</p>
               <p className="mb-0">
                 Since your delivery date is more than 7 days away, you can:
               </p>
@@ -96,7 +96,7 @@ const PaymentStep = ({
                 {userType === "crew" && <li>Pay in cash on delivery (crew members only)</li>}
               </ul>
               {paymentDeadline && (
-                <p className="mt-2 mb-0 fw-bold">Payment Deadline: {paymentDeadline}</p>
+                <p className="mt-2 mb-0 fw-bold">Payment deadline: {paymentDeadline}</p>
               )}
             </div>
           </div>
@@ -117,7 +117,7 @@ const PaymentStep = ({
         )}
 
         <div className="mb-4">
-          <h5 className="mb-3 border-bottom pb-2">Select Payment Method</h5>
+          <h5 className="mb-3 border-bottom pb-2">Select payment method</h5>
           
           {/* Credit/Debit Card option */}
           <div 
@@ -137,7 +137,7 @@ const PaymentStep = ({
               <label htmlFor="viva-wallet" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
                 <FontAwesomeIcon icon={faCreditCard} className="me-3 text-primary" />
                 <div>
-                  <span className="fw-bold">Pay Now with Credit/Debit Card</span>
+                  <span className="fw-bold">Pay now with Credit/Debit Card</span>
                   <small className="d-block text-muted">Secure payment via Viva Wallet</small>
                 </div>
               </label>
@@ -168,7 +168,7 @@ const PaymentStep = ({
               <label htmlFor="paypal" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
                 <FontAwesomeIcon icon={faPaypal} className="me-3 text-primary" />
                 <div>
-                  <span className="fw-bold">Pay Now with PayPal</span>
+                  <span className="fw-bold">Pay now with PayPal</span>
                   <small className="d-block text-muted">Fast and secure payment</small>
                 </div>
               </label>
@@ -200,7 +200,7 @@ const PaymentStep = ({
                 <label htmlFor="bank-transfer" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faUniversity} className="me-3 text-primary" />
                   <div>
-                    <span className="fw-bold">Pay Later by Bank Transfer</span>
+                    <span className="fw-bold">Pay later by Bank transfer</span>
                     {paymentDeadline && (
                       <small className="d-block text-muted">Payment required by {paymentDeadline}</small>
                     )}
@@ -235,7 +235,7 @@ const PaymentStep = ({
                 <label htmlFor="cash-on-delivery" className="mb-0 d-flex align-items-center flex-grow-1" style={{ cursor: 'pointer' }}>
                   <FontAwesomeIcon icon={faMoneyBillWave} className="me-3 text-primary" />
                   <div>
-                    <span className="fw-bold">Pay in Cash on Delivery</span>
+                    <span className="fw-bold">Pay in Cash on delivery</span>
                     <small className="d-block text-muted">Available only for crew members</small>
                   </div>
                 </label>
@@ -251,13 +251,13 @@ const PaymentStep = ({
         </div>
 
         <div className="mb-4">
-          <h5 className="mb-3 border-bottom pb-2">Review Order</h5>
+          <h5 className="mb-3 border-bottom pb-2">Review order</h5>
           <p>Please review your information before completing your order:</p>
           
           <div className="row mb-3">
             <div className="col-md-6">
               <div className="rounded bg-light p-3 h-100">
-                <h6 className="mb-2 text-muted">Personal Details</h6>
+                <h6 className="mb-2 text-muted">Personal details</h6>
                 <div className="row mb-1">
                   <div className="col-4 fw-bold">Name:</div>
                   <div className="col-8">{billing.first_name} {billing.last_name}</div>
@@ -275,7 +275,7 @@ const PaymentStep = ({
             
             <div className="col-md-6 mt-3 mt-md-0">
               <div className="rounded bg-light p-3 h-100">
-                <h6 className="mb-2 text-muted">Delivery Details</h6>
+                <h6 className="mb-2 text-muted">Delivery details</h6>
                 {billing.delivery_date && (
                   <div className="row mb-1">
                     <div className="col-4 fw-bold">Date:</div>
@@ -343,7 +343,7 @@ const PaymentStep = ({
               onClick={prevStep}
               disabled={isSubmitting}
             >
-              Back <span className="d-none d-sm-inline">to Delivery Details</span>
+              Back <span className="d-none d-sm-inline">to delivery details</span>
             </button>
             <button
               type="button"

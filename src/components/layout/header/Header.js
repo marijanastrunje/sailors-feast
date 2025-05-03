@@ -15,6 +15,8 @@ const Header = () => {
     // Dodaj ref za praćenje elementa menija
     const menuRef = useRef(null);
     const menuButtonRef = useRef(null);
+    const searchBoxRef = useRef(null);
+    const searchButtonRef = useRef(null);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -66,6 +68,17 @@ const Header = () => {
             ) {
                 setMenu(false);
             }
+
+            if (
+                isSearchVisible &&
+                searchBoxRef.current &&
+                !searchBoxRef.current.contains(event.target) &&
+                searchButtonRef.current &&
+                !searchButtonRef.current.contains(event.target)
+            ) {
+                setIsSearchVisible(false);
+                setSearchResults([]);
+            }
         };
 
         // Dodaj event listener na dokument
@@ -75,7 +88,7 @@ const Header = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [menu]); // Ovisi o stanju menija
+    }, [menu, isSearchVisible]); // Ovisi o stanju menija
 
     useEffect(() => {
         const handleCartUpdate = () => {
@@ -180,7 +193,7 @@ const Header = () => {
                             <Link className="user"><FontAwesomeIcon icon={faUser} className="me-1" />{username}</Link>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end p-2">
-                            <li><Link to="/user" className="dropdown-item">User Dashboard</Link></li>
+                            <li><Link to="/user" className="dropdown-item">User dashboard</Link></li>
                             <li><hr className="dropdown-divider m-0" /></li>
                             <li><button className="dropdown-item text-danger" onClick={logout}>Logout</button></li>
                             </ul>
@@ -210,10 +223,10 @@ const Header = () => {
                         <img src="/img/logo/white-color-logo-horizontal-sailors-feast.svg" width={230} height={40} alt="Sailor's Feast logo" />
                     </Link>
                     <div className="d-flex align-items-center order-lg-2">
-                        <button id="search-icon" className="search-button mx-1 mx-md-2" aria-label="Search" onClick={toggleSearch}>
+                        <button id="search-icon" className="search-button mx-1 mx-md-2" aria-label="Search" onClick={toggleSearch} ref={searchButtonRef}>
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </button>
-                        <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`}>
+                        <div id="search-box" className={`search-box col-12 col-md-4 ${isSearchVisible ? '' : 'd-none'}`} ref={searchBoxRef}>
                         <form
                             className="d-flex p-2"
                             onSubmit={handleSearchSubmit}
@@ -260,17 +273,17 @@ const Header = () => {
                         <ul className="navbar-nav mx-auto mb-lg-0">
                             <li className="nav-item me-2"><Link to="/" className={`nav-link ${currentPath === '/' ? 'active' : ''}`}><FontAwesomeIcon icon={faHouse} className="mx-2 d-lg-none" />Home</Link></li>
                             <li className="nav-item dropdown me-2">
-                                <Link className={`nav-link dropdown-toggle ${isFoodBoxActive ? 'active' : ''}`} data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-lg-none" />Food Box</Link>
+                                <Link className={`nav-link dropdown-toggle ${isFoodBoxActive ? 'active' : ''}`} data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-lg-none" />Food box</Link>
                                 <ul className="dropdown-menu">
                                     <li><Link to="/all-boxes" className={`dropdown-item ${currentPath === '/all-boxes' ? 'active' : ''}`}>Compare boxes</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/standard-box" className={`dropdown-item ${currentPath === '/standard-box' ? 'active' : ''}`}>Standard Box</Link></li>
+                                    <li><Link to="/standard-box" className={`dropdown-item ${currentPath === '/standard-box' ? 'active' : ''}`}>Standard box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/friends-family-box" className={`dropdown-item ${currentPath === '/friends-family-box' ? 'active' : ''}`}>Friends&Family Box</Link></li>
+                                    <li><Link to="/friends-family-box" className={`dropdown-item ${currentPath === '/friends-family-box' ? 'active' : ''}`}>Friends&Family box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/feast-box" className={`dropdown-item ${currentPath === '/feast-box' ? 'active' : ''}`}>Feast Box</Link></li>
+                                    <li><Link to="/feast-box" className={`dropdown-item ${currentPath === '/feast-box' ? 'active' : ''}`}>Feast box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/healthy-box" className={`dropdown-item ${currentPath === '/healthy-box' ? 'active' : ''}`} href="healthy-box.html">Healthy Box</Link></li>
+                                    <li><Link to="/healthy-box" className={`dropdown-item ${currentPath === '/healthy-box' ? 'active' : ''}`} href="healthy-box.html">Healthy box</Link></li>
                                 </ul>
                             </li>
                             <li className="nav-item me-2"><Link to="/groceries" className={`nav-link ${currentPath === '/groceries' ? 'active' : ''}`}><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-lg-none" />Groceries</Link></li>

@@ -21,7 +21,9 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
       <form className="needs-validation">
         <div className="row g-3">
           <div className="col-md-6">
-            <label htmlFor="first_name" className="form-label">First Name</label>
+            <label htmlFor="first_name" className="form-label">
+              First Name <span className="text-danger">*</span>
+            </label>
             <input
               type="text"
               className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
@@ -38,7 +40,9 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
           </div>
 
           <div className="col-md-6">
-            <label htmlFor="last_name" className="form-label">Last Name</label>
+            <label htmlFor="last_name" className="form-label">
+              Last Name <span className="text-danger">*</span>
+            </label>
             <input
               type="text"
               className={`form-control ${errors.last_name ? 'is-invalid' : ''}`}
@@ -55,7 +59,9 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
           </div>
 
           <div className="col-12">
-            <label htmlFor="email" className="form-label">Email</label>
+            <label htmlFor="email" className="form-label">
+              Email <span className="text-danger">*</span>
+            </label>
             <input
               type="email"
               className={`form-control ${errors.email ? 'is-invalid' : ''}`}
@@ -72,7 +78,9 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
           </div>
 
           <div className="col-12">
-            <label htmlFor="phone" className="form-label">Phone</label>
+            <label htmlFor="phone" className="form-label">
+              Phone <span className="text-danger">*</span>
+            </label>
             <div className={`phone-input-container ${errors.phone ? 'is-invalid' : ''}`}>
               <PhoneInput
                 country={'hr'}
@@ -125,7 +133,7 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
             onClick={nextStep}
             disabled={isSubmitting}
           >
-            Continue to Delivery Details
+            Continue to delivery details
           </button>
         </div>
       </form>

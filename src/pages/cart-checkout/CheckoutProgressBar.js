@@ -2,8 +2,8 @@ import React from "react";
 
 const CheckoutProgressBar = ({ currentStep }) => {
   const steps = [
-    { id: 1, name: "Personal Details" },
-    { id: 2, name: "Delivery Details" },
+    { id: 1, name: "Personal details" },
+    { id: 2, name: "Delivery details" },
     { id: 3, name: "Payment" }
   ];
 

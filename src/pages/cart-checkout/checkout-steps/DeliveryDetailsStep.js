@@ -139,7 +139,7 @@ const DeliveryDetailsStep = ({
   return (
     <div className="checkout-step">
       <h4 className="mb-3">
-        Delivery Details
+        Delivery details
         {!showWarning && (
           <span className="optional-label"></span>
         )}
@@ -169,7 +169,7 @@ const DeliveryDetailsStep = ({
           <div className="col-md-6">
             <label htmlFor="delivery_date" className="form-label d-flex justify-content-between align-items-center">
               <span>
-                Preferred Delivery Date 
+                Preferred delivery date 
                 <span className="text-danger ms-1">*</span>
               </span>
             </label>
@@ -218,7 +218,7 @@ const DeliveryDetailsStep = ({
 
           <div className="col-md-6">
             <label htmlFor="delivery_time" className="form-label">
-              Preferred Delivery Time
+              Preferred delivery time
               <span className="text-danger ms-1">*</span>
             </label>
             <select
@@ -239,9 +239,14 @@ const DeliveryDetailsStep = ({
                 ))
               )}
             </select>
+            {billing.marina && (
+            <small className="form-text text-muted">
+              You can see only available time slots.
+            </small>
+            )}
             {!billing.marina && (
               <small className="form-text text-muted">
-                Please select a marina first to see available time slots
+                Please select a marina first to see available time slots.
               </small>
             )}
             {!billing.delivery_date && billing.marina && (
@@ -327,7 +332,7 @@ const DeliveryDetailsStep = ({
 
           <div className="col-12">
             <label htmlFor="order_notes" className="form-label">
-              Order Notes <span className="optional-label">(optional)</span>
+              Order notes <span className="optional-label">(optional)</span>
             </label>
             <textarea
               className="form-control"
@@ -349,7 +354,7 @@ const DeliveryDetailsStep = ({
             onClick={prevStep}
             disabled={isSubmitting}
           >
-            Back to Personal Details
+            Back to personal details
           </button>
           <button
             type="button"
@@ -371,7 +376,7 @@ const DeliveryDetailsStep = ({
             }}            
             disabled={isSubmitting}
           >
-            Continue to Payment
+            Continue to payment
           </button>
         </div>
       </form>

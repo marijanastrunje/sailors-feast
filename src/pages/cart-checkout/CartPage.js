@@ -250,10 +250,13 @@ const CartPage = () => {
                         ))}
                       </tbody>
                     </table>
-                    <small className="text-muted text-end d-block">
-                      Want to save your list? <Link to="/login" className="text-prim">Login here</Link>
-                    </small>
 
+                    {!token && (
+                      <small className="text-muted text-end d-block">
+                        Want to save your list? <Link to="/login" className="text-prim">Login here</Link>
+                      </small>
+                    )}
+                    
                   </>
                 )}
               </>

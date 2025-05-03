@@ -25,7 +25,7 @@ const Hero = () => {
         />
         <div>
           <h1 className="m-0">Sailor's Feast</h1>
-          <h2 className="text-start mb-0">Yacht supply Croatia</h2>
+          <p className="text-start mb-0 fw-semibold fs-4">Yacht supply Croatia</p>
           <p>We bring fresh food and tasty drinks right to your boat, so you can enjoy more time on the water.</p>
           <Link to="/groceries" className="btn btn-prim">
             Shop now

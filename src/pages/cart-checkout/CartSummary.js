@@ -23,7 +23,7 @@ const CartSummary = ({ cart, setTotalPrice }) => {
     return (
         <>
             <h4 className="d-flex justify-content-center align-items-center mb-3">
-                <span className="text-prim me-1">Your Cart</span>
+                <span className="text-prim me-1">Your cart</span>
                 <span className="badge rounded-pill me-2" style={{ backgroundColor: "var(--primary-color)", color: "white" }}>{cart.length}</span>
                 <button className="btn btn-sm d-md-none" style={{ border: "1px solid var(--primary-color)", color: "var(--primary-color)", backgroundColor: "transparent" }} onClick={() => setShowCart(!showCart)}>
                     {showCart ? "▲" : "▼"}
