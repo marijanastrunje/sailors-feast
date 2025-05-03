@@ -239,14 +239,14 @@ const DeliveryDetailsStep = ({
                 ))
               )}
             </select>
-            {billing.marina && (
+            {billing.delivery_date && billing.marina && (
             <small className="form-text text-muted">
               You can see only available time slots.
             </small>
             )}
             {!billing.marina && (
               <small className="form-text text-muted">
-                Please select a marina first to see available time slots.
+                Please select a marina to see available time slots.
               </small>
             )}
             {!billing.delivery_date && billing.marina && (

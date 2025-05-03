@@ -17,12 +17,12 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
 
   return (
     <div className="checkout-step">
-      <h4 className="mb-3">Personal Details</h4>
+      <h4 className="mb-3">Personal details</h4>
       <form className="needs-validation">
         <div className="row g-3">
           <div className="col-md-6">
             <label htmlFor="first_name" className="form-label">
-              First Name <span className="text-danger">*</span>
+              First name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -41,7 +41,7 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
 
           <div className="col-md-6">
             <label htmlFor="last_name" className="form-label">
-              Last Name <span className="text-danger">*</span>
+              Last name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -111,7 +111,7 @@ const PersonalDetailsStep = ({ billing, setBilling, errors = {}, nextStep, isSub
 
           <div className="col-12">
             <label htmlFor="number_of_guests" className="form-label">
-              Number of Guests <span className="optional-label">(optional)</span>
+              Number of guests <span className="optional-label">(optional)</span>
             </label>
             <input
               type="number"
