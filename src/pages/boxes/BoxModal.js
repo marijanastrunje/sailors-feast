@@ -135,5 +135,4 @@ const BoxModal = ({ extraProducts, handleAddProduct, closeModal, onShowProductMo
   );
 };
 
-// Optimizacija ponovnog renderiranja pomoću memo
 export default React.memo(BoxModal);

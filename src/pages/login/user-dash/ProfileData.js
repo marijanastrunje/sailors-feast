@@ -13,10 +13,10 @@ const ProfileData = ({ billing, setBilling, saveUserData }) => {
 
   return (
     <div className="col-12 col-md-8 mx-auto mt-5 p-3">
-      <h2 className="mb-3">Personal Information</h2>
+      <h2 className="mb-3">Personal information</h2>
       <div className="row g-1">
         <div className="col-6">
-          <label htmlFor="first_name" className="form-label">First Name</label>
+          <label htmlFor="first_name" className="form-label">First name</label>
           <input
             id="first_name"
             type="text"
@@ -27,7 +27,7 @@ const ProfileData = ({ billing, setBilling, saveUserData }) => {
         </div>
 
         <div className="col-6">
-          <label htmlFor="last_name" className="form-label">Last Name</label>
+          <label htmlFor="last_name" className="form-label">Last name</label>
           <input
             id="last_name"
             type="text"
@@ -117,7 +117,7 @@ const ProfileData = ({ billing, setBilling, saveUserData }) => {
       </div>
 
       <button className="btn btn-prim mt-3" onClick={saveUserData}>
-        Save Changes
+        Save changes
       </button>
     </div>
   );

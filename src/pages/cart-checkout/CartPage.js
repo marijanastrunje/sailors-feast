@@ -1,6 +1,3 @@
-// First, let's update the CartPage.js component to improve the guest checkout flow
-// src/pages/cart-checkout/CartPage.js
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -118,6 +115,7 @@ const CartPage = () => {
 
       setSavedLists(updatedLists);
       alert(`List "${listName}" has been successfully saved!`);
+      navigate("/user");
     } catch (err) {
       alert("Unable to save the list.");
     }
@@ -253,7 +251,7 @@ const CartPage = () => {
 
                     {!token && (
                       <small className="text-muted text-end d-block">
-                        Want to save your list? <Link to="/login" className="text-prim">Login here</Link>
+                        Want to save your list? <Link to={`/login?redirect=${encodeURIComponent(window.location.pathname)}`} className="text-prim">Login here</Link>
                       </small>
                     )}
                     

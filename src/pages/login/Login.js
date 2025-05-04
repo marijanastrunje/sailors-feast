@@ -85,13 +85,13 @@ const Login = () => {
                 .then(res => res.json())
                 .then(user => {
                     localStorage.setItem("user_type", user.user_type || "");
+                    window.dispatchEvent(new Event('userLogin'));
                     navigate(redirect);
-                    window.location.reload();
                 })
                 .catch(err => {
                     console.warn("Failed to fetch user_type:", err);
+                    window.dispatchEvent(new Event('userLogin'));
                     navigate(redirect);
-                    window.location.reload();
                 });
             })
             .catch((err) => {

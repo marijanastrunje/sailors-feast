@@ -14,267 +14,221 @@ const authHeader = {
   Authorization: "Basic " + btoa(`${wcKey}:${wcSecret}`),
 };
 
-const CACHE_EXPIRATION = 60 * 60 * 1000; // 1 hour
-let globalCache = {};
-
-// Initialize cache from localStorage if available
-try {
-  const savedCache = localStorage.getItem('box_api_cache');
-  if (savedCache) {
-    const parsedCache = JSON.parse(savedCache);
-    if (parsedCache && (Date.now() - parsedCache.timestamp < CACHE_EXPIRATION)) {
-      globalCache = parsedCache;
-    }
-  }
-} catch (e) {
-  console.error('Error loading cache from localStorage', e);
-}
-
 const BoxLayout = ({ categoryId, categoryMapping }) => {
   const componentMounted = useRef(true);
-  const apiCache = useRef(globalCache);
   const navigate = useNavigate();
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const [subcategories, setSubcategories] = useState([]);
   const [subcategoryProducts, setSubcategoryProducts] = useState({});
   const [extraProducts, setExtraProducts] = useState([]);
+  const [activeModalCategory, setActiveModalCategory] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryInfo, setCategoryInfo] = useState({ name: "", description: "", image: "" });
   const [isLoading, setIsLoading] = useState(true);
-  const [headerLoaded, setHeaderLoaded] = useState(false);
-  const [productsLoaded, setProductsLoaded] = useState(false);
-  const [activeModalCategory, setActiveModalCategory] = useState(null);
+  const [peopleCount, setPeopleCount] = useState(4);
+  const [listName, setListName] = useState("");
+  const [, setSavedLists] = useState({});
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const token = localStorage.getItem("token");
+  const loadedFromStorage = useRef(false);
+  const [isFirstLoadAfterLogin, setIsFirstLoadAfterLogin] = useState(true);
 
-  // Update loading state when header or products load
   useEffect(() => {
-    setIsLoading(!(headerLoaded && productsLoaded));
-  }, [headerLoaded, productsLoaded]);
+    const savedProducts = localStorage.getItem("pendingBoxProducts");
+    const savedPeopleCount = localStorage.getItem("pendingPeopleCount");
 
-  // Fetch category info and subcategories with products
+    if (savedProducts) {
+      setSubcategoryProducts(JSON.parse(savedProducts));
+      loadedFromStorage.current = true;
+      localStorage.removeItem("pendingBoxProducts");
+    }
+    if (savedPeopleCount) {
+      setPeopleCount(parseInt(savedPeopleCount, 10));
+      localStorage.removeItem("pendingPeopleCount");
+    }
+  }, []);
+
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    const fetchCategoryInfo = async () => {
-      const cacheKey = `category_${categoryId}`;
-      if (apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
-        setCategoryInfo(apiCache.current[cacheKey]);
-        setHeaderLoaded(true);
-        return;
+    const handleLogin = () => {
+      const savedProducts = localStorage.getItem("pendingBoxProducts");
+      const savedPeopleCount = localStorage.getItem("pendingPeopleCount");
+  
+      if (savedProducts) {
+        setSubcategoryProducts(JSON.parse(savedProducts));
+        localStorage.removeItem("pendingBoxProducts");
       }
-
-      try {
-        const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, {
-          headers: authHeader,
-          signal
-        });
-        const data = await res.json();
-        if (!componentMounted.current) return;
-
-        const info = {
-          name: data.name || "",
-          description: data.description || "",
-          image: data.image?.src || "",
-        };
-
-        if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
-        apiCache.current[cacheKey] = info;
-        apiCache.current.timestamp = Date.now();
-
-        setCategoryInfo(info);
-        setHeaderLoaded(true);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error("Error fetching category:", err);
-        }
-        setHeaderLoaded(true);
+      if (savedPeopleCount) {
+        setPeopleCount(parseInt(savedPeopleCount, 10));
+        localStorage.removeItem("pendingPeopleCount");
       }
     };
+  
+    window.addEventListener('userLogin', handleLogin);
+    return () => {
+      window.removeEventListener('userLogin', handleLogin);
+    };
+  }, []);  
 
-    const fetchSubcategoriesAndProducts = async () => {
-      const cacheKey = `subcategories_${categoryId}`;
-      if (apiCache.current && apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
-        setSubcategories(apiCache.current[cacheKey].subcategoriesData);
-        setSubcategoryProducts(apiCache.current[cacheKey].grouped);
-        setProductsLoaded(true);
-        return;
-      }
-
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, {
-          headers: authHeader,
-          signal
-        });
-        const subcategoriesData = await subcatRes.json();
+        const categoryRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories/${categoryId}`, { headers: authHeader });
+        const categoryData = await categoryRes.json();
         if (!componentMounted.current) return;
-        setSubcategories(subcategoriesData);
 
-        if (subcategoriesData.length > 0) {
-          const allSubcategoryIds = subcategoriesData.map(sub => sub.id).join(",");
-          const productRes = await fetch(
-            `${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories`,
-            { headers: authHeader, signal }
-          );
-          const allProducts = await productRes.json();
-          if (!componentMounted.current) return;
+        setCategoryInfo({
+          name: categoryData.name || "",
+          description: categoryData.description || "",
+          image: categoryData.image?.src || "",
+        });
 
-          const grouped = {};
-          subcategoriesData.forEach(sub => {
-            grouped[sub.id] = allProducts.filter(prod =>
-              prod.categories.some(cat => cat.id === sub.id)
-            );
-          });
+        const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, { headers: authHeader });
+        const subcatData = await subcatRes.json();
+        if (!componentMounted.current) return;
 
-          if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
-          apiCache.current[cacheKey] = {
-            subcategoriesData,
-            grouped
-          };
-          apiCache.current.timestamp = Date.now();
+        setSubcategories(subcatData);
 
+        const allSubcategoryIds = subcatData.map(sub => sub.id).join(",");
+        const productRes = await fetch(`${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories,acf`, { headers: authHeader });
+        const products = await productRes.json();
+        if (!componentMounted.current) return;
+
+        const grouped = {};
+        subcatData.forEach(sub => {
+          grouped[sub.id] = products
+            .filter(p => p.categories.some(cat => cat.id === sub.id))
+            .map(product => {
+              const baseQuantity = parseInt(product.acf?.boxes_product_default_quantity, 10);
+              const defaultQuantity = isNaN(baseQuantity) ? 1 : baseQuantity;
+              return { ...product, baseQuantity: defaultQuantity, quantity: defaultQuantity };
+            });
+        });
+
+        if (!loadedFromStorage.current) {
           setSubcategoryProducts(grouped);
         }
-
-        setProductsLoaded(true);
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error("Error fetching products:", error);
-        }
-        setProductsLoaded(true);
+        
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setIsLoading(false);
       }
     };
 
-    fetchCategoryInfo();
-    fetchSubcategoriesAndProducts();
-
+    fetchData();
     return () => {
-      controller.abort();
       componentMounted.current = false;
-      
-      // Optimize cache storage by removing unnecessary data
-      try {
-        const cacheToSave = {...apiCache.current};
-        // Remove potentially large temporary data before saving
-        delete cacheToSave.tempData;
-        
-        localStorage.setItem('box_api_cache', JSON.stringify(cacheToSave));
-        globalCache = cacheToSave;
-      } catch (e) {
-        console.error('Error saving cache to localStorage', e);
-      }
     };
   }, [categoryId]);
 
-  // Memoized handler for showing product modal
-  const handleShowProductModal = useCallback((product) => {
-    setSelectedProduct(product);
-  }, []);
+  useEffect(() => {
 
-  // Memoized handler for removing products
-  const handleRemoveProduct = useCallback((subcategoryId, productId) => {
-    setSubcategoryProducts(prev => ({
-      ...prev,
-      [subcategoryId]: prev[subcategoryId].filter(p => p.id !== productId),
-    }));
-  }, []);
-
-  // Fetch extra products for subcategories
-  const fetchExtraSubcategories = useCallback(async (parentCategoryId) => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    
-    setExtraProducts([]);
-    const cacheKey = `extras_${parentCategoryId}`;
-    if (apiCache.current && apiCache.current[cacheKey] && (Date.now() - apiCache.current.timestamp < CACHE_EXPIRATION)) {
-      setExtraProducts(apiCache.current[cacheKey]);
-      return;
-    }
-
-    try {
-      const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
-        headers: authHeader,
-        signal
-      });
-      const subcats = await res.json();
-      if (!componentMounted.current) return;
-
-      const productPromises = subcats.map(async subcat => {
-        const res = await fetch(
-          `${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}&_fields=id,name,price,images,categories`,
-          { headers: authHeader, signal }
-        );
-        const products = await res.json();
-        return { id: subcat.id, name: subcat.name, products };
-      });
-
-      const withProducts = await Promise.all(productPromises);
-      if (!componentMounted.current) return;
-
-      if (!apiCache.current) apiCache.current = { timestamp: Date.now() };
-      apiCache.current[cacheKey] = withProducts;
-      apiCache.current.timestamp = Date.now();
-
-      setExtraProducts(withProducts);
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error("Error fetching extra subcategories:", error);
-      }
-      setExtraProducts([]);
-    }
-    
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  // Memoized handler for showing modal
-  const handleShowModal = useCallback((subcategoryId) => {
-    setExtraProducts([]);
-    setActiveModalCategory(subcategoryId);
-    setShowModal(true);
-    fetchExtraSubcategories(categoryMapping[subcategoryId]);
-  }, [fetchExtraSubcategories, categoryMapping]);
-
-  // Memoized handler for adding products
-  const handleAddProduct = useCallback((product, quantity) => {
-    const productSubcategoryId = product.categories?.find(cat =>
-      subcategories.some(sub => sub.id === cat.id)
-    )?.id;
-
-    const subcategoryId = productSubcategoryId || activeModalCategory;
-
-    if (!subcategoryId) {
-      console.error("Unknown subcategory for adding product");
+    if (isFirstLoadAfterLogin && loadedFromStorage.current) {
       return;
     }
 
     setSubcategoryProducts(prev => {
+      const updated = {};
+      Object.keys(prev).forEach(subcatId => {
+        updated[subcatId] = prev[subcatId].map(product => {
+          const scaledQuantity = Math.max(1, Math.round((product.baseQuantity / 4) * peopleCount));
+          return { ...product, quantity: scaledQuantity };
+        });
+      });
+      return updated;
+    });
+  }, [peopleCount, isFirstLoadAfterLogin]);
+  
+  const handleShowProductModal = (product) => setSelectedProduct(product);
+
+  const handleRemoveProduct = (subcategoryId, productId) => {
+    setSubcategoryProducts(prev => ({
+      ...prev,
+      [subcategoryId]: prev[subcategoryId].filter(p => p.id !== productId),
+    }));
+  };
+
+  const handleAddProduct = (product, quantity) => {
+    const lastCategoryId = product.categories?.length > 0 
+      ? product.categories[product.categories.length - 1].id 
+      : null;
+  
+    const subcategoryId = subcategories.some(sub => sub.id === lastCategoryId)
+      ? lastCategoryId
+      : activeModalCategory;
+  
+    if (!subcategoryId) {
+      console.error("Unknown subcategory for adding product");
+      return;
+    }
+  
+    // NOVO: postavi baseQuantity na unos korisnika
+    const baseQuantity = quantity;
+  
+    setSubcategoryProducts(prev => {
       const existing = prev[subcategoryId] || [];
       const existingProduct = existing.find(p => p.id === product.id);
-
+  
       if (existingProduct) {
         return {
           ...prev,
           [subcategoryId]: existing.map(p =>
             p.id === product.id
-              ? { ...p, quantity: (p.quantity || 0) + quantity }
+              ? { ...p, baseQuantity: p.baseQuantity + baseQuantity }
               : p
-          )
+          ),
         };
       } else {
         return {
           ...prev,
-          [subcategoryId]: [...existing, { ...product, quantity }]
+          [subcategoryId]: [
+            ...existing,
+            { ...product, baseQuantity: baseQuantity, quantity: baseQuantity },
+          ],
         };
       }
     });
-
+  
     setShowModal(false);
-  }, [subcategories, activeModalCategory]);
+  };
+  
 
-  // Memoized calculation for total sum
+  const fetchExtraSubcategories = useCallback(async (parentCategoryId) => {
+    setExtraProducts([]);
+    try {
+      const res = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${parentCategoryId}`, {
+        headers: authHeader,
+      });
+      const subcats = await res.json();
+      if (!componentMounted.current) return;
+  
+      const productPromises = subcats.map(async (subcat) => {
+        const res = await fetch(
+          `${backendUrl}/wp-json/wc/v3/products?category=${subcat.id}&_fields=id,name,price,images,categories,acf`,
+          { headers: authHeader }
+        );
+        const products = await res.json();
+        return { id: subcat.id, name: subcat.name, products };
+      });
+  
+      const withProducts = await Promise.all(productPromises);
+      if (!componentMounted.current) return;
+  
+      setExtraProducts(withProducts);
+    } catch (error) {
+      console.error("Error fetching extra subcategories:", error);
+      setExtraProducts([]);
+    }
+  }, []);
+
+  const handleShowModal = useCallback((subcategoryId) => {
+    setExtraProducts([]);
+    setActiveModalCategory(subcategoryId);
+    setShowModal(true);
+    fetchExtraSubcategories(categoryMapping[subcategoryId]);
+  }, [fetchExtraSubcategories, categoryMapping]);  
+
   const totalSum = useMemo(() => {
     return subcategories.reduce((sum, sub) => {
       return (
@@ -284,91 +238,135 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
     }, 0);
   }, [subcategories, subcategoryProducts]);
 
-  // Memoized subcategory products list for optimized rendering
-  const subcategoryProductsList = useMemo(() => {
-    return Object.entries(subcategoryProducts).map(([id, products]) => ({
-      id: parseInt(id, 10),
-      products
-    }));
-  }, [subcategoryProducts]);
-
-  // Debounced add to cart function
-  const addToCart = useCallback(() => {
-    if (isAddingToCart) return;
-    
-    setIsAddingToCart(true);
-    
-    try {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    
-      // Find product IDs from box
-      const currentBoxProductIds = new Set();
-      subcategories.forEach((subcategory) => {
-        subcategoryProducts[subcategory.id]?.forEach((product) => {
-          currentBoxProductIds.add(product.id);
-        });
-      });
-    
-      // Filter existing items from cart
-      cart = cart.filter((item) => !item.box || currentBoxProductIds.has(item.id));
-    
-      // Add/update products from box
-      subcategories.forEach((subcategory) => {
-        subcategoryProducts[subcategory.id]?.forEach((product) => {
-          const quantity = product.quantity || 1;
-          if (quantity > 0) {
-            const existingProduct = cart.find((item) => item.id === product.id);
-            if (existingProduct) {
-              existingProduct.quantity = quantity;
-            } else {
-              cart.push({
-                id: product.id,
-                image: product.images,
-                title: product.name,
-                price: product.price,
-                quantity: quantity,
-                box: true,
-              });
-            }
+  const addToCart = () => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const currentBoxProductIds = new Set();
+    subcategories.forEach(sub => {
+      subcategoryProducts[sub.id]?.forEach(product => currentBoxProductIds.add(product.id));
+    });
+    cart = cart.filter(item => !item.box || currentBoxProductIds.has(item.id));
+    subcategories.forEach(sub => {
+      subcategoryProducts[sub.id]?.forEach(product => {
+        const quantity = product.quantity || 1;
+        if (quantity > 0) {
+          const existing = cart.find(item => item.id === product.id);
+          if (existing) {
+            existing.quantity = quantity;
+          } else {
+            cart.push({
+              id: product.id,
+              image: product.images,
+              title: product.name,
+              price: product.price,
+              quantity,
+              box: true,
+            });
           }
+        }
+      });
+    });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+    navigate("/cart");
+  };
+
+  const saveToBackend = async () => {
+    if (!token) {
+      navigate("/login?redirect=/boxes");
+      return;
+    }
+  
+    if (!listName.trim()) {
+      alert("Please enter a list name before saving.");
+      return;
+    }
+  
+    try {
+      const res = await fetch(`${backendUrl}/wp-json/wp/v2/users/me?nocache=` + Date.now(), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+  
+      let currentLists = {};
+      try {
+        const parsed = JSON.parse(data.meta?.saved_lists || "{}");
+        if (typeof parsed === "object" && parsed !== null) {
+          currentLists = parsed;
+        }
+      } catch (err) {
+        console.warn("Failed parsing saved_lists:", err);
+      }
+  
+      // Pripremi box proizvode (filtriraj po `box: true`)
+      const currentBoxProducts = [];
+      subcategories.forEach(sub => {
+        subcategoryProducts[sub.id]?.forEach(product => {
+          currentBoxProducts.push({
+            id: product.id,
+            image: product.images,
+            title: product.name,
+            price: product.price,
+            quantity: product.quantity,
+            box: true,
+          });
         });
       });
-    
-      // Save and update
-      localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("cartUpdated"));
-      navigate("/cart");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    } finally {
-      setTimeout(() => {
-        setIsAddingToCart(false);
-      }, 500); // Prevent double-clicks
+  
+      const updatedLists = { ...currentLists, [listName]: currentBoxProducts };
+  
+      const saveRes = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          meta: {
+            saved_lists: JSON.stringify(updatedLists),
+          },
+        }),
+      });
+  
+      const saveData = await saveRes.json();
+      console.log("Saved lists:", updatedLists);
+      console.log("Backend response:", saveData);
+  
+      setSavedLists(updatedLists);
+      alert(`List "${listName}" has been successfully saved!`);
+      navigate("/user");
+    } catch (err) {
+      alert("Unable to save the list.");
     }
-  }, [subcategories, subcategoryProducts, navigate, isAddingToCart]);
+    setShowSaveModal(false);
+  };  
 
-  // Memoized handler for closing modal
+  const handlePeopleCountChange = (count) => {
+    if (isFirstLoadAfterLogin) {
+
+      setIsFirstLoadAfterLogin(false);
+    }
+    setPeopleCount(count);
+  };
+
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setTimeout(() => {
       setExtraProducts([]);
-      setActiveModalCategory(null);
     }, 300);
   }, []);
 
   if (isLoading) {
     return (
       <>
-        {headerLoaded && (
-          <BoxHeader
-            title={categoryInfo.name}
-            description={categoryInfo.description}
-            image={categoryInfo.image}
-            totalSum={0}
-            isLoading={true}
-            onAddToCart={addToCart}
-          />
-        )}
+        <BoxHeader
+          title={categoryInfo.name}
+          description={categoryInfo.description}
+          image={categoryInfo.image}
+          totalSum={0}
+          peopleCount={peopleCount}
+          onPeopleCountChange={handlePeopleCountChange}
+          onAddToCart={addToCart}
+        />
         <BoxLayoutSkeleton />
       </>
     );
@@ -381,21 +379,22 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
         description={categoryInfo.description}
         image={categoryInfo.image}
         totalSum={totalSum}
+        peopleCount={peopleCount}
+        onPeopleCountChange={handlePeopleCountChange}
         onAddToCart={addToCart}
-        isAddingToCart={isAddingToCart}
       />
-
       <BoxProductTable
         subcategories={subcategories}
         subcategoryProducts={subcategoryProducts}
-        subcategoryProductsList={subcategoryProductsList}
         setSubcategoryProducts={setSubcategoryProducts}
         onShowProductModal={handleShowProductModal}
         handleRemoveProduct={handleRemoveProduct}
         handleShowModal={handleShowModal}
         categoryMapping={categoryMapping}
+        onShowSaveModal={() => setShowSaveModal(true)}
+        token={token}
+        peopleCount={peopleCount}
       />
-
       {showModal && (
         <BoxModal
           extraProducts={extraProducts}
@@ -405,10 +404,40 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
           categoryMapping={categoryMapping}
         />
       )}
-
       {selectedProduct && (
         <ModalProduct product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
+
+      {showSaveModal && (
+        <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Save Your List</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSaveModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter list name"
+                  value={listName}
+                  onChange={(e) => setListName(e.target.value)}
+                />
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-sm btn-secondary" onClick={() => setShowSaveModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-sm btn-prim" onClick={saveToBackend}>
+                  Save List
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };

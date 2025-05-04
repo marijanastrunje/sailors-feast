@@ -34,7 +34,7 @@ const Checkout = () => {
   const [hasCheckedDeliveryDate, setHasCheckedDeliveryDate] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
-  const [billing, setBilling] = useBillingData();
+  const [billing, setBilling,] = useBillingData();
   const [cart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
 
   // Check if user is logged in for non-guest checkout
