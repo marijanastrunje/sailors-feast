@@ -18,7 +18,7 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const redirect = queryParams.get("redirect") || "/";
+    const redirect = queryParams.get("redirect") || "/user";
 
     useEffect(() => {
         if (localStorage.getItem("token")) {

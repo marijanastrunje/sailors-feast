@@ -16,6 +16,7 @@ const PaymentStep = ({
   showDeliveryWarning,
   deliveryDate,
   error,
+  isGuestCheckout,
   handlePaypalPayment, 
   orderId, 
   totalPrice
@@ -108,8 +109,7 @@ const PaymentStep = ({
             <FontAwesomeIcon icon={faExclamationTriangle} className="me-3 mt-1" />
             <div>
               <p className="mb-0">
-                <strong>Important:</strong> Since your delivery date is less than 7 days away, 
-                immediate payment is required to process your order.
+                <strong>Important:</strong> Since your delivery date is less than 7 days away, payment is required to process your order.
                 {userType === "crew" && " However, as a crew member, you can still pay in cash on delivery."}
               </p>
             </div>
@@ -217,7 +217,7 @@ const PaymentStep = ({
           )}
 
           {/* Cash option - only available for crew members */}
-          {userType === "crew" && (
+          {!isGuestCheckout && userType === "crew" && (
             <div
               className={`payment-option rounded border p-3 mt-3 ${selectedPaymentMethod === 'cash' ? 'border-primary shadow-sm' : ''}`}
               onClick={() => setSelectedPaymentMethod('cash')}

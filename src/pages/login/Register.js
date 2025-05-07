@@ -22,17 +22,35 @@ const Register = () => {
         user_type: ""
     });
 
-    const [error, setError] = useState("");
+    const [errors, setErrors] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        user_type: "",
+        general: ""
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [captchaValue, setCaptchaValue] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+    
+        setForm((prevForm) => ({
+            ...prevForm,
+            [name]: value
+        }));
+    
+        // Ako je ranije bilo greške i korisnik sad nešto unosi, očisti tu grešku
+        if (errors[name] && value.trim() !== "") {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: ""
+            }));
+        }
     };
+    
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -56,14 +74,29 @@ const Register = () => {
 
     const handleRegister = (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        setError("");
+
+        const newErrors = {
+            first_name: form.first_name.trim() ? "" : "First name is required",
+            last_name: form.last_name.trim() ? "" : "Last name is required",
+            email: /\S+@\S+\.\S+/.test(form.email) ? "" : "Please enter a valid email",
+            password: form.password.length >= 6 ? "" : "Password must be at least 6 characters",
+            user_type: form.user_type ? "" : "Please select a user type",
+            general: ""
+        };
 
         if (!captchaValue) {
-            setError("Please confirm that you're not a robot.");
-            setIsLoading(false);
+            newErrors.general = "Please confirm that you're not a robot.";
+        }
+
+        const hasErrors = Object.values(newErrors).some(error => error);
+
+        if (hasErrors) {
+            setErrors(newErrors);
             return;
         }
+
+        setIsLoading(true);
+        setErrors({});
 
         fetch(`${backendUrl}/wp-json/custom/v1/verify-recaptcha`, {
             method: "POST",
@@ -87,7 +120,11 @@ const Register = () => {
         })
         .then((data) => {
             if (data?.code) {
-                setError("Registration failed: " + data.message);
+                if (data.code === "existing_user_login" || data.code === "existing_user_email") {
+                    setErrors({ ...errors, email: "Email address is already in use" });
+                } else {
+                    setErrors({ ...errors, general: "Registration failed: " + data.message });
+                }
                 return Promise.reject("Registration error");
             }
 
@@ -95,7 +132,7 @@ const Register = () => {
         })
         .then((loginData) => {
             if (loginData?.code) {
-                setError("Login failed after registration.");
+                setErrors({ ...errors, general: "Login failed after registration." });
                 return;
             }
 
@@ -103,12 +140,15 @@ const Register = () => {
             localStorage.setItem("username", loginData.user_display_name);
             localStorage.setItem("user_email", form.email);
             localStorage.setItem("user_type", form.user_type);
+            window.dispatchEvent(new Event('userLogin'));
             navigate(redirect);
-            window.location.reload();
         })
         .catch((err) => {
             console.error("Register error:", err);
-            setError(err.message || "Something went wrong. Please try again.");
+            setErrors(prev => ({
+                ...prev,
+                general: err.message || "Something went wrong. Please try again."
+            }));
         })
         .finally(() => {
             setIsLoading(false);
@@ -173,7 +213,6 @@ const Register = () => {
                                                 value="guest"
                                                 checked={form.user_type === "guest"}
                                                 onChange={handleChange}
-                                                required
                                             />
                                             <label className="form-check-label" htmlFor="guest">Guest</label>
                                         </div>
@@ -186,11 +225,11 @@ const Register = () => {
                                                 value="crew"
                                                 checked={form.user_type === "crew"}
                                                 onChange={handleChange}
-                                                required
                                             />
                                             <label className="form-check-label" htmlFor="crew">Crew</label>
                                         </div>
                                     </div>
+                                    {errors.user_type && <div className="text-danger w-100 text-start small mt-1">{errors.user_type}</div>}
                                 </div>
 
                                 <div className="input-group mt-2">
@@ -202,11 +241,11 @@ const Register = () => {
                                         name="first_name"
                                         value={form.first_name}
                                         onChange={handleChange}
-                                        className="form-control"
+                                        className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
                                         placeholder="Enter your first name"
                                         aria-label="First name"
-                                        required
                                     />
+                                    {errors.first_name && <div className="invalid-feedback text-start">{errors.first_name}</div>}
                                 </div>
 
                                 <div className="input-group mt-2">
@@ -218,11 +257,11 @@ const Register = () => {
                                         name="last_name"
                                         value={form.last_name}
                                         onChange={handleChange}
-                                        className="form-control"
+                                        className={`form-control ${errors.last_name ? 'is-invalid' : ''}`}
                                         placeholder="Enter your last name"
                                         aria-label="Last name"
-                                        required
                                     />
+                                    {errors.last_name && <div className="invalid-feedback text-start">{errors.last_name}</div>}
                                 </div>
 
                                 <div className="input-group mt-2">
@@ -234,11 +273,11 @@ const Register = () => {
                                         name="email"
                                         value={form.email}
                                         onChange={handleChange}
-                                        className="form-control"
+                                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                                         placeholder="Enter your email"
                                         aria-label="Email"
-                                        required
                                     />
+                                    {errors.email && <div className="invalid-feedback text-start">{errors.email}</div>}
                                 </div>
 
                                 <div className="input-group mt-2">
@@ -250,10 +289,9 @@ const Register = () => {
                                         name="password"
                                         value={form.password}
                                         onChange={handleChange}
-                                        className="form-control"
-                                        placeholder="Create a password"
+                                        className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                                        placeholder="Create a password (min. 6 characters)"
                                         aria-label="Password"
-                                        required
                                     />
                                     <button
                                         type="button"
@@ -263,15 +301,27 @@ const Register = () => {
                                     >
                                         <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                                     </button>
+                                    {errors.password && <div className="invalid-feedback text-start">{errors.password}</div>}
                                 </div>
 
                                 <div className="recaptcha-wrapper mt-2">
-                                    <ReCAPTCHA sitekey={siteKey} onChange={(value) => setCaptchaValue(value)} />
+                                <ReCAPTCHA
+                                    sitekey={siteKey}
+                                    onChange={(value) => {
+                                        setCaptchaValue(value);
+                                        if (errors.general === "Please confirm that you're not a robot.") {
+                                            setErrors((prevErrors) => ({
+                                                ...prevErrors,
+                                                general: ""
+                                            }));
+                                        }
+                                    }}
+                                />
                                 </div>
 
-                                {error && (
+                                {errors.general && (
                                     <p className="alert alert-danger p-1 p-sm-2 text-center mt-3" role="alert">
-                                        {error}
+                                        {errors.general}
                                     </p>
                                 )}
 

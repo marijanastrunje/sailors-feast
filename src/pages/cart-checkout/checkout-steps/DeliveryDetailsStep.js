@@ -28,7 +28,6 @@ const DeliveryDetailsStep = ({
     "Marina Trogir (SCT)",
     "Marina Baotić",
     "Marina Kremik",
-    "Marina Frapa Rogoznica"
   ];
 
   // Handle form field changes
