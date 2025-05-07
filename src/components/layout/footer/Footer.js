@@ -26,7 +26,7 @@ const Footer = () => {
                     </Link>
                     <p className="px-2">
                         Ivana Meštrovića 35, Sesvete<br />
-                        Phone: <a href="tel:+385955399166" className="text-muted">+385 95 539 9166</a><br />
+                        Phone: <a href="tel:+385913060267" className="text-muted">+385 91 306 0267</a><br />
                         E-mail: <a href="mailto:info@sailorsfeast.com" className="text-muted">info@sailorsfeast.com</a><br />
                         OIB: 42509895972<br />
                         IBAN: HR9124020061101222221
