@@ -72,14 +72,36 @@ const Groceries = () => {
   const subcategoriesCache = useRef(loadFromSessionStorage('subcategoriesCache') || {});
   const fetchCache = useRef({});
 
+  // Ažurirana funkcija scrollToContent koja koristi URL parametar
   const scrollToContent = useCallback(() => {
-    if (contentStartRef.current) {
-      contentStartRef.current.scrollIntoView({ behavior: "smooth" });
-    } else {
-      // Fallback in case ref isn't available
-      window.scrollTo({ behavior: "smooth" }); 
+    // Provjera je li ovo prvi posjet
+    const searchParams = new URLSearchParams(location.search);
+    const shouldScroll = searchParams.get('scroll') === 'true';
+    
+    // Ako nema parametra za scroll, prikaži hero sekciju (ne radi scroll)
+    if (!shouldScroll) {
+      return;
     }
-  }, []);
+    
+    if (contentStartRef.current) {
+      // Dobivanje pozicije elementa
+      const elementPosition = contentStartRef.current.getBoundingClientRect().top;
+      // Izračun pozicije za scroll (trenutna pozicija + scroll pozicija - 89px offset)
+      const offsetPosition = elementPosition + window.pageYOffset - 89;
+      
+      // Koristite scrollTo s izračunatom pozicijom
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    } else {
+      // Fallback u slučaju da ref nije dostupan
+      window.scrollTo({ 
+        top: 0,
+        behavior: "smooth" 
+      });
+    }
+  }, [location.search]);
   
   // Save caches to session storage when component unmounts
   useEffect(() => {
@@ -224,6 +246,14 @@ const Groceries = () => {
     if (!categoryId) return;
 
     if (isDirectClick) {
+      // Dodajte scroll=true parametar u URL kada korisnik klikne na kategoriju
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set('scroll', 'true');
+      
+      // Ažurirajte URL bez resetiranja stranice
+      navigate(`/groceries?${searchParams.toString()}`, { replace: true });
+      
+      // Pozovite scrollToContent da provjeri treba li scrollati
       scrollToContent();
     }
     
@@ -371,10 +401,17 @@ const Groceries = () => {
   const fetchSubcategories = useCallback((categoryId) => {
     if (!categoryId) return;
 
+    // Dodajte scroll=true parametar u URL kada korisnik klikne na kategoriju
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('scroll', 'true');
+    
+    // Ažurirajte URL bez resetiranja stranice
+    navigate(`/groceries?${searchParams.toString()}`, { replace: true });
+    
+    // Pozovite scrollToContent da provjeri treba li scrollati
     scrollToContent();
     
     // Clear search if active when changing categories
-    const searchParams = new URLSearchParams(location.search);
     const hasSearchParam = searchParams.has('search');
 
     if (isSearchActive && !hasSearchParam) {
@@ -598,9 +635,18 @@ const Groceries = () => {
   const handlePageChange = useCallback((page) => {
     if (page >= 1 && page <= paginationData.totalPages) {
       setCurrentPage(page);
-      scrollToContent(); 
+      
+      // Dodajte scroll=true parametar u URL pri promjeni stranice
+      const searchParams = new URLSearchParams(location.search);
+      searchParams.set('scroll', 'true');
+      
+      // Ažurirajte URL bez resetiranja stranice
+      navigate(`/groceries?${searchParams.toString()}`, { replace: true });
+      
+      // Pozovite scrollToContent
+      scrollToContent();
     }
-  }, [paginationData.totalPages, scrollToContent]);
+  }, [paginationData.totalPages, location.search, navigate, scrollToContent]);
 
   // Lazy loading for FAQ
   const [isVisible, setIsVisible] = useState({
@@ -627,12 +673,11 @@ const Groceries = () => {
 
   // Clear search button handler - extracted to reduce inline function creation
   const handleClearSearch = useCallback(() => {
-    scrollToContent();
     navigate('/groceries', { replace: true });
     setIsSearchActive(false);
     setSearchTerm("");
     searchInitiatedRef.current = false;
-  }, [navigate, scrollToContent]);
+  }, [navigate]);
 
   return (
     <>

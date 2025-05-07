@@ -82,6 +82,12 @@ const Checkout = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    if (orderCreated) {
+      window.scrollTo(0, 0);
+    }
+  }, [orderCreated]);
+
   // Create line items from cart
   const lineItems = cart.map(item => ({
     product_id: item.id,
@@ -162,6 +168,14 @@ const Checkout = () => {
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
     window.scrollTo(0, 0);
+  };
+
+  const handlePaymentMethodChange = (method) => {
+    setSelectedPaymentMethod(method);
+    // Reset payment failed message when user selects a new payment method
+    if (paymentFailed) {
+      setPaymentFailed(false);
+    }
   };
 
   // Handle guest registration after successful order
@@ -614,7 +628,7 @@ const Checkout = () => {
             prevStep={prevStep}
             isSubmitting={isSubmitting}
             selectedPaymentMethod={selectedPaymentMethod}
-            setSelectedPaymentMethod={setSelectedPaymentMethod}
+            setSelectedPaymentMethod={handlePaymentMethodChange}
             showDeliveryWarning={showDeliveryWarning}
             deliveryDate={billing.delivery_date}
             orderId={orderId}
