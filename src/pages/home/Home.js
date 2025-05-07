@@ -61,7 +61,7 @@ const Home = () => {
         <SpecialOffer />
       </section>
 
-      <section id="charter">
+      <section id="charter" className="d-none">
         <CharterPromoSection />
       </section>
 

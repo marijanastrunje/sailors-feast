@@ -34,7 +34,7 @@ const Footer = () => {
                 </div>
 
                 <div className="col-md-4 text-center pt-md-4 mb-2">
-                    <Link to="/charter"><p className="m-0">Charter</p></Link>
+                    <Link to="/charter"><p className="m-0 d-none">Charter</p></Link>
                     <Link to="/faq"><p className="m-0">FAQ</p></Link>
                     <Link to="/privacy-policy"><p className="m-0">Privacy Policy</p></Link>
                     <Link to="/terms-and-conditions"><p>Terms&Conditions</p></Link>

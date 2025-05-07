@@ -289,7 +289,7 @@ const Header = () => {
                             <li className="nav-item me-2"><Link to="/groceries" className={`nav-link ${currentPath === '/groceries' ? 'active' : ''}`}><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-lg-none" />Groceries</Link></li>
                             <li className="nav-item me-2"><Link to="/recipes" className={`nav-link ${currentPath === '/recipes' ? 'active' : ''}`} ><FontAwesomeIcon icon={faSpoon} className="mx-2 d-lg-none" />Recipes</Link></li>
                             <li className="nav-item me-2"><Link to="/blog" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faBookOpen} className="mx-2 d-lg-none" />Blog</Link></li>
-                            <li className="nav-item me-2"><Link to="/charter" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faShip} className="mx-2 d-lg-none" />Charter</Link></li>
+                            <li className="nav-item me-2 d-none"><Link to="/charter" className={`nav-link ${currentPath === '/blog' ? 'active' : ''}`}><FontAwesomeIcon icon={faShip} className="mx-2 d-lg-none" />Charter</Link></li>
                             <li className="nav-item"><Link to="/contact" className={`nav-link ${currentPath === '/contact' ? 'active' : ''}`}><FontAwesomeIcon icon={faPhone} className="mx-2 d-lg-none" />Contact</Link></li>
                         </ul>
                     </div>

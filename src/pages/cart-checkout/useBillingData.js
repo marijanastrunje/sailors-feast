@@ -5,31 +5,20 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const useBillingData = () => {
     const [token, setToken] = useState(localStorage.getItem("token"));
 
-    // Inicijaliziraj billing s podacima iz localStorage ako postoje
-    const [billing, setBilling] = useState(() => {
-        const savedBilling = localStorage.getItem("billingData");
-        const defaultBilling = {
-            first_name: "",
-            last_name: "",
-            email: "",
-            phone: "",
-            number_of_guests: "",
-            marina: "",
-            charter: "",
-            boat: "",
-            gate: "",
-            delivery_date: "",
-            delivery_time: "",
-            order_notes: ""
-        };
-        
-        return savedBilling ? JSON.parse(savedBilling) : defaultBilling;
+    const [billing, setBilling] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        number_of_guests: "",
+        marina: "",
+        charter: "",
+        boat: "",
+        gate: "",
+        delivery_date: "",
+        delivery_time: "",
+        order_notes: ""
     });
-
-    // Spremi billing podatke u localStorage kad se promijene
-    useEffect(() => {
-        localStorage.setItem("billingData", JSON.stringify(billing));
-    }, [billing]);
 
     // Function to fetch user data
     const fetchUserData = useCallback(() => {
@@ -43,14 +32,14 @@ const useBillingData = () => {
             if (data.id) {
                 setBilling(prev => ({
                     ...prev,
-                    first_name: data.first_name || prev.first_name || "",
-                    last_name: data.last_name || prev.last_name || "",
-                    email: localStorage.getItem("user_email") || prev.email || "",
-                    phone: data.phone || prev.phone || "",
-                    marina: data.marina || prev.marina || "",
-                    charter: data.charter || prev.charter || "",
-                    boat: data.boat || prev.boat || "",
-                    gate: data.gate || prev.gate || ""
+                    first_name: data.first_name || "",
+                    last_name: data.last_name || "",
+                    email: localStorage.getItem("user_email") || "",
+                    phone: data.phone || "",
+                    marina: data.marina || "",
+                    charter: data.charter || "",
+                    boat: data.boat || "",
+                    gate: data.gate || ""
                 }));
             }
         })

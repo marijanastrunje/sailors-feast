@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { useNavigate } from "react-router-dom";
 import './Orders.css'
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -10,17 +11,14 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showQRModal, setShowQRModal] = useState(false);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const resUser = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const { id: userId } = await resUser.json();
 
-        const resOrders = await fetch(`${backendUrl}/wp-json/wc/v3/orders?customer=${userId}&per_page=100`, {
+        const resOrders = await fetch(`${backendUrl}/wp-json/wc/v3/orders?per_page=100`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const ordersData = await resOrders.json();
@@ -66,6 +64,28 @@ const Orders = () => {
     const bankDetails = `Recipient: Sailor's Feast d.o.o.\nIBAN: HR9124020061101222221\nReference number: ${order.id}-${new Date(order.date_created).getFullYear()}\nAmount: ${parseFloat(order.total).toFixed(2)} EUR\nDescription: Order #${order.id}`;
     navigator.clipboard.writeText(bankDetails.trim());
     alert("Bank details copied to clipboard!");
+  };
+
+  const orderAgain = (order) => {
+    // Pretvaramo line_items u format košarice
+    const cartItems = order.line_items.map(item => ({
+      id: item.product_id,
+      title: item.name,
+      price: parseFloat(item.price),
+      quantity: item.quantity,
+      // Za sliku koristimo prazno polje - učitat će se kasnije kroz API
+      image: []
+    }));
+    
+    // Spremamo u košaricu
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    
+    // Dispečiramo događaj za obavijest o promjeni košarice
+    window.dispatchEvent(new Event("cartUpdated"));
+    
+    // Obavještavamo korisnika i preusmjeravamo na stranicu košarice
+    alert(`Products from Order #${order.id} have been added to your cart!`);
+    navigate("/cart");
   };
 
   const getPaymentDeadline = (order) => {
@@ -197,6 +217,18 @@ const Orders = () => {
                               <div>Total</div>
                               <div>{parseFloat(order.total).toFixed(2)} €</div>
                             </div>
+                          </div>
+                          {/* Dodavanje "Order Again" gumba */}
+                          <div className="mt-4 d-grid">
+                            <button 
+                              className="btn btn-success" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                orderAgain(order);
+                              }}
+                            >
+                              <i className="bi bi-cart-plus me-2"></i> Order Again
+                            </button>
                           </div>
                         </div>
                         
