@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +14,7 @@ const Login = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const recaptchaRef = useRef(null); // Reference za reCAPTCHA komponentu
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -97,6 +98,11 @@ const Login = () => {
             .catch((err) => {
                 console.error("Login error:", err);
                 setError(err.message || "Something went wrong. Please try again.");
+                // Resetiranje reCAPTCHA
+                if (recaptchaRef.current) {
+                    recaptchaRef.current.reset();
+                    setCaptchaValue(null);
+                }
             })
             .finally(() => {
                 setIsLoading(false);
@@ -204,7 +210,11 @@ const Login = () => {
 
 
                                 <div className="recaptcha-wrapper mt-3">
-                                    <ReCAPTCHA sitekey={siteKey} onChange={handleCaptchaChange} />
+                                    <ReCAPTCHA 
+                                        ref={recaptchaRef}
+                                        sitekey={siteKey} 
+                                        onChange={handleCaptchaChange} 
+                                    />
                                 </div>
 
                                 {error && (

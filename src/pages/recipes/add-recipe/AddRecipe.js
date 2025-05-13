@@ -21,7 +21,7 @@ const IngredientsField = ({ ingredients, setIngredients }) => {
 
   // List of available measurement units
   const unitOptions = [
-    "g", "kg", "ml", "dcl", "l", "pc", "pcs", "tbsp", "spoon", "cup", "pinch", "add to taste", ""
+    "g", "kg", "ml", "dcl", "l", "pc", "pcs", "teaspoon", "spoon", "cup", "pinch", "add to taste", ""
   ];
 
   const handleAddIngredient = () => {

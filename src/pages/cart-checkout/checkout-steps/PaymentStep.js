@@ -141,7 +141,7 @@ const PaymentStep = ({
                   <small className="d-block text-muted">Secure payment via Viva Wallet</small>
                 </div>
               </label>
-              <img src="/img/payment/viva-wallet.png" alt="Viva Wallet" className="ms-auto" height="30" />
+              <img src="/img/logo/payments-logo/viva-logo.jpeg" alt="Viva Wallet" className="ms-auto" height="30" />
             </div>
             {selectedPaymentMethod === 'vivawallet' && (
               <p className="small text-muted mt-2 ms-4 ps-3">
@@ -172,7 +172,7 @@ const PaymentStep = ({
                   <small className="d-block text-muted">Fast and secure payment</small>
                 </div>
               </label>
-              <img src="/img/payment/paypal.png" alt="PayPal" className="ms-auto" height="30" />
+              <img src="/img/logo/payments-logo/paypal-logo.jpeg" alt="PayPal" className="ms-auto" height="30" />
             </div>
             {selectedPaymentMethod === 'paypal' && (
               <p className="small text-muted mt-2 ms-4 ps-3">
@@ -206,7 +206,6 @@ const PaymentStep = ({
                     )}
                   </div>
                 </label>
-                <img src="/img/payment/bank-transfer.png" alt="Bank Transfer" className="ms-auto" height="30" />
               </div>
               {selectedPaymentMethod === 'banktransfer' && (
                 <p className="small text-muted mt-2 ms-4 ps-3">
@@ -239,7 +238,6 @@ const PaymentStep = ({
                     <small className="d-block text-muted">Available only for crew members</small>
                   </div>
                 </label>
-                <img src="/img/payment/cash.png" alt="Cash Payment" className="ms-auto" height="30" />
               </div>
               {selectedPaymentMethod === 'cash' && (
                 <p className="small text-muted mt-2 ms-4 ps-3">
@@ -259,16 +257,16 @@ const PaymentStep = ({
               <div className="rounded bg-light p-3 h-100">
                 <h6 className="mb-2 text-muted">Personal details</h6>
                 <div className="row mb-1">
-                  <div className="col-4 fw-bold">Name:</div>
-                  <div className="col-8">{billing.first_name} {billing.last_name}</div>
+                  <div className="col-3 fw-bold">Name:</div>
+                  <div className="col-9 p-0">{billing.first_name} {billing.last_name}</div>
                 </div>
                 <div className="row mb-1">
-                  <div className="col-4 fw-bold">Email:</div>
-                  <div className="col-8">{billing.email}</div>
+                  <div className="col-3 fw-bold">Email:</div>
+                  <div className="col-9 p-0">{billing.email}</div>
                 </div>
                 <div className="row mb-1">
-                  <div className="col-4 fw-bold">Phone:</div>
-                  <div className="col-8">{billing.phone}</div>
+                  <div className="col-3 fw-bold">Phone:</div>
+                  <div className="col-9 p-0">{billing.phone}</div>
                 </div>
               </div>
             </div>
@@ -278,8 +276,8 @@ const PaymentStep = ({
                 <h6 className="mb-2 text-muted">Delivery details</h6>
                 {billing.delivery_date && (
                   <div className="row mb-1">
-                    <div className="col-4 fw-bold">Date:</div>
-                    <div className="col-8">
+                    <div className="col-3 fw-bold">Date:</div>
+                    <div className="col-9 p-0">
                       {new Date(billing.delivery_date).toLocaleDateString()}
                       {billing.delivery_time && ` at ${billing.delivery_time}`}
                     </div>
@@ -288,29 +286,29 @@ const PaymentStep = ({
                 
                 {billing.marina && (
                   <div className="row mb-1">
-                    <div className="col-4 fw-bold">Marina:</div>
-                    <div className="col-8">{billing.marina}</div>
+                    <div className="col-3 fw-bold">Marina:</div>
+                    <div className="col-9 p-0">{billing.marina}</div>
                   </div>
                 )}
                 
                 {billing.charter && (
                   <div className="row mb-1">
-                    <div className="col-4 fw-bold">Charter:</div>
-                    <div className="col-8">{billing.charter}</div>
+                    <div className="col-3 fw-bold">Charter:</div>
+                    <div className="col-9 p-0">{billing.charter}</div>
                   </div>
                 )}
                 
                 {billing.boat && (
                   <div className="row mb-1">
-                    <div className="col-4 fw-bold">Boat:</div>
-                    <div className="col-8">{billing.boat}</div>
+                    <div className="col-3 fw-bold">Boat:</div>
+                    <div className="col-9 p-0">{billing.boat}</div>
                   </div>
                 )}
                 
                 {billing.gate && (
                   <div className="row mb-1">
-                    <div className="col-4 fw-bold">Gate:</div>
-                    <div className="col-8">{billing.gate}</div>
+                    <div className="col-3 fw-bold">Gate:</div>
+                    <div className="col-9 p-0">{billing.gate}</div>
                   </div>
                 )}
               </div>

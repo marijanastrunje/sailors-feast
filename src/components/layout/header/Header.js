@@ -179,9 +179,9 @@ const Header = () => {
             {/* Top Navbar */}
             <nav className="top-navbar navbar-expand-md fixed-top">
                 <div className="container-fluid d-flex align-items-center">
-                    <a href="tel:+385913060267" title="Call us for more details" className="d-flex align-items-center mt-1">
+                    <a href="tel:+385916142773" title="Call us for more details" className="d-flex align-items-center mt-1">
                         <FontAwesomeIcon icon={faPhone} className="me-3 me-md-1" />
-                        <span className="d-none d-sm-inline me-3">+385 91 306 0267</span>
+                        <span className="d-none d-sm-inline me-3">+385 91 614 2773</span>
                     </a>
                     <a href="mailto:info@sailorsfeast.com" title="Send us email" className="d-flex align-items-center mt-1">
                         <FontAwesomeIcon icon={faEnvelope} className="me-1" />

@@ -96,7 +96,7 @@ const ContactForm = () => {
             <strong>Sailor's Feast</strong><br />
             Ivana Meštrovića 35<br />
             10360 Sesvete, Croatia<br />
-            <a href="tel:+385913060267">+385 91 306 0267</a><br />
+            <a href="tel:+385916142773">+385 91 614 2773</a><br />
             <a href="mailto:info@sailorsfeast.com">info@sailorsfeast.com</a>
           </p>
         </div>

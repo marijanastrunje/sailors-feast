@@ -1,0 +1,108 @@
+/* Blog specifični stilovi */
+
+/* Stilovi za blog sadržaj */
+.blog-content {
+    font-family: "Inter", sans-serif;
+    color: var(--text-muted-color);
+  }
+  
+  /* Vraćamo prikaz lista u blog sadržaju */
+  .blog-content ul {
+    list-style: disc !important;
+    padding-left: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .blog-content ol {
+    list-style: decimal !important;
+    padding-left: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Stiliziranje liste i njezinih točaka */
+  .blog-content ul li, 
+  .blog-content ol li {
+    margin-bottom: 0.5rem;
+    color: var(--text-muted-color);
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.875rem, 5vw, 1rem);
+    line-height: 1.6;
+  }
+  
+  /* Stiliziranje linkova u blog sadržaju */
+  .blog-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+  }
+  
+  .blog-content a:hover {
+    color: #e65a3a; /* malo svjetlija varijanta primarne boje */
+    border-bottom: 1px solid #e65a3a;
+  }
+  
+  /* Stiliziranje naslova unutar blog sadržaja */
+  .blog-content h2 {
+    font-family: "Lexend", sans-serif;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 550;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    text-align: left; /* naslovi u blogu su poravnati lijevo */
+    color: var(--h-color);
+  }
+  
+  .blog-content h3 {
+    font-family: "Lexend", sans-serif;
+    font-size: clamp(1rem, 5vw, 1.4rem);
+    font-weight: 500; 
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--h-color);
+  }
+  
+  .blog-content h4 {
+    font-family: "Lexend", sans-serif;
+    font-size: clamp(0.875rem, 5vw, 1.2rem);
+    font-weight: 500;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--h-color);
+  }
+  
+  /* Stilovi za paragrafe */
+  .blog-content p {
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+  }
+  
+  /* Stilovi za bold tekst */
+  .blog-content strong,
+  .blog-content b {
+    font-weight: 600;
+    color: var(--h-color);
+  }
+  
+  /* Poboljšani stilovi za prikaz na mobilnim uređajima */
+  @media (max-width: 767px) {
+    .blog-content ul,
+    .blog-content ol {
+      padding-left: 1.5rem !important;
+    }
+    
+    .blog-content {
+      padding: 0 0.5rem;
+    }
+  }
+
+  .blog-tags .badge {
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+  
+  .blog-tags .badge:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+  }

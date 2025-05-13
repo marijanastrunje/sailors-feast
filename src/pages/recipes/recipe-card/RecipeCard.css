@@ -1,6 +1,6 @@
 .card {
     max-width: 220px;
-    min-height: 290px;
+    min-height: 325px;
     background-color: var(--footer-bg-color);
     overflow: hidden;
   }

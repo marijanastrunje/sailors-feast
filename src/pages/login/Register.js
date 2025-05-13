@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,6 +13,7 @@ const Register = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const redirect = queryParams.get("redirect") || "/user";
+    const recaptchaRef = useRef(null); // Reference za reCAPTCHA komponentu
 
     const [form, setForm] = useState({
         first_name: "",
@@ -86,6 +87,11 @@ const Register = () => {
 
         if (!captchaValue) {
             newErrors.general = "Please confirm that you're not a robot.";
+            // Resetiranje reCAPTCHA kad je greška vezana za reCAPTCHA
+            if (recaptchaRef.current) {
+                recaptchaRef.current.reset();
+                setCaptchaValue(null);
+            }
         }
 
         const hasErrors = Object.values(newErrors).some(error => error);
@@ -149,6 +155,11 @@ const Register = () => {
                 ...prev,
                 general: err.message || "Something went wrong. Please try again."
             }));
+            // Resetiranje reCAPTCHA kada dođe do bilo koje greške
+            if (recaptchaRef.current) {
+                recaptchaRef.current.reset();
+                setCaptchaValue(null);
+            }
         })
         .finally(() => {
             setIsLoading(false);
@@ -306,6 +317,7 @@ const Register = () => {
 
                                 <div className="recaptcha-wrapper mt-2">
                                 <ReCAPTCHA
+                                    ref={recaptchaRef}
                                     sitekey={siteKey}
                                     onChange={(value) => {
                                         setCaptchaValue(value);

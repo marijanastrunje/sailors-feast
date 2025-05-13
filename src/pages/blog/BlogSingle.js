@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import MediaImg from "../../components/common/media/MediaImg";
 import ScrollToTopButton from "../../components/ui/ScrollToTopButton";
 import SEO from "../../components/common/SEO";
 import Loader from "../../components/common/Loader"
+import './BlogSingle.css'
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
@@ -100,6 +101,23 @@ const BlogSingle = () => {
                   __html: post.content?.rendered || "<p>No content available.</p>",
                 }}
               />
+
+              {post._embedded && post._embedded["wp:term"] && (
+                <div className="blog-tags mt-4 pt-3 border-top">
+                  <h4 className="mb-3">Tags:</h4>
+                  <div className="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                    {post._embedded["wp:term"][1]?.filter(term => term.taxonomy === "post_tag").map((tag) => (
+                      <Link 
+                        key={tag.id}
+                        to={`/blog?tag=${tag.id}`}
+                        className="badge bg-light text-dark text-decoration-none p-2"
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Related Content Section */}
               <div className="related-content mt-5 pt-4 border-top">

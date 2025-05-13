@@ -441,8 +441,8 @@ const CharterLandingPage = () => {
                 <FontAwesomeIcon icon={faPhone} className="charter-contact-icon mb-3" />
                 <h3 className="h5 mb-2">Call Us Directly</h3>
                 <p>Speak with our partnership team</p>
-                <a href="tel:+385913060267" className="btn btn-outline-secondary btn-sm">
-                  +385 91 306 0267
+                <a href="tel:+385916142773" className="btn btn-outline-secondary btn-sm">
+                  +385 91 614 2773
                 </a>
               </div>
             </div>
