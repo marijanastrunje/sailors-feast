@@ -224,6 +224,11 @@ const UserDashboard = () => {
       case "logout":
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
+        localStorage.removeItem("username");
+        localStorage.removeItem("user_email");
+        localStorage.removeItem("user_type");
+        localStorage.removeItem("lastOrderId");
+        sessionStorage.removeItem("guest_checkout");
         window.dispatchEvent(new Event('userLogout'));
         navigate("/");
         return null;
