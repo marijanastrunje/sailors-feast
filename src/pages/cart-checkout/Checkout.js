@@ -1,3 +1,4 @@
+// Checkout.js
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useBillingData from "./checkout/useBillingData";
@@ -9,6 +10,15 @@ import PaymentStep from "./checkout/checkout-steps/PaymentStep";
 import QRCodePayment from "./checkout/QRCodePayment";
 import PayPalSuccess from "./checkout/PayPalSuccess";
 import GuestRegistrationModal from "./checkout/checkout-steps/GuestRegistrationModal";
+import { createOrder } from "./checkout/services/orderService";
+import { 
+  handleBankTransfer, 
+  handleCashPayment, 
+  handleVivaPayment, 
+  handlePaypalPayment 
+} from "./checkout/services/paymentService";
+import { handleGuestRegistration } from "./checkout/services/userService";
+import { checkDeliveryDateWarning, validateStep } from "./checkout/utilities/checkoutUtils";
 import "./CheckoutSteps.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -33,7 +43,7 @@ const Checkout = () => {
   const [hasCheckedDeliveryDate, setHasCheckedDeliveryDate] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
-  const [billing, setBilling,] = useBillingData();
+  const [billing, setBilling] = useBillingData();
   const [cart] = useState(JSON.parse(localStorage.getItem("cart")) || []);
 
   // Check if user is logged in for non-guest checkout
@@ -87,62 +97,31 @@ const Checkout = () => {
     }
   }, [orderCreated]);
 
-  // Create line items from cart
-  const lineItems = cart.map(item => ({
-    product_id: item.id,
-    quantity: item.quantity
-  }));
-
-  // Calculate if delivery warning should be shown (if delivery date is less than 7 days away)
-  const checkDeliveryDateWarning = useCallback((deliveryDate) => {
-    if (!deliveryDate) return false;
-    
-    const today = new Date();
-    const delivery = new Date(deliveryDate);
-    const differenceInTime = delivery.getTime() - today.getTime();
-    const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-    
-    return differenceInDays < 7;
-  }, []);
+  // Koristi checkDeliveryDateWarning kao callback
+  const checkDeliveryDateWarningCallback = useCallback(checkDeliveryDateWarning, []);
 
   // Update delivery warning when delivery date changes
   useEffect(() => {
     if (billing.delivery_date && !hasCheckedDeliveryDate) {
-      const needsWarning = checkDeliveryDateWarning(billing.delivery_date);
+      const needsWarning = checkDeliveryDateWarningCallback(billing.delivery_date);
       setShowDeliveryWarning(needsWarning);
       setHasCheckedDeliveryDate(true);
     }
-  }, [billing.delivery_date, checkDeliveryDateWarning, hasCheckedDeliveryDate]);
+  }, [billing.delivery_date, checkDeliveryDateWarningCallback, hasCheckedDeliveryDate]);
 
   // Validate step before proceeding to next
-  const validateStep = (step) => {
-    const errors = {};
-    
-    if (step === 1) {
-      if (!billing.first_name) errors.first_name = "First name is required";
-      if (!billing.last_name) errors.last_name = "Last name is required";
-      if (!billing.email) errors.email = "Email is required";
-      if (!billing.phone) errors.phone = "Phone is required";
-    }
-    
-    // Validate delivery details if delivery date is less than 7 days away
-    if (step === 2 && showDeliveryWarning) {
-      if (!billing.marina) errors.marina = "Marina is required";
-      if (!billing.charter) errors.charter = "Charter is required";
-      if (!billing.boat) errors.boat = "Boat is required";
-      if (!billing.gate) errors.gate = "Gate/pier is required";
-    }
-    
+  const validateCurrentStep = (step) => {
+    const { errors, isValid } = validateStep(step, billing, showDeliveryWarning);
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return isValid;
   };
 
   // Navigate to next step
   const nextStep = () => {
-    if (validateStep(currentStep)) {
+    if (validateCurrentStep(currentStep)) {
       // If delivery date is set in step 2 and we haven't checked it yet
       if (currentStep === 2 && billing.delivery_date && !hasCheckedDeliveryDate) {
-        const needsWarning = checkDeliveryDateWarning(billing.delivery_date);
+        const needsWarning = checkDeliveryDateWarningCallback(billing.delivery_date);
         setShowDeliveryWarning(needsWarning);
         setHasCheckedDeliveryDate(true);
         
@@ -178,432 +157,119 @@ const Checkout = () => {
   };
 
   // Handle guest registration after successful order
-  const handleGuestRegistration = async (password, userType) => {
-    if (!billing.email || !billing.first_name || !billing.last_name) {
-      alert("Missing required user information.");
-      return;
-    }
-
+  const handleGuestRegistrationClick = async (password, userType) => {
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-
-      // Prepare registration data
-      const registerData = {
-        username: billing.email,
-        email: billing.email,
-        password: password,
-        first_name: billing.first_name,
-        last_name: billing.last_name,
-        meta: { user_type: userType }
-      };
-
-      // Send registration request
-      const registerResponse = await fetch(`${backendUrl}/wp-json/simple-jwt-login/v1/users`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(registerData)
-      });
-
-      if (!registerResponse.ok) {
-        const errorData = await registerResponse.json();
-        throw new Error(errorData.message || "Failed to create account.");
+      const newUserId = await handleGuestRegistration(billing, password, userType, orderId);
+      if (newUserId) {
+        setUserId(newUserId);
       }
-
-      console.log("User registration successful");
-
-      // Login with new user credentials
-      const loginResponse = await fetch(`${backendUrl}/wp-json/jwt-auth/v1/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: billing.email,
-          password: password
-        })
-      });
-
-      const loginData = await loginResponse.json();
-
-      if (!loginData.token) {
-        throw new Error("Failed to log in after registration.");
-      }
-
-      console.log("User login successful, token received");
-
-      // Save token and user data in localStorage
-      localStorage.setItem("token", loginData.token);
-      localStorage.setItem("username", loginData.user_display_name);
-      localStorage.setItem("user_email", billing.email);
-      localStorage.setItem("user_type", userType);
-
-      // Remove guest checkout flag
-      sessionStorage.removeItem("guest_checkout");
-
-      // Get user data to update userId in React state
-      const userDataResponse = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
-        headers: { Authorization: `Bearer ${loginData.token}` }
-      });
-      
-      if (!userDataResponse.ok) {
-        console.error("Error fetching user data:", await userDataResponse.text());
-        throw new Error("Failed to fetch user data after login.");
-      }
-      
-      const userData = await userDataResponse.json();
-      setUserId(userData.id);
-
-      console.log("User data retrieved, ID:", userData.id);
-
-      // Emit event that user data has been updated
-      window.dispatchEvent(new Event("userLogin"));
-
-      // Associate order with user on backend
-      if (orderId) {
-        try {
-          console.log("Associating order ID", orderId, "with user ID", userData.id);
-          
-          const associateResponse = await fetch(`${backendUrl}/wp-json/sailorsfeast/v1/associate-order`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${loginData.token}`
-            },
-            body: JSON.stringify({ orderId, userId: userData.id })
-          });
-          
-          if (!associateResponse.ok) {
-            const associateError = await associateResponse.json();
-            console.error("Order association failed with status:", associateResponse.status, associateError);
-          } else {
-            const associateResult = await associateResponse.json();
-            console.log("Order association result:", associateResult);
-          }
-        } catch (associateError) {
-          console.error("Exception during order association:", associateError);
-          // Don't throw here - we want to complete registration even if association fails
-        }
-      }
-
-      alert("Registration successful! Your account is now linked to the order.");
     } catch (error) {
-      console.error("Registration error:", error);
-      alert(error.message || "Failed to create account.");
+      console.error("Error during registration:", error);
     } finally {
       setIsSubmitting(false);
       setShowRegistrationModal(false);
     }
   };
-  
-  
-
-  // Create order in WooCommerce
-  const createOrder = async () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty. Please add products before placing an order.");
-      return null;
-    }
-    if (!billing.privacyConsent) {
-      alert("Please accept the privacy policy before proceeding.");
-      return null;
-    }
-
-    // Check if delivery date is less than 7 days away and delivery details are missing
-    if (billing.delivery_date) {
-      const needsDeliveryDetails = checkDeliveryDateWarning(billing.delivery_date);
-      
-      if (needsDeliveryDetails && (!billing.marina || !billing.charter || !billing.boat || !billing.gate)) {
-        alert("Delivery details are required for orders with delivery date less than 7 days away.");
-        setCurrentStep(2); // Go back to delivery details step
-        return null;
-      }
-    }
-
-    // Set payment method to PayPal when creating order for PayPal payment
-    const paymentMethod = selectedPaymentMethod === "paypal" ? "paypal" : selectedPaymentMethod;
-    const paymentMethodTitle = selectedPaymentMethod === "vivawallet" 
-      ? "Viva Wallet" 
-      : selectedPaymentMethod === "cash"
-        ? "Cash on Delivery"
-        : selectedPaymentMethod === "paypal"
-          ? "PayPal"
-          : "Bank Transfer";
-
-    // Prepare order data
-    const orderData = {
-      customer_id: userId || 0, // Use 0 for guest checkout
-      payment_method: paymentMethod === "cash" ? "cod" : paymentMethod,
-      payment_method_title: paymentMethodTitle,
-      set_paid: false,
-      status: selectedPaymentMethod === "banktransfer" ? "on-hold" : selectedPaymentMethod === "cash" ? "processing" : "pending", 
-      billing: {
-        first_name: billing.first_name,
-        last_name: billing.last_name,
-        email: billing.email,
-        phone: billing.phone
-      },
-      shipping: {
-        first_name: billing.first_name,
-        last_name: billing.last_name
-      },
-      line_items: lineItems,
-      meta_data: [
-        ...Object.entries(billing).map(([key, value]) => ({
-          key: `billing_${key}`,
-          value
-        })),
-        {
-          key: "is_guest_checkout",
-          value: isGuestCheckout ? "yes" : "no"
-        },
-        {
-          key: "payment_deadline",
-          value: billing.delivery_date ? new Date(new Date(billing.delivery_date).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : ""
-        }
-      ],
-    };
-
-    try {
-      // Create order via WooCommerce API
-      const response = await fetch(`${backendUrl}/wp-json/wc/v3/orders?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orderData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create order.");
-      }
-
-      const data = await response.json();
-      if (!data.id) throw new Error("Missing order ID.");
-      
-      setOrderId(data.id);
-      setOrderCreated(true);
-      return data.id;
-    } catch (error) {
-      console.error("Order creation error:", error.message);
-      alert("There was an error while creating the order: " + error.message);
-      return null;
-    }
-  };
-
-  // Handle bank transfer payment
-  const handleBankTransfer = async () => {
-    setIsSubmitting(true);
-    const orderId = await createOrder();
-    if (!orderId) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    localStorage.setItem("lastOrderId", orderId);
-
-    try {
-      // Generate QR code data
-      const qrData = {
-        orderId,
-        customerName: `${billing.first_name} ${billing.last_name}`,
-        amount: totalPrice,
-        email: billing.email,
-        reference: `ORDER-${orderId}`,
-        paymentDeadline: billing.delivery_date
-          ? new Date(new Date(billing.delivery_date).getTime() - 7 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0]
-          : ""
-      };
-      
-
-      // Save QR code data to order
-      const qrResponse = await fetch(`${backendUrl}/wp-json/sailorsfeast/v1/save-qr-data`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(qrData)
-      });
-      
-      const qrResult = await qrResponse.json();
-      
-      if (!qrResponse.ok || !qrResult.success) {
-        console.error("QR save failed:", qrResult.message);
-        alert("There was an error saving QR code data: " + (qrResult.message || "Unknown error"));
-        setIsSubmitting(false);
-        return;
-      }
-      
-      setQrCodeData(qrData);
-      setIsSubmitting(false);
-      
-      // Clear cart after successful order
-      localStorage.removeItem("cart");
-      window.dispatchEvent(new Event("cartUpdated"));
-      
-      // If it was a guest checkout, offer registration after successful order
-      if (isGuestCheckout) {
-        setShowRegistrationModal(true);
-      }
-    } catch (error) {
-      console.error("Payment processing error:", error.message);
-      alert("There was an error while processing the payment.");
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCashPayment = async () => {
-    setIsSubmitting(true);
-    const orderId = await createOrder();
-    if (!orderId) {
-      setIsSubmitting(false);
-      return;
-    }
-  
-    try {
-      // Update order status to "processing"
-      const updateResponse = await fetch(`${backendUrl}/wp-json/wc/v3/orders/${orderId}?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "processing" })
-      });
-  
-      if (!updateResponse.ok) {
-        throw new Error("Failed to update order status");
-      }
-      
-      // Clear cart after successful order
-      localStorage.removeItem("cart");
-      window.dispatchEvent(new Event("cartUpdated"));
-      
-      // Save order ID in localStorage
-      localStorage.setItem("lastOrderId", orderId);
-      
-      // If it was a guest checkout, offer registration
-      if (isGuestCheckout) {
-        setShowRegistrationModal(true);
-      }
-      
-      // Redirect to order success page
-      navigate(`/order-success/${orderId}`);
-    } catch (error) {
-      console.error("Error processing cash payment:", error.message);
-      alert("There was an error while processing your order.");
-      setIsSubmitting(false);
-    }
-  };
-
-  // Process payment via Viva Wallet
-  const handleVivaPayment = async () => {
-    setIsSubmitting(true);
-    const orderId = await createOrder();
-    if (!orderId) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    localStorage.setItem("lastOrderId", orderId);
-
-    try {
-      // First part: Send order details to Viva API
-      const response = await fetch(`${backendUrl}/wp-json/viva/v1/order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: Math.round(totalPrice * 100), // Ensure amount is in cents and properly rounded
-          email: billing.email,
-          fullName: `${billing.first_name} ${billing.last_name}`,
-          orderId, // Pass orderId properly
-        })
-      });
-
-      if (!response.ok) {
-        console.error("Failed to initiate payment, response status:", response.status);
-        throw new Error("Failed to initiate payment.");
-      }
-
-      // Second part: Get the order code
-      const orderCodeResponse = await fetch(`${backendUrl}/wp-json/viva/v1/order-code`);
-      
-      if (!orderCodeResponse.ok) {
-        console.error("Failed to get order code, response status:", orderCodeResponse.status);
-        throw new Error("Failed to get order code.");
-      }
-      
-      const orderCodeData = await orderCodeResponse.json();
-      
-      if (!orderCodeData.orderCode) {
-        console.error("Order code not returned in response:", orderCodeData);
-        throw new Error("Order code not returned.");
-      }
-
-      // Clear cart before redirecting to payment page
-      localStorage.removeItem("cart");
-      window.dispatchEvent(new Event("cartUpdated"));
-
-      // Redirect to payment page with the order code
-      window.location.href = `https://www.vivapayments.com/web/checkout?ref=${orderCodeData.orderCode}`;
-    } catch (error) {
-      console.error("Payment processing error:", error.message);
-      alert("There was an error while processing the payment.");
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handle PayPal payment completion
-  const handlePaypalPayment = async () => {
-    setIsSubmitting(true);
-    const orderId = await createOrder();
-    if (!orderId) {
-      setIsSubmitting(false);
-      return;
-    }
-  
-    localStorage.setItem("lastOrderId", orderId);
-  
-    try {
-
-      sessionStorage.setItem("guest_checkout", isGuestCheckout ? "true" : "false");
-
-      const response = await fetch(`${backendUrl}/wp-json/paypal/v1/create-order`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: totalPrice,
-          orderId: orderId,
-          returnUrl: `${window.location.origin}/order-success/${orderId}?paypal=success`,
-          cancelUrl: `${window.location.origin}/checkout?payment=failed`
-        })
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to create PayPal order");
-      }
-  
-      const data = await response.json();
-      
-      if (data.approvalUrl) {
-        window.location.href = data.approvalUrl;
-      } else {
-        throw new Error("No approval URL received from PayPal");
-      }
-    } catch (error) {
-      console.error("PayPal payment error:", error.message);
-      alert("There was an error initiating PayPal payment.");
-      setIsSubmitting(false);
-    }
-  };
-  
 
   // Process the selected payment method
-
   const processPayment = async () => {
-    if (selectedPaymentMethod === "banktransfer") {
-      await handleBankTransfer();
-    } else if (selectedPaymentMethod === "cash") {
-      await handleCashPayment();
-    } else if (selectedPaymentMethod === "paypal") {
-      await handlePaypalPayment();
-    } else {
-      await handleVivaPayment();
+    setIsSubmitting(true);
+    try {
+      let newOrderId;
+
+      if (selectedPaymentMethod === "banktransfer") {
+        // Create order and handle bank transfer
+        newOrderId = await createOrder(cart, billing, userId, selectedPaymentMethod, isGuestCheckout, checkDeliveryDateWarningCallback);
+        if (!newOrderId) {
+          setIsSubmitting(false);
+          return;
+        }
+        
+        setOrderId(newOrderId);
+        localStorage.setItem("lastOrderId", newOrderId);
+        
+        const qrData = await handleBankTransfer(newOrderId, billing, totalPrice);
+        if (qrData) {
+          setQrCodeData(qrData);
+          setOrderCreated(true);
+          
+          // Clear cart after successful order
+          localStorage.removeItem("cart");
+          window.dispatchEvent(new Event("cartUpdated"));
+          
+          // If it was a guest checkout, offer registration after successful order
+          if (isGuestCheckout) {
+            setShowRegistrationModal(true);
+          }
+        }
+      } else if (selectedPaymentMethod === "cash") {
+        // Create order and handle cash payment
+        newOrderId = await createOrder(cart, billing, userId, selectedPaymentMethod, isGuestCheckout, checkDeliveryDateWarningCallback);
+        if (!newOrderId) {
+          setIsSubmitting(false);
+          return;
+        }
+        
+        setOrderId(newOrderId);
+        localStorage.setItem("lastOrderId", newOrderId);
+        
+        const success = await handleCashPayment(newOrderId);
+        if (success) {
+          // Clear cart after successful order
+          localStorage.removeItem("cart");
+          window.dispatchEvent(new Event("cartUpdated"));
+          
+          // If it was a guest checkout, offer registration
+          if (isGuestCheckout) {
+            setShowRegistrationModal(true);
+          }
+          
+          // Redirect to order success page
+          navigate(`/order-success/${newOrderId}`);
+        }
+      } else if (selectedPaymentMethod === "paypal") {
+        // Create order and handle PayPal payment
+        newOrderId = await createOrder(cart, billing, userId, selectedPaymentMethod, isGuestCheckout, checkDeliveryDateWarningCallback);
+        if (!newOrderId) {
+          setIsSubmitting(false);
+          return;
+        }
+        
+        setOrderId(newOrderId);
+        localStorage.setItem("lastOrderId", newOrderId);
+        
+        sessionStorage.setItem("guest_checkout", isGuestCheckout ? "true" : "false");
+        
+        const approvalUrl = await handlePaypalPayment(newOrderId, totalPrice, isGuestCheckout);
+        if (approvalUrl) {
+          window.location.href = approvalUrl;
+        }
+      } else {
+        // Create order and handle Viva payment
+        newOrderId = await createOrder(cart, billing, userId, selectedPaymentMethod, isGuestCheckout, checkDeliveryDateWarningCallback);
+        if (!newOrderId) {
+          setIsSubmitting(false);
+          return;
+        }
+        
+        setOrderId(newOrderId);
+        localStorage.setItem("lastOrderId", newOrderId);
+        
+        const paymentUrl = await handleVivaPayment(newOrderId, billing, totalPrice);
+        if (paymentUrl) {
+          // Clear cart before redirecting to payment page
+          localStorage.removeItem("cart");
+          window.dispatchEvent(new Event("cartUpdated"));
+          
+          window.location.href = paymentUrl;
+        }
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error.message);
+      alert("There was an error while processing the payment.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -661,7 +327,7 @@ const Checkout = () => {
             prevStep={prevStep}
             isSubmitting={isSubmitting}
             setShowDeliveryWarning={setShowDeliveryWarning}
-            checkDeliveryDateWarning={checkDeliveryDateWarning}
+            checkDeliveryDateWarning={checkDeliveryDateWarningCallback}
             setHasCheckedDeliveryDate={setHasCheckedDeliveryDate}
           />
         );
@@ -671,7 +337,7 @@ const Checkout = () => {
             billing={billing}
             setBilling={setBilling}
             handlePayment={processPayment}
-            handlePaypalPayment={handlePaypalPayment}
+            handlePaypalPayment={processPayment}
             prevStep={prevStep}
             isSubmitting={isSubmitting}
             selectedPaymentMethod={selectedPaymentMethod}
@@ -718,7 +384,7 @@ const Checkout = () => {
         <GuestRegistrationModal 
           show={showRegistrationModal}
           onClose={() => setShowRegistrationModal(false)}
-          onRegister={handleGuestRegistration}
+          onRegister={handleGuestRegistrationClick}
           userInfo={{
             email: billing.email,
             firstName: billing.first_name,
