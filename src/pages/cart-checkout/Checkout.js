@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import useBillingData from "./useBillingData";
-import CartSummary from "./CartSummary";
-import CheckoutProgressBar from "./CheckoutProgressBar";
-import PersonalDetailsStep from "./checkout-steps/PersonalDetailsStep";
-import DeliveryDetailsStep from "./checkout-steps/DeliveryDetailsStep";
-import PaymentStep from "./checkout-steps/PaymentStep";
-import QRCodePayment from "./QRCodePayment";
-import PayPalSuccess from "./PayPalSuccess";
-import GuestRegistrationModal from "./checkout-steps/GuestRegistrationModal";
+import useBillingData from "./checkout/useBillingData";
+import CartSummary from "./checkout/CartSummary";
+import CheckoutProgressBar from "./checkout/CheckoutProgressBar";
+import PersonalDetailsStep from "./checkout/checkout-steps/PersonalDetailsStep";
+import DeliveryDetailsStep from "./checkout/checkout-steps/DeliveryDetailsStep";
+import PaymentStep from "./checkout/checkout-steps/PaymentStep";
+import QRCodePayment from "./checkout/QRCodePayment";
+import PayPalSuccess from "./checkout/PayPalSuccess";
+import GuestRegistrationModal from "./checkout/checkout-steps/GuestRegistrationModal";
 import "./CheckoutSteps.css";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;

@@ -32,7 +32,7 @@ const Checkout = lazy(() => import('./pages/cart-checkout/Checkout'));
 const UserDashboard = lazy(() => import('./pages/login/user-dash/userDashboard'));
 const Success = lazy(() => import('./pages/cart-checkout/Success'));
 const Failure = lazy(() => import('./pages/cart-checkout/Failure'));
-const PayPalSuccess = lazy(() => import('./pages/cart-checkout/PayPalSuccess'));
+const PayPalSuccess = lazy(() => import('./pages/cart-checkout/checkout/PayPalSuccess'));
 const AddRecipe = lazy(() => import('./pages/recipes/add-recipe/AddRecipe'));
 const AddBlogPost = lazy(() => import('./pages/blog/AddBlogPost'));
 const PrivacyPolicyPage = lazy(() => import('./pages/pp-tc/PrivacyPolicy'));

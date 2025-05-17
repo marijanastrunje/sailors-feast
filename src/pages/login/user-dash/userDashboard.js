@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useBillingData from "../../cart-checkout/useBillingData";
+import useBillingData from "../../cart-checkout/checkout/useBillingData";
 import ProfileData from "./ProfileData";
 import SavedLists from "./SavedLists";
 import SavedRecipes from "./SavedRecipes";
