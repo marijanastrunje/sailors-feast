@@ -66,7 +66,7 @@ const ContactForm = () => {
   return (
     <>
       <SEO
-        title="Contact | Sailor's Feast"
+        title="Contact"
         description="Got questions about your yacht grocery order or delivery in Croatia? Contact us — we're here to help make your sailing trip easy and fun!"
         keywords={[
           'contact Sailor\'s Feast',
@@ -96,8 +96,8 @@ const ContactForm = () => {
             <strong>Sailor's Feast</strong><br />
             Ivana Meštrovića 35<br />
             10360 Sesvete, Croatia<br />
-            <a href="tel:+385916142773">+385 91 614 2773</a><br />
-            <a href="mailto:info@sailorsfeast.com">info@sailorsfeast.com</a>
+            <a href="tel:+385916142773" className="text-prim">+385 91 614 2773</a><br />
+            <a href="mailto:info@sailorsfeast.com" className="text-prim">info@sailorsfeast.com</a>
           </p>
         </div>
 

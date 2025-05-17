@@ -368,7 +368,7 @@ const RecipesPage = () => {
   return (
     <>
       <SEO
-        title="Recipes | Sailor's Feast"
+        title="Recipes"
         description="Discover a collection of easy, delicious recipes perfect for your sailing trip in Croatia. Filter by type, diet, cooking method and more!"
         keywords={[
           "boat recipes",

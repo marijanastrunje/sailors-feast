@@ -45,7 +45,7 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Sailor's Feast | Fresh food for your boat"
+        title="Fresh food for your boat"
         description="Sailor's Feast brings fresh food and drinks right to your boat in Croatia. Get groceries and fun snack boxes delivered fast to your marina!"
         keywords={['boat food delivery', 'sailing Croatia', 'marina groceries', 'yacht snacks', 'Sailor\'s Feast']}
         path="/"

@@ -9,7 +9,7 @@ const FFBox = () => {
   return (
     <>
       <SEO
-        title="Friends & Family box | Sailor's Feast"
+        title="Friends & Family box"
         description="Make sailing even more fun with our Friends & Family box! Packed with snacks, drinks, and goodies everyone on board will love, delivered to your boat in Croatia."
         keywords={[
           'Friends & Family Box',

@@ -9,7 +9,7 @@ const StandardBox = () => {
   return (
     <>
       <SEO
-        title="Standard box | Sailor's Feast"
+        title="Standard box"
         description="Get all your sailing essentials with the our Standard box! A perfect mix of snacks, meals, and drinks delivered to your boat in Croatia."
         keywords={[
           'Standard Box',

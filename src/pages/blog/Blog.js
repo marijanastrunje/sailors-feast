@@ -172,7 +172,7 @@ const Blog = () => {
   return (
     <>
       <SEO
-        title="Blog | Sailor's Feast"
+        title="Blog"
         description="Join the Sailor's Feast blog for fun stories, easy recipes, and cool sailing tips! Get the best ideas to make your Croatia boat trip tasty and awesome."
         keywords={['sailing tips', 'easy recipes', 'Croatia travel', 'boat food', 'yachting blog', 'Sailor\'s Feast']}
         path="/blog"

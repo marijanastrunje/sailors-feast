@@ -9,7 +9,7 @@ const HealthyBox = () => {
   return (
     <>
       <SEO
-        title="Healthy box | Sailor's Feast"
+        title="Healthy box"
         description="Stay energized at sea with our Healthy box! Enjoy fresh, nutritious snacks and meals delivered right to your boat in Croatia."
         keywords={[
           'Healthy Box',

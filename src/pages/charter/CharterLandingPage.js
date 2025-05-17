@@ -147,7 +147,7 @@ const CharterLandingPage = () => {
   return (
     <>
       <SEO
-        title="Charter Partner Program | Sailor's Feast"
+        title="Charter Partner Program"
         description="Boost your charter business with Sailor's Feast! Offer your guests fresh, local food delivered right to their boat and make their sailing experience unforgettable."
         keywords={[
           'charter partner program',

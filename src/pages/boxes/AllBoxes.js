@@ -46,7 +46,7 @@ const AllBoxes = () => {
   return (
     <>
     <SEO
-      title="All boxes | Sailor's Feast"
+      title="All boxes"
       description="Check out our fun and tasty Sailor's Feast food boxes! Get snacks, drinks, and more delivered right to your boat in Croatia."
       keywords={['food boxes', 'boat snacks', 'sailing Croatia', 'yacht food', 'Sailor\'s Feast']}
       path="/all-boxes"

@@ -9,7 +9,7 @@ const FeastBox = () => {
   return (
     <>
       <SEO
-        title="Feast box | Sailor's Feast"
+        title="Feast box"
         description="Discover our delicious Feast box packed with fresh snacks, drinks, and goodies, delivered straight to your boat in Croatia!"
         keywords={[
           'Sailor\'s Feast Box',

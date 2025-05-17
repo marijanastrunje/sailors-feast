@@ -682,7 +682,7 @@ const Groceries = () => {
   return (
     <>
       <SEO
-        title="Groceries | Sailor's Feast"
+        title="Groceries"
         description="Shop fresh groceries, snacks, and drinks for your sailing trip in Croatia. Get everything delivered right to your boat for an easy, fun vacation!"
         keywords={[
           'boat groceries',
