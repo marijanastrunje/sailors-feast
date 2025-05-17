@@ -37,7 +37,7 @@ const BookmarkToggle = ({ itemId, metaKey = "saved_recipes", className = "", onC
     localStorage.setItem(localKey, JSON.stringify(updated));
 
     try {
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/wp-json/wp/v2/users/me`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

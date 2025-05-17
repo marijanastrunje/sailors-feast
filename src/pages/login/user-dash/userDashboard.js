@@ -67,7 +67,7 @@ const UserDashboard = () => {
   const saveUserData = () => {
     if (!token) return alert("You are not logged in!");
 
-    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

@@ -314,7 +314,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   
       const updatedLists = { ...currentLists, [listName]: currentBoxProducts };
   
-      const saveRes = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+      const saveRes = await fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

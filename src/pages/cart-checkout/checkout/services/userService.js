@@ -59,7 +59,7 @@ export const handleGuestRegistration = async (billing, password, userType, order
     sessionStorage.removeItem("guest_checkout");
 
     // Get user data to update userId in React state
-    const userDataResponse = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+    const userDataResponse = await fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
       headers: { Authorization: `Bearer ${loginData.token}` }
     });
     

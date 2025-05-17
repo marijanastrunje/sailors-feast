@@ -57,7 +57,7 @@ const Checkout = () => {
   useEffect(() => {
     if (!token || isGuestCheckout) return;
     
-    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

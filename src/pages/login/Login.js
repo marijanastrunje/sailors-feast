@@ -78,7 +78,7 @@ const Login = () => {
                 localStorage.setItem("user_email", form.username);
 
                 // Dohvati user_type iz REST API-ja
-                fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+                fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
                     headers: {
                         Authorization: `Bearer ${data.token}`,
                     },

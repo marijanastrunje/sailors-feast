@@ -21,7 +21,7 @@ const SavedLists = ({ savedLists, setSavedLists }) => {
     const updatedLists = { ...savedLists };
     delete updatedLists[listName];
 
-    fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+    fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

@@ -29,7 +29,7 @@ const CartPage = () => {
 
   useEffect(() => {
     if (token) {
-      fetch(`${backendUrl}/wp-json/wp/v2/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, { headers: { Authorization: `Bearer ${token}` } })
         .then((res) => res.json())
         .then((data) => {
           if (data.meta?.saved_lists) {
@@ -96,7 +96,7 @@ const CartPage = () => {
 
       const updatedLists = { ...currentLists, [listName]: cart };
 
-      const saveRes = await fetch(`${backendUrl}/wp-json/wp/v2/users/me`, {
+      const saveRes = await fetch(`${backendUrl}/wp-json/wp/v2/users/me?no_cache=${Date.now()}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
