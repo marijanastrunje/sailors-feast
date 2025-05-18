@@ -90,9 +90,9 @@ const PaymentStep = ({
               <p className="mb-0">
                 Since your delivery date is more than 7 days away, you can:
               </p>
-              <ul className="mb-0 mt-2">
-                <li>Pay now using credit/debit card via Viva Wallet, or</li>
-                <li>Pay now using PayPal, or</li>
+              <ul className="mb-0 mt-2 ps-3" style={{ listStyleType: "disc" }}>
+                <li>Pay now using credit/debit card via Viva Wallet</li>
+                <li>Pay now using PayPal</li>
                 <li>Pay later by bank transfer (before the deadline)</li>
                 {userType === "crew" && <li>Pay in cash on delivery (crew members only)</li>}
               </ul>

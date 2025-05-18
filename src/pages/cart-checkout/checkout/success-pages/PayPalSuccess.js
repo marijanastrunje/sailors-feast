@@ -3,14 +3,17 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-const PayPalSuccess = () => {
+const PayPalSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationModal }) => {
     const { orderId } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [orderDetails, setOrderDetails] = useState(null);
-    const isGuestCheckout = sessionStorage.getItem("guest_checkout") === "true";
-    const hasAccount = localStorage.getItem("token");
+    const [copied, setCopied] = useState(false);
+    
+    // Fallback provjere ako propovi nisu prosljeđeni
+    const isGuest = isGuestCheckout ?? (sessionStorage.getItem("guest_checkout") === "true");
+    const userHasAccount = hasAccount ?? !!localStorage.getItem("token");
 
     useEffect(() => {
         if (!orderId) {
@@ -44,6 +47,16 @@ const PayPalSuccess = () => {
         fetchOrderDetails();
     }, [orderId]);
 
+    // Funkcija za kopiranje broja narudžbe
+    const handleCopyOrderId = () => {
+        navigator.clipboard.writeText(orderId);
+        setCopied(true);
+        
+        setTimeout(() => {
+            setCopied(false);
+        }, 3000);
+    };
+
     return (
         <div className="container">
             <div className="payment-confirmation py-4">
@@ -53,9 +66,16 @@ const PayPalSuccess = () => {
                     </div>
                     <h2>Thank you for your order!</h2>
                     <p className="lead">Your payment has been successfully processed.</p>
+                    {orderDetails?.email && (
+                        <p>A confirmation email with all order details has been sent to <strong>{orderDetails.email}</strong></p>
+                    )}
                 </div>
 
-                {loading && <p className="text-center">Loading order details...</p>}
+                {loading && (
+                    <div className="text-center">
+                        <p>Loading order details...</p>
+                    </div>
+                )}
 
                 {error && (
                     <div className="alert alert-danger text-center">
@@ -65,11 +85,6 @@ const PayPalSuccess = () => {
 
                 {!loading && !error && (
                     <>
-                        <div className="text-center mb-4">
-                            <h4>Order #<strong>{orderId}</strong></h4>
-                            <p>A confirmation email with all order details has been sent to <strong>{orderDetails?.email}</strong></p>
-                        </div>
-
                         <div className="row justify-content-center">
                             <div className="col-lg-8">
                                 <div className="card mb-4">
@@ -77,11 +92,35 @@ const PayPalSuccess = () => {
                                         <h3 className="card-title h5 mb-0">Order Details</h3>
                                     </div>
                                     <div className="card-body">
-                                        <p className="mb-2"><strong>Order Number:</strong> {orderId}</p>
-                                        <p className="mb-2"><strong>Payment Method:</strong> PayPal</p>
-                                        <p className="mb-2"><strong>Status:</strong> Payment Completed</p>
+                                        <div className="d-flex justify-content-between align-items-center mb-3">
+                                            <div>
+                                                <strong>Order Number:</strong> {orderId}
+                                            </div>
+                                            <button
+                                                className="btn btn-sm btn-outline-secondary"
+                                                onClick={handleCopyOrderId}
+                                            >
+                                                {copied ? "✓ Copied" : "Copy"}
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="row">
+                                            <div className="col-md-6 mb-2">
+                                                <strong>Payment Method:</strong>
+                                                <br />
+                                                <span className="text-muted">PayPal</span>
+                                            </div>
+                                            <div className="col-md-6 mb-2">
+                                                <strong>Status:</strong>
+                                                <br />
+                                                <span className="badge bg-success">Payment Completed</span>
+                                            </div>
+                                        </div>
+                                        
                                         {orderDetails?.total && (
-                                            <p className="mb-0"><strong>Total:</strong> €{orderDetails.total}</p>
+                                            <div className="mt-3">
+                                                <strong>Total:</strong> €{orderDetails.total}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -89,8 +128,8 @@ const PayPalSuccess = () => {
                         </div>
 
                         <div className="text-center mt-4">
-                            {isGuestCheckout ? (
-                                hasAccount ? (
+                            {isGuest ? (
+                                userHasAccount ? (
                                     <>
                                         <p className="text-success mb-3">Your account has been created and you're now logged in.</p>
                                         <button onClick={() => navigate("/user")} className="btn btn-prim me-2">
@@ -101,12 +140,19 @@ const PayPalSuccess = () => {
                                     <>
                                         <p className="mb-3">Want to track your order and save time on future purchases?</p>
                                         <button
-                                            onClick={() => navigate("/register", {
-                                                state: {
-                                                    email: orderDetails?.email,
-                                                    fromOrder: true
+                                            onClick={() => {
+                                                if (onShowRegistrationModal) {
+                                                    onShowRegistrationModal();
+                                                } else {
+                                                    // Fallback ako modal funkcija nije dostupna
+                                                    navigate("/register", {
+                                                        state: {
+                                                            email: orderDetails?.email,
+                                                            fromOrder: true
+                                                        }
+                                                    });
                                                 }
-                                            })}
+                                            }}
                                             className="btn btn-prim me-2"
                                         >
                                             Create Account
@@ -118,7 +164,7 @@ const PayPalSuccess = () => {
                                     View Your Orders
                                 </button>
                             )}
-                            <Link to="/all-boxes" className="btn btn-outline-secondary">
+                            <Link to="/all-boxes" className="btn btn-outline-secondary ms-2">
                                 Continue Shopping
                             </Link>
                         </div>
