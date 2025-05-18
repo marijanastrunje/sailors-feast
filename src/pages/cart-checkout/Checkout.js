@@ -226,7 +226,7 @@ const Checkout = () => {
           }
           
           // Redirect to order success page
-          navigate(`/order-success/${newOrderId}`);
+          navigate(`/cash-payment-success/${newOrderId}`);
         }
       } else if (selectedPaymentMethod === "paypal") {
         // Create order and handle PayPal payment

@@ -16,9 +16,25 @@ const CartSummary = ({ cart, setTotalPrice }) => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
     };
 
+    // Izračun PDV-a (PDV stopa 25% u Hrvatskoj)
+    const getTaxAmount = () => {
+        const totalWithTax = parseFloat(totalPrice());
+        const taxRate = 0.25; // 25% PDV
+        const taxAmount = totalWithTax - (totalWithTax / (1 + taxRate));
+        return taxAmount.toFixed(2);
+    };
+
+    // Izračun iznosa bez PDV-a
+    const getPriceWithoutTax = () => {
+        const totalWithTax = parseFloat(totalPrice());
+        const taxRate = 0.25; // 25% PDV
+        const priceWithoutTax = totalWithTax / (1 + taxRate);
+        return priceWithoutTax.toFixed(2);
+    };
+
     useEffect(() => {
         setTotalPrice(totalPrice());
-    }, [cart, totalPrice, setTotalPrice]);
+    }, [cart, setTotalPrice]);
 
     return (
         <>
@@ -70,7 +86,21 @@ const CartSummary = ({ cart, setTotalPrice }) => {
                 </>
             )}
             <div className="text-center">
-                <h4>Total: {totalPrice()} €</h4>
+                <div className="p-2">
+                    <div className="d-flex justify-content-between">
+                        <span>Subtotal (without VAT):</span>
+                        <strong>{getPriceWithoutTax()} €</strong>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                        <span>VAT (25%):</span>
+                        <strong>{getTaxAmount()} €</strong>
+                    </div>
+                    <hr className="my-1" />
+                    <div className="d-flex justify-content-between">
+                        <span>Total (with VAT):</span>
+                        <strong>{totalPrice()} €</strong>
+                    </div>
+                </div>
             </div>
         </>
     );

@@ -44,6 +44,22 @@ const CartPage = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
+  // Izračun PDV-a (PDV stopa 25% u Hrvatskoj)
+  const getTaxAmount = () => {
+    const totalWithTax = parseFloat(totalPrice());
+    const taxRate = 0.25; // 25% PDV
+    const taxAmount = totalWithTax - (totalWithTax / (1 + taxRate));
+    return taxAmount.toFixed(2);
+  };
+
+  // Izračun iznosa bez PDV-a
+  const getPriceWithoutTax = () => {
+    const totalWithTax = parseFloat(totalPrice());
+    const taxRate = 0.25; // 25% PDV
+    const priceWithoutTax = totalWithTax / (1 + taxRate);
+    return priceWithoutTax.toFixed(2);
+  };
+
   const removeItem = (id) => {
     const updatedCart = cart.filter((item) => item.id !== id);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -261,16 +277,30 @@ const CartPage = () => {
             )}
 
             {cart.length > 0 && (
-              <div className="mt-3">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h4 className="mb-2 mb-md-0">Total: {totalPrice()} €</h4>
+              <div>
+                <div className="d-flex justify-content-between align-items-start mt-2">
+                  <div className="me-2" style={{ minWidth: "240px" }}>
+                    <div className="d-flex justify-content-between">
+                      <span>Subtotal (without VAT):</span>
+                      <strong>{getPriceWithoutTax()} €</strong>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span>VAT (25%):</span>
+                      <strong>{getTaxAmount()} €</strong>
+                    </div>
+                    <hr className="my-1" />
+                    <div className="d-flex justify-content-between">
+                      <span>Total (with VAT):</span>
+                      <strong>{totalPrice()} €</strong>
+                    </div>
+                  </div>
                   <div>
                     {token && (
-                      <button className="btn btn-sm btn-secondary me-2" onClick={() => setShowSaveModal(true)}>
-                        Save as List
+                      <button className="btn btn-sm btn-secondary me-sm-2 ms-2 ms-md-0 mt-2" onClick={() => setShowSaveModal(true)}>
+                        Save list
                       </button>
                     )}
-                    <button onClick={clearCart} className="btn btn-sm btn-outline-secondary">Clear Cart</button>
+                    <button onClick={clearCart} className="btn btn-sm btn-outline-secondary mt-2">Clear Cart</button>
                   </div>
                 </div>
 

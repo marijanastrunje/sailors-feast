@@ -1,7 +1,7 @@
 import React from "react";
 import ProductCard from "./ProductCard";
 
-const ProductsGrid = ({ products, onShowModal }) => {
+const ProductsGrid = ({ products, onShowModal, allProducts }) => {
   if (!products || products.length === 0) {
     return (
       <p
@@ -24,7 +24,7 @@ const ProductsGrid = ({ products, onShowModal }) => {
     >
       {products.map((product) => (
         <div key={product.id} className="col" role="listitem">
-          <ProductCard product={product} onShowModal={onShowModal} />
+          <ProductCard product={product} onShowModal={onShowModal} allProducts={allProducts} />
         </div>
       ))}
     </div>

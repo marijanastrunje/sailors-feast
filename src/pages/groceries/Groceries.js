@@ -770,7 +770,7 @@ const Groceries = () => {
                 <>
                   {paginationData.paginatedProducts.length > 0 ? (
                     <>
-                      <MemoizedProductsGrid products={paginationData.paginatedProducts} onShowModal={handleShowModal} />
+                      <MemoizedProductsGrid products={paginationData.paginatedProducts} onShowModal={handleShowModal} allProducts={allProducts} />
                       {paginationData.totalPages > 1 && (
                         <Pagination
                           currentPage={currentPage}

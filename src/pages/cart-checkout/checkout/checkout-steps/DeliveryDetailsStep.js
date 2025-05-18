@@ -340,7 +340,7 @@ const DeliveryDetailsStep = ({
               value={billing.order_notes || ''}
               onChange={handleChange}
               disabled={isSubmitting}
-              placeholder="Any special instructions for your delivery..."
+              placeholder="If you need anything else or have any questions, feel free to write to us here."
               rows="3"
             ></textarea>
           </div>
