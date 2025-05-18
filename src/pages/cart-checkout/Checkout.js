@@ -7,8 +7,8 @@ import CheckoutProgressBar from "./checkout/CheckoutProgressBar";
 import PersonalDetailsStep from "./checkout/checkout-steps/PersonalDetailsStep";
 import DeliveryDetailsStep from "./checkout/checkout-steps/DeliveryDetailsStep";
 import PaymentStep from "./checkout/checkout-steps/PaymentStep";
-import QRCodePayment from "./checkout/QRCodePayment";
-import PayPalSuccess from "./checkout/PayPalSuccess";
+import QRCodePayment from "./checkout/success-pages/QRCodeSuccess";
+import PayPalSuccess from "./checkout/success-pages/PayPalSuccess";
 import GuestRegistrationModal from "./checkout/checkout-steps/GuestRegistrationModal";
 import { createOrder } from "./checkout/services/orderService";
 import { 
