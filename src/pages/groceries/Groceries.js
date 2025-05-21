@@ -291,7 +291,7 @@ const Groceries = () => {
     fetchCache.current[cacheKey] = true;
 
     // Fetch products for this category
-    fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}&per_page=100`, {
+    fetch(`${backendUrl}/wp-json/wc/v3/products?category=${categoryId}&per_page=100&orderby=menu_order&order=asc`, {
       headers: { Authorization: authHeader }
     })
       .then(res => res.json())
@@ -697,7 +697,7 @@ const Groceries = () => {
         <div className="groceries-hero p-2 text-center" aria-label="Groceries hero section">
           <h1 className="display-5 fw-bold text-white position-relative z-2">Groceries</h1>
           <div className="col-lg-6 mx-auto">
-            <p className="lead mb-4 text-white position-relative z-2">
+            <p className="lead fw-semibold mb-4 text-white position-relative z-2">
             Find everything you need for your trip. Browse by category, search for your favorites, and add items with a single click. We'll deliver it all fresh to your boat.
             </p>
           </div>

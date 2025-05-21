@@ -109,7 +109,7 @@ const CashPaymentSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationMod
             View Your Orders
           </button>
         )}
-        <Link to="/all-boxes" className="btn btn-outline-secondary ms-2">
+        <Link to="/groceries" className="btn btn-outline-secondary ms-2">
           Continue Shopping
         </Link>
       </div>

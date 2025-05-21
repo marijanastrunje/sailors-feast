@@ -7,7 +7,7 @@
 }
 
 .quantity-input-box {
-        width: 30px;
+        width: 40px;
         text-align: center;
         font-size: 1rem;
         color: #000;
@@ -36,10 +36,9 @@ input.quantity-input-box:focus-visible {
         border-radius: 4px;
 }
 
-@media (max-width: 480px) {
-        .box-products img,
-        .box-products .placeholder-img {
-                width: 200px !important;
-                height: auto;
-        }
+@media (max-width: 980px) {
+  .box-products img {
+    width: 250px;
+    height: auto;
+  }
 }

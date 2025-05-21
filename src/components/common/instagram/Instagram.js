@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInstagram } from "@fortawesome/free-brands-svg-icons";
 
@@ -62,10 +61,10 @@ for (let i = 0; i < images.length; i += 3) {
   return (
     <div>
       <h4>Follow us</h4>
-      <Link to="/" className="d-inline-flex align-items-center">
+      <a href="https://www.instagram.com/sailorsfeast/" className="d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
         <FontAwesomeIcon icon={faInstagram} />
         #sailorsfeast
-      </Link>
+      </a>
       <div className="instagram">
       <Slider {...settings}>
         {isMobile

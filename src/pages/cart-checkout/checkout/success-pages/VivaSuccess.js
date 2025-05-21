@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const VivaSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationModal }) => {
+const Success = ({ onShowRegistrationModal }) => {
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const isGuest = sessionStorage.getItem("guest_checkout") === "true";
+  const userHasAccount = !!localStorage.getItem("token");
 
   useEffect(() => {
     const orderIdFromStorage = localStorage.getItem("lastOrderId");
-
     if (!orderIdFromStorage) {
       setError("No order ID found.");
       setLoading(false);
@@ -20,25 +20,23 @@ const VivaSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationModal }) =
 
     setOrderId(orderIdFromStorage);
 
-    const updateOrderStatus = async () => {
+    const fetchAndMarkOrder = async () => {
       try {
-        const response = await fetch("https://backend.sailorsfeast.com/wp-json/sailorsfeast/v1/mark-paid", {
+        const res = await fetch("https://backend.sailorsfeast.com/wp-json/sailorsfeast/v1/mark-paid", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderId: orderIdFromStorage }),
         });
+        if (!res.ok) throw new Error("Failed to mark order as paid.");
 
-        if (!response.ok) throw new Error("Error updating order status.");
-
-        // Također možemo dohvatiti detalje narudžbe ako je potrebno
-        const orderResponse = await fetch(`https://backend.sailorsfeast.com/wp-json/wc/v3/orders/${orderIdFromStorage}?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`);
-        if (orderResponse.ok) {
-          const orderData = await orderResponse.json();
+        const orderRes = await fetch(
+          `https://backend.sailorsfeast.com/wp-json/wc/v3/orders/${orderIdFromStorage}?consumer_key=${process.env.REACT_APP_WC_KEY}&consumer_secret=${process.env.REACT_APP_WC_SECRET}`
+        );
+        if (orderRes.ok) {
+          const data = await orderRes.json();
           setOrderDetails({
-            email: orderData.billing.email,
-            total: orderData.total
+            email: data.billing.email,
+            total: data.total,
           });
         }
 
@@ -47,45 +45,27 @@ const VivaSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationModal }) =
         window.dispatchEvent(new Event("cartUpdated"));
 
         setLoading(false);
-      } catch (error) {
-        console.error("Failed to update order:", error);
-        setError("Error updating your order.");
+      } catch (err) {
+        console.error(err);
+        setError("Error finalizing your order.");
         setLoading(false);
       }
     };
 
-    updateOrderStatus();
+    fetchAndMarkOrder();
   }, []);
 
-  // Funkcija za kopiranje broja narudžbe
-  const handleCopyOrderId = () => {
-    navigator.clipboard.writeText(orderId);
-    setCopied(true);
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 3000);
-  };
-
   return (
-    <div className="payment-confirmation py-4">
+    <div className="container pb-5 pt-4">
       <div className="text-center mb-4">
-        <div className="icon-container mb-3">
-          <i className="fas fa-check-circle text-success" style={{ fontSize: '48px' }}></i>
-        </div>
         <h2>Thank you for your order!</h2>
-        <p className="lead">Your payment has been successfully processed.</p>
+        <p className="lead">Your payment was successful.</p>
         {orderDetails?.email && (
-          <p>A confirmation email with all order details has been sent to <strong>{orderDetails.email}</strong></p>
+          <p>A confirmation email has been sent to <strong>{orderDetails.email}</strong>.</p>
         )}
       </div>
 
-      {loading && (
-        <div className="text-center">
-          <p>Processing your order...</p>
-        </div>
-      )}
-
+      {loading && <p className="text-center">Processing your order...</p>}
       {error && (
         <div className="alert alert-danger text-center">
           <strong>{error}</strong>
@@ -93,68 +73,55 @@ const VivaSuccess = ({ isGuestCheckout, hasAccount, onShowRegistrationModal }) =
       )}
 
       {!loading && !error && orderId && (
-        <>
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <div className="card mb-4">
-                <div className="card-header bg-sec text-white">
-                  <h3 className="card-title h5 mb-0">Order Details</h3>
-                </div>
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <div>
-                      <strong>Order Number:</strong> {orderId}
-                    </div>
-                    <button
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={handleCopyOrderId}
-                    >
-                      {copied ? "✓ Copied" : "Copy"}
-                    </button>
-                  </div>
-                  <p className="mb-2"><strong>Payment Method:</strong> Viva Wallet</p>
-                  <p className="mb-2"><strong>Status:</strong> Payment Completed</p>
-                  {orderDetails?.total && (
-                    <p className="mb-0"><strong>Total:</strong> €{orderDetails.total}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="text-center">
+          <h5 className="mb-3">Order ID: <strong>{orderId}</strong></h5>
+          {orderDetails?.total && (
+            <p className="mb-3">Total: <strong>€{orderDetails.total}</strong></p>
+          )}
 
-          <div className="text-center mt-4">
-            {isGuestCheckout ? (
-              hasAccount ? (
-                <>
-                  <p className="text-success mb-3">Your account has been created and you're now logged in.</p>
-                  <button onClick={() => navigate("/user")} className="btn btn-prim me-2">
-                    View Your Orders
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="mb-3">Want to track your order and save time on future purchases?</p>
-                  <button
-                    onClick={onShowRegistrationModal}
-                    className="btn btn-prim me-2"
-                  >
-                    Create Account
-                  </button>
-                </>
-              )
+          {isGuest ? (
+            userHasAccount ? (
+              <>
+                <p className="text-success mb-3">Your account has been created and you're now logged in.</p>
+                <button className="btn btn-prim me-2" onClick={() => navigate("/user")}>
+                  View Your Orders
+                </button>
+              </>
             ) : (
-              <button onClick={() => navigate("/user")} className="btn btn-prim me-2">
-                View Your Orders
-              </button>
-            )}
-            <Link to="/all-boxes" className="btn btn-outline-secondary ms-2">
-              Continue Shopping
-            </Link>
-          </div>
-        </>
+              <>
+                <p className="mb-3">Want to track your order and save time next time?</p>
+                <button
+                  className="btn btn-prim me-2"
+                  onClick={() => {
+                    if (onShowRegistrationModal) {
+                      onShowRegistrationModal();
+                    } else {
+                      navigate("/register", {
+                        state: {
+                          email: orderDetails?.email,
+                          fromOrder: true,
+                        },
+                      });
+                    }
+                  }}
+                >
+                  Create Account
+                </button>
+              </>
+            )
+          ) : (
+            <button className="btn btn-prim me-2" onClick={() => navigate("/user")}>
+              View Your Orders
+            </button>
+          )}
+
+          <button className="btn btn-outline-secondary ms-2" onClick={() => navigate("/")}>
+            Back to Homepage
+          </button>
+        </div>
       )}
     </div>
   );
 };
 
-export default VivaSuccess;
+export default Success;

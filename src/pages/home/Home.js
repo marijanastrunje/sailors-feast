@@ -27,7 +27,7 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=0&per_page=20`, {
+    fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=0&per_page=30`, {
       headers: { Authorization: authHeader }
     })
       .then(response => response.json())

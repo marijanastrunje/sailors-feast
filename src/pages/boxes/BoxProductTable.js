@@ -11,6 +11,7 @@ const BoxProductTable = ({
   onShowSaveModal,
   token,
   peopleCount,
+  totalSum,
 }) => {
   
   const navigate = useNavigate();
@@ -30,17 +31,6 @@ const BoxProductTable = ({
       return updated;
     });
   };
-
-  const totalSum = subcategories.reduce((sum, subcategory) => {
-    return (
-      sum +
-      (subcategoryProducts[subcategory.id]?.reduce(
-        (subSum, product) =>
-          subSum + product.price * (product.quantity || 0),
-        0
-      ) || 0)
-    );
-  }, 0);
 
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];

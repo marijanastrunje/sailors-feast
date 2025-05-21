@@ -36,6 +36,7 @@ const categories = [
   { id: 144, name: "Breakfast" },
   { id: 145, name: "Lunch" },
   { id: 146, name: "Dinner" },
+  { id: 2334, name: "Dessert" },
 ];
 
 const RecipesPage = () => {

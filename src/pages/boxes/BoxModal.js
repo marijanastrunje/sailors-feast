@@ -49,7 +49,7 @@ const BoxModal = ({ extraProducts, handleAddProduct, closeModal, onShowProductMo
                   <img
                     src={product.images[0].src}
                     alt={product.name}
-                    width="90"
+                    width="250"
                     loading="lazy"
                   />
                 ) : (

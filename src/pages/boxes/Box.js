@@ -83,11 +83,12 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
           image: categoryData.image?.src || "",
         });
 
-        const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}`, { headers: authHeader });
+        const subcatRes = await fetch(`${backendUrl}/wp-json/wc/v3/products/categories?parent=${categoryId}&per_page=50`, { headers: authHeader });
         const subcatData = await subcatRes.json();
         if (!componentMounted.current) return;
 
-        setSubcategories(subcatData);
+        const sortedSubcatData = subcatData.sort((a, b) => a.menu_order - b.menu_order);
+        setSubcategories(sortedSubcatData);
 
         const allSubcategoryIds = subcatData.map(sub => sub.id).join(",");
         const productRes = await fetch(`${backendUrl}/wp-json/wc/v3/products?category=${allSubcategoryIds}&per_page=100&_fields=id,name,price,images,categories,acf`, { headers: authHeader });
@@ -230,13 +231,18 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
   }, [fetchExtraSubcategories, categoryMapping]);  
 
   const totalSum = useMemo(() => {
-    return subcategories.reduce((sum, sub) => {
+    return Object.values(subcategoryProducts).reduce((sum, products) => {
       return (
         sum +
-        (subcategoryProducts[sub.id]?.reduce((s, p) => s + Number(p.price || 0) * (p.quantity || 1), 0) || 0)
+        products.reduce(
+          (subSum, product) =>
+            subSum + Number(product.price || 0) * (product.quantity || 0),
+          0
+        )
       );
     }, 0);
-  }, [subcategories, subcategoryProducts]);
+  }, [subcategoryProducts]);
+
 
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -394,6 +400,7 @@ const BoxLayout = ({ categoryId, categoryMapping }) => {
         onShowSaveModal={() => setShowSaveModal(true)}
         token={token}
         peopleCount={peopleCount}
+        totalSum={totalSum}
       />
       {showModal && (
         <BoxModal

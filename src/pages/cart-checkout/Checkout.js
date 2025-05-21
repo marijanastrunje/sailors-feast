@@ -9,7 +9,6 @@ import DeliveryDetailsStep from "./checkout/checkout-steps/DeliveryDetailsStep";
 import PaymentStep from "./checkout/checkout-steps/PaymentStep";
 import QRCodePayment from "./checkout/success-pages/QRCodeSuccess";
 import PayPalSuccess from "./checkout/success-pages/PayPalSuccess";
-import VivaSuccess from "./checkout/success-pages/VivaSuccess";
 import CashPaymentSuccess from "./checkout/success-pages/CashPaymentSuccess";
 import GuestRegistrationModal from "./checkout/checkout-steps/GuestRegistrationModal";
 import { createOrder } from "./checkout/services/orderService";
@@ -260,9 +259,9 @@ const Checkout = () => {
         
         const paymentUrl = await handleVivaPayment(newOrderId, billing, totalPrice);
         if (paymentUrl) {
-          // Clear cart before redirecting to payment page
-          localStorage.removeItem("cart");
-          window.dispatchEvent(new Event("cartUpdated"));
+          // Ovdje NE brišemo cart, jer ćemo to raditi nakon povratka sa Vive
+          sessionStorage.setItem("guest_checkout", isGuestCheckout ? "true" : "false");
+          localStorage.setItem("lastOrderId", newOrderId);
           
           window.location.href = paymentUrl;
         }
@@ -279,7 +278,6 @@ const Checkout = () => {
   const renderStep = () => {
     const params = new URLSearchParams(location.search);
     const isPayPalSuccess = params.get("paypal") === "success";
-    const isVivaSuccess = params.get("viva") === "success";
     const isCashSuccess = location.pathname.includes("/cash-payment-success/");
 
     if (isPayPalSuccess && orderCreated) {
@@ -290,17 +288,6 @@ const Checkout = () => {
           hasAccount={!!token}
           onShowRegistrationModal={() => setShowRegistrationModal(true)}
           showRegistrationModal={showRegistrationModal}
-        />
-      );
-    }
-
-    // Viva Success
-    if (isVivaSuccess && orderCreated) {
-      return (
-        <VivaSuccess
-          isGuestCheckout={isGuestCheckout}
-          hasAccount={!!token}
-          onShowRegistrationModal={() => setShowRegistrationModal(true)}
         />
       );
     }

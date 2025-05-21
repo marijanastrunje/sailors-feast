@@ -279,15 +279,15 @@ const Header = () => {
                             <li className="nav-item dropdown me-2">
                                 <Link className={`nav-link dropdown-toggle ${isFoodBoxActive ? 'active' : ''}`} data-bs-toggle="dropdown"><FontAwesomeIcon icon={faBoxOpen} className="mx-2 d-lg-none" />Food box</Link>
                                 <ul className="dropdown-menu">
-                                    <li><Link to="/all-boxes" className={`dropdown-item ${currentPath === '/all-boxes' ? 'active' : ''}`}>Compare boxes</Link></li>
-                                    <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/standard-box" className={`dropdown-item ${currentPath === '/standard-box' ? 'active' : ''}`}>Standard box</Link></li>
-                                    <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/friends-family-box" className={`dropdown-item ${currentPath === '/friends-family-box' ? 'active' : ''}`}>Friends&Family box</Link></li>
+                                    <li><Link to="/all-boxes" className={`dropdown-item d-none ${currentPath === '/all-boxes' ? 'active' : ''}`}>Compare boxes</Link></li>
+                                    <li><hr className="dropdown-divider d-none" /></li>
+                                    <li><Link to="/standard-box" className={`dropdown-item d-none ${currentPath === '/standard-box' ? 'active' : ''}`}>Standard box</Link></li>
+                                    <li><hr className="dropdown-divider d-none" /></li>
+                                    <li><Link to="/friends-family-box" className={`dropdown-item d-none ${currentPath === '/friends-family-box' ? 'active' : ''}`}>Friends&Family box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><Link to="/feast-box" className={`dropdown-item ${currentPath === '/feast-box' ? 'active' : ''}`}>Feast box</Link></li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><Link to="/healthy-box" className={`dropdown-item ${currentPath === '/healthy-box' ? 'active' : ''}`} href="healthy-box.html">Healthy box</Link></li>
+                                    <li><Link to="/healthy-box" className={`dropdown-item d-none ${currentPath === '/healthy-box' ? 'active' : ''}`} href="healthy-box.html">Healthy box</Link></li>
                                 </ul>
                             </li>
                             <li className="nav-item me-2"><Link to="/groceries" className={`nav-link ${currentPath === '/groceries' ? 'active' : ''}`}><FontAwesomeIcon icon={faBasketShopping} className="mx-2 d-lg-none" />Groceries</Link></li>

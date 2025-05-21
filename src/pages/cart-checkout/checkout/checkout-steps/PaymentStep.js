@@ -92,7 +92,7 @@ const PaymentStep = ({
               </p>
               <ul className="mb-0 mt-2 ps-3" style={{ listStyleType: "disc" }}>
                 <li>Pay now using credit/debit card via Viva Wallet</li>
-                <li>Pay now using PayPal</li>
+                <li className="d-none">Pay now using PayPal</li>
                 <li>Pay later by bank transfer (before the deadline)</li>
                 {userType === "crew" && <li>Pay in cash on delivery (crew members only)</li>}
               </ul>
@@ -152,7 +152,7 @@ const PaymentStep = ({
 
           {/* PayPal option */}
           <div 
-            className={`payment-option rounded border p-3 mb-3 ${selectedPaymentMethod === 'paypal' ? 'border-primary shadow-sm' : ''}`}
+            className={`d-none payment-option rounded border p-3 mb-3 ${selectedPaymentMethod === 'paypal' ? 'border-primary shadow-sm' : ''}`}
             onClick={() => setSelectedPaymentMethod('paypal')}
             style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
           >

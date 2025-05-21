@@ -96,7 +96,7 @@ const BoxCarousel = () => {
           </div>
 
           <button
-            className="carousel-control-prev"
+            className="carousel-control-prev d-none"
             type="button"
             data-bs-target="#carouselExample"
             data-bs-slide="prev"
@@ -105,7 +105,7 @@ const BoxCarousel = () => {
             <span className="visually-hidden">Previous</span>
           </button>
           <button
-            className="carousel-control-next"
+            className="carousel-control-next d-none"
             type="button"
             data-bs-target="#carouselExample"
             data-bs-slide="next"
